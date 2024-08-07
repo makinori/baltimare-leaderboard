@@ -1,6 +1,7 @@
 {
 	"name": "baltimare-leaderboard",
 	"license": "AGPL-3.0-only",
+	"packageManager": "pnpm@9.7.0",
 	"scripts": {
 		"start": "tsx src/main.ts"
 	},
