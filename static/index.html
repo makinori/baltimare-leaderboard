@@ -1,0 +1,276 @@
+<html>
+	<head>
+		<title>Baltimare Leaderboard</title>
+		<meta name="viewport" content="width=device-width, initial-scale=0.8" />
+		<link href="/favicon.png" rel="icon" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--user-height: 32px;
+				--user-corner: 8px;
+				--user-spacing: 8px;
+			}
+
+			body {
+				background-color: #111;
+				font-family: "Nunito", sans-serif;
+				color: #fff;
+			}
+
+			#app {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.logo {
+				width: calc(100vw - 16px);
+				max-width: 600px;
+				margin-top: 32px;
+			}
+
+			.header {
+				margin-top: 16px;
+				margin-bottom: 8px;
+				font-weight: 700;
+				font-size: 20px;
+				display: flex;
+				width: calc(100vw - 16px);
+				max-width: 800px;
+				opacity: 0.6;
+			}
+
+			.header a {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.users {
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+				width: calc(100vw - 16px);
+				max-width: 800px;
+				margin-bottom: 32px;
+			}
+
+			a {
+				text-decoration: none;
+				color: #fff;
+			}
+
+			.user {
+				height: var(--user-height);
+				background-color: #222;
+				border-radius: var(--user-corner);
+				overflow: hidden;
+				color: #fff;
+				font-size: 20px;
+				font-weight: 600;
+				letter-spacing: -1px;
+				position: relative;
+			}
+
+			.user .bar {
+				position: absolute;
+				margin: auto;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: calc(var(--user-height) - var(--user-corner));
+				border-radius: var(--user-corner);
+			}
+
+			.user .info {
+				position: absolute;
+				margin: auto;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+			}
+
+			.user .info .username {
+				font-weight: 400;
+				opacity: 0.4;
+				margin-left: calc(var(--user-spacing) / 2);
+			}
+
+			.user .info .avatar {
+				width: var(--user-height);
+				height: var(--user-height);
+				border-radius: 0 var(--user-corner) var(--user-corner) 0;
+				margin-right: var(--user-spacing);
+				background-color: #333;
+				background-image: url("anon-avatar.png");
+				background-size: 100% 100%;
+			}
+
+			.flex-grow {
+				flex-grow: 1;
+			}
+
+			.user .info .time {
+				margin-right: var(--user-spacing);
+				font-weight: 500;
+				opacity: 0.6;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app"></div>
+		<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+		<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+		<script type="module">
+			import { FaArrowRight } from "https://esm.run/react-icons/fa6";
+
+			// kek
+
+			const e = React.createElement;
+
+			const usernameRegex = / \([^(]+?\)$/;
+
+			const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
+
+			function formatMinutes(m) {
+				if (m < 60) return `${m}m`;
+				const h = Math.floor(m / 60);
+				return `${h}h ${m % 60}m`;
+			}
+
+			function User({ i, user, highestMinutes }) {
+				let name = [];
+
+				const usernameMatches = user.name.match(usernameRegex);
+				if (usernameMatches != null) {
+					const displayName = user.name
+						.replace(usernameRegex, "")
+						.trim();
+
+					name = [
+						displayName,
+						e("div", { className: "username" }, usernameMatches[0]),
+					];
+				} else {
+					name = [user.name];
+				}
+
+				const percentage = user.minutes / highestMinutes;
+
+				return e("div", { className: "user" }, [
+					e("div", {
+						className: "bar",
+						style: {
+							right: (1 - percentage) * 100 + "%",
+							backgroundColor: `hsl(${i * 10}deg, 20%, 30%)`,
+						},
+					}),
+					e("div", { className: "info" }, [
+						e("a", {
+							className: "avatar",
+							href:
+								"https://world.secondlife.com/resident/" +
+								user._id,
+							style: {
+								backgroundImage: nullUuidRegex.test(
+									user.imageId,
+								)
+									? null
+									: "url(https://picture-service.secondlife.com/" +
+									  user.imageId +
+									  "/256x192.jpg)",
+							},
+						}),
+						name,
+						e("div", { className: "flex-grow" }),
+						e(
+							"div",
+							{ className: "time" },
+							formatMinutes(user.minutes),
+						),
+					]),
+				]);
+			}
+
+			function App() {
+				const [users, setUsers] = React.useState([]);
+
+				const updateUsers = React.useCallback(async () => {
+					const res = await fetch("/api/users");
+					setUsers(await res.json());
+				}, [setUsers]);
+
+				React.useEffect(() => {
+					updateUsers();
+					// TODO: use cron?
+					const interval = setInterval(updateUsers, 1000 * 10);
+					return () => {
+						clearInterval(interval);
+					};
+				}, [updateUsers]);
+
+				const highestMinutes = React.useMemo(() => {
+					let highest = 0;
+					for (const user of users) {
+						if (user.minutes > highest) {
+							highest = user.minutes;
+						}
+					}
+					return highest;
+				}, [users]);
+
+				return [
+					e(
+						"a",
+						{ href: "https://baltimare.pages.dev/favicon.ico" },
+						e("img", {
+							src: "baltimare-opg.png",
+							className: "logo",
+						}),
+					),
+					e("div", { class: "header" }, [
+						`${users.length} popens`,
+						e("div", { className: "flex-grow" }),
+						e(
+							"a",
+							{
+								href: "https://github.com/makidoll/baltimare-leaderboard",
+								style: {
+									opacity: 0.6,
+								},
+							},
+							[
+								"source code",
+								e(FaArrowRight, {
+									size: 16,
+									style: { marginLeft: 4 },
+								}),
+							],
+						),
+					]),
+					e(
+						"div",
+						{ className: "users" },
+						users.map((user, i) =>
+							e(User, { key: i, i, user, highestMinutes }),
+						),
+					),
+				];
+			}
+
+			const root = ReactDOM.createRoot(document.getElementById("app"));
+			root.render(e(App));
+		</script>
+	</body>
+</html>
