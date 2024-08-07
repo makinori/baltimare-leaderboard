@@ -74,7 +74,6 @@
 				overflow: hidden;
 				color: #fff;
 				font-size: 20px;
-				font-weight: 600;
 				letter-spacing: -1px;
 				position: relative;
 			}
@@ -99,39 +98,53 @@
 				display: flex;
 				flex-direction: row;
 				align-items: center;
-			}
-
-			.user .info .username {
-				font-weight: 400;
-				opacity: 0.4;
-				margin-left: calc(var(--user-spacing) / 2);
-			}
-
-			.user .info .avatar {
-				width: var(--user-height);
-				height: var(--user-height);
-				border-radius: 0 var(--user-corner) var(--user-corner) 0;
-				margin-right: var(--user-spacing);
-				background-color: #333;
-				background-image: url("anon-avatar.png");
-				background-size: 100% 100%;
+				text-shadow: 2px 2px 0px rgba(17, 17, 17, 0.4);
 			}
 
 			.flex-grow {
 				flex-grow: 1;
 			}
 
+			.user .info .avatar {
+				width: var(--user-height);
+				height: var(--user-height);
+				border-radius: 0 var(--user-corner) var(--user-corner) 0;
+				background-color: #333;
+				background-image: url("anon-avatar.png");
+				background-size: 100% 100%;
+			}
+
+			.user .info .display-name {
+				margin-left: calc(var(--user-spacing));
+				font-weight: 700;
+			}
+
+			.user .info .username {
+				margin-left: calc(var(--user-spacing));
+				font-size: 16px;
+				font-weight: 600;
+				opacity: 0.4;
+			}
+
+			.user .info .seen {
+				margin-right: calc(var(--user-spacing) * 1.5);
+				font-size: 16px;
+				font-weight: 600;
+				opacity: 0.4;
+			}
+
 			.user .info .time {
-				margin-right: var(--user-spacing);
-				font-weight: 500;
+				margin-right: calc(var(--user-spacing) * 1.5);
+				font-weight: 700;
 				opacity: 0.6;
 			}
 		</style>
 	</head>
 	<body>
 		<div id="app"></div>
-		<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
-		<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script>
 		<script type="module">
 			import { FaArrowRight } from "https://esm.run/react-icons/fa6";
 
@@ -139,7 +152,7 @@
 
 			const e = React.createElement;
 
-			const usernameRegex = / \([^(]+?\)$/;
+			const usernameRegex = / \(([^(]+?)\)$/;
 
 			const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
 
@@ -159,14 +172,28 @@
 						.trim();
 
 					name = [
-						displayName,
-						e("div", { className: "username" }, usernameMatches[0]),
+						e("div", { className: "display-name" }, displayName),
+						e("div", { className: "username" }, usernameMatches[1]),
 					];
 				} else {
-					name = [user.name];
+					name = [e("div", { className: "display-name" }, user.name)];
 				}
 
 				const percentage = user.minutes / highestMinutes;
+
+				const lastSeen = new Date(user.lastSeen);
+				const lastSeenSeconds = (Date.now() - lastSeen) / 1000;
+				const seenRecently = lastSeenSeconds < 60 * 2; // within 2 minutes
+
+				let lastSeenText = "online";
+				if (!seenRecently) {
+					lastSeenText = dateFns
+						.formatDistanceToNow(lastSeen, {
+							addSuffix: true,
+						})
+						.replace("about", "")
+						.trim();
+				}
 
 				return e("div", { className: "user" }, [
 					e("div", {
@@ -194,6 +221,7 @@
 						}),
 						name,
 						e("div", { className: "flex-grow" }),
+						e("div", { className: "seen" }, lastSeenText),
 						e(
 							"div",
 							{ className: "time" },
