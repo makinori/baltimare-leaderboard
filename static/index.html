@@ -158,10 +158,22 @@
 
 			const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
 
+			function addSeperators(n) {
+				let out = [];
+				const chars = Math.floor(n).toString().split("").reverse();
+
+				for (let i = 0; i < chars.length; i += 3) {
+					if (i != 0) out = [...out, ","];
+					out = [...out, ...chars.slice(i, i + 3)];
+				}
+
+				return out.reverse().join("");
+			}
+
 			function formatMinutes(m) {
 				if (m < 60) return `${m}m`;
 				const h = Math.floor(m / 60);
-				return `${h}h ${m % 60}m`;
+				return `${addSeperators(h)}h ${m % 60}m`;
 			}
 
 			function User({ i, user, highestMinutes }) {
