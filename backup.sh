@@ -1,2 +1,3 @@
 #!/bin/bash
-cp db/users.db db/users-$(date +%F).db
+mkdir -p db/backups
+cp db/users.db db/backups/users-$(date +%F).db
