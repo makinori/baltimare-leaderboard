@@ -6,16 +6,18 @@ initCron();
 
 const app = express();
 
-const staticDir = path.resolve(__dirname, "../static");
-
 app.get("/api/users", (req, res) => {
 	res.json(users.getAllData().sort((a, b) => b.minutes - a.minutes));
 });
 
+const frontendDir = path.resolve(__dirname, "../frontend/dist");
+const staticDir = path.resolve(__dirname, "../static");
+
+app.use(express.static(frontendDir));
 app.use(express.static(staticDir));
 
 app.get("/", (req, res) => {
-	res.sendFile(path.resolve(staticDir, "index.html"));
+	res.sendFile(path.resolve(frontendDir, "index.html"));
 });
 
 app.get("*", (req, res) => {
@@ -24,5 +26,5 @@ app.get("*", (req, res) => {
 
 const port = Number.parseInt(process.env.PORT ?? "8080");
 app.listen(port, () => {
-	console.log("Starting web server at *:" + port);
+	console.log("Starting web server at http://127.0.0.1:" + port);
 });

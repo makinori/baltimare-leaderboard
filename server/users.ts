@@ -1,9 +1,9 @@
 import Datastore from "@seald-io/nedb";
-import { CronJob } from "cron";
+import { Cron } from "croner";
 import { JSDOM } from "jsdom";
 import * as path from "path";
 
-interface User {
+export interface IUser {
 	_id: string;
 	minutes: number;
 	name: string;
@@ -12,7 +12,7 @@ interface User {
 	lastUpdated: Date;
 }
 
-const users = new Datastore<User>({
+const users = new Datastore<IUser>({
 	filename: path.resolve(__dirname, "../db/users.db"),
 	autoload: true,
 });
@@ -71,7 +71,7 @@ async function processUser(uuid: string) {
 	let foundUser = await users.findOneAsync({ _id: uuid });
 
 	if (foundUser == null) {
-		let user: User = {
+		let user: IUser = {
 			_id: uuid,
 			minutes: 1,
 			name: "",
@@ -141,12 +141,8 @@ function initCron() {
 
 	console.log("Initializing cron for once a minute");
 
-	new CronJob(
-		"0 * * * * *", // every minute at 0 seconds
-		logUsers,
-		null,
-		true,
-	);
+	// every minute at 0 seconds
+	Cron("0 * * * * *", logUsers);
 }
 
 export { initCron, users };

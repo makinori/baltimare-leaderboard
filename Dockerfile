@@ -9,5 +9,6 @@ ADD package.json pnpm-lock.yaml .
 RUN pnpm install --frozen-lockfile
 
 ADD . .
+RUN pnpm build && rm -rf .parcel-cache
 
-CMD ["pnpm", "start"]
+CMD ["pnpm", "serve"]
