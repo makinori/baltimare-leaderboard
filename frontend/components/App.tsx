@@ -1,7 +1,8 @@
 import Cron from "croner";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaArrowRight } from "react-icons/fa6";
 import type { IUser } from "../../server/users";
+import { FlexGrow } from "./FlexGrow";
 import { User } from "./User";
 
 export function App() {
@@ -34,18 +35,54 @@ export function App() {
 	return (
 		<>
 			<a href="https://baltimare.pages.dev">
-				<img src="baltimare-opg.png" className="logo"></img>
+				<img
+					css={{
+						width: "calc(100vw - 16px)",
+						maxWidth: 600,
+						marginTop: 32,
+					}}
+					src="baltimare-opg.png"
+				></img>
 			</a>
-			<div className="header">
+			<div
+				css={{
+					marginTop: 16,
+					marginBottom: 8,
+					fontWeight: 800,
+					fontSize: 20,
+					display: "flex",
+					width: "calc(100vw - 16px - 8px)",
+					maxWidth: 800 - 8,
+					opacity: 0.4,
+				}}
+			>
 				{`${users.length} popens`}
-
-				<div className="flex-grow"></div>
-				<a href="https://github.com/makidoll/baltimare-leaderboard">
+				<FlexGrow />
+				<a
+					css={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "center",
+						fontWeight: 800,
+						opacity: 0.4,
+					}}
+					href="https://github.com/makidoll/baltimare-leaderboard"
+				>
 					source code
 					<FaArrowRight size={16} style={{ marginLeft: 4 }} />
 				</a>
 			</div>
-			<div className="users">
+			<div
+				css={{
+					display: "flex",
+					flexDirection: "column",
+					gap: 4,
+					width: "calc(100vw - 16px)",
+					maxWidth: 800,
+					marginBottom: 32,
+				}}
+			>
 				{users.map((user, i) => (
 					<User
 						key={i}

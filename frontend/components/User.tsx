@@ -1,6 +1,9 @@
+import styled from "@emotion/styled";
 import { formatDistanceToNow } from "date-fns";
 import React from "react";
 import type { IUser } from "../../server/users";
+import { styleVars } from "../vars";
+import { FlexGrow } from "./FlexGrow";
 
 const usernameRegex = / \(([^(]+?)\)$/;
 
@@ -24,6 +27,19 @@ function formatMinutes(m: number) {
 	return `${addSeperators(h)}h ${m % 60}m`;
 }
 
+const DisplayName = styled.div({
+	marginLeft: styleVars.userSpacing,
+	fontWeight: 800,
+	opacity: 0.9,
+});
+
+const Username = styled.div({
+	marginLeft: styleVars.userSpacing,
+	fontSize: 16,
+	fontWeight: 700,
+	opacity: 0.4,
+});
+
 export function User({
 	i,
 	user,
@@ -41,12 +57,12 @@ export function User({
 
 		name = (
 			<>
-				<div className="display-name">{displayName}</div>
-				<div className="username">{usernameMatches[1]}</div>
+				<DisplayName>{displayName}</DisplayName>
+				<Username>{usernameMatches[1]}</Username>
 			</>
 		);
 	} else {
-		name = <div className="display-name">{user.name}</div>;
+		name = <DisplayName>{user.name}</DisplayName>;
 	}
 
 	const percentage = user.minutes / highestMinutes;
@@ -65,30 +81,82 @@ export function User({
 	}
 
 	return (
-		<div className="user">
+		<div
+			css={{
+				height: styleVars.userHeight,
+				backgroundColor: "#222",
+				borderRadius: styleVars.userCorner,
+				overflow: "hidden",
+				color: "#fff",
+				fontSize: 20,
+				letterSpacing: -1,
+				position: "relative",
+			}}
+		>
 			<div
-				className="bar"
-				style={{
+				css={{
+					position: "absolute",
+					margin: "auto",
+					top: 0,
+					bottom: 0,
+					left: styleVars.userHeight - styleVars.userCorner,
+					borderRadius: styleVars.userCorner,
+					// dynamic
 					right: (1 - percentage) * 100 + "%",
 					backgroundColor: `hsl(${i * 10}deg, 20%, 30%)`,
 				}}
 			></div>
-			<div className="info">
+			<div
+				css={{
+					position: "absolute",
+					margin: "auto",
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0,
+					display: "flex",
+					flexDirection: "row",
+					alignItems: "center",
+					textShadow: "2px 2px 0px rgba(17, 17, 17, 0.4)",
+				}}
+			>
 				<a
-					className="avatar"
-					href={"https://world.secondlife.com/resident/" + user._id}
-					style={{
+					css={{
+						width: styleVars.userHeight,
+						height: styleVars.userHeight,
+						borderRadius: `0 ${styleVars.userCorner}px ${styleVars.userCorner}px 0`,
+						backgroundColor: "#333",
+						backgroundSize: "100% 100%",
+						// dynamic
 						backgroundImage: nullUuidRegex.test(user.imageId)
-							? ""
+							? "url(anon-avatar.png)"
 							: "url(https://picture-service.secondlife.com/" +
 							  user.imageId +
 							  "/256x192.jpg)",
 					}}
+					href={"https://world.secondlife.com/resident/" + user._id}
 				></a>
 				{name}
-				<div className="flex-grow"></div>
-				<div className="seen">{lastSeenText}</div>
-				<div className="time">{formatMinutes(user.minutes)}</div>
+				<FlexGrow />
+				<div
+					css={{
+						marginRight: styleVars.userSpacing * 1.5,
+						fontSize: 16,
+						fontWeight: 700,
+						opacity: 0.4,
+					}}
+				>
+					{lastSeenText}
+				</div>
+				<div
+					css={{
+						marginRight: styleVars.userSpacing * 1.5,
+						fontWeight: 700,
+						opacity: 0.6,
+					}}
+				>
+					{formatMinutes(user.minutes)}
+				</div>
 			</div>
 		</div>
 	);
