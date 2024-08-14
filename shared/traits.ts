@@ -4,6 +4,16 @@
 
 export const userTraitsMap = {
 	bot: ["baltimare", "camarea2", "horseheights"],
+	janny: [
+		"rarapony",
+		"vulneria",
+		"alphonsedev",
+		"musicora.skydancer",
+		"blackvinegarcity",
+		"firecrakcr",
+		"marbiepie",
+		"b0gdanoff",
+	],
 	// image traits
 	anonfilly: ["camarea2", "sunshineyelloww"],
 	nugget: ["horsehiney"],

@@ -1,15 +1,16 @@
+import { CSSObject } from "@emotion/react";
 import styled from "@emotion/styled";
-import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { IApiUser } from "../../server/users";
 import {
 	ImageTraitType,
 	imageTraitKeys,
 	imageTraitMap,
 } from "../../shared/traits";
+import { useSoundManager } from "../services/SoundManager";
 import { styleVars } from "../vars";
 import { FlexGrow } from "./FlexGrow";
 import { HStack } from "./Stack";
-import { useSoundManager } from "../services/SoundManager";
 
 const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
 
@@ -85,6 +86,35 @@ function ImageTrait({ imageTrait }: { imageTrait: ImageTraitType }) {
 	) : (
 		traitImg
 	);
+}
+
+function TextTrait({ text, janny }: { text: string; janny?: boolean }) {
+	const css: CSSObject = {
+		padding: "0 5px",
+		borderRadius: 4,
+		fontSize: 12,
+		fontWeight: 800,
+		letterSpacing: 0,
+		backgroundColor: "#333",
+		backgroundSize: "100% 100%",
+		color: "#888",
+		textShadow: "none",
+		marginLeft: styleVars.userSpacing * 1,
+		opacity: 1,
+		overflow: "hidden",
+	};
+
+	if (janny) {
+		// const opacity = 0.75;
+		// const c = `rgba(51,51,51,${opacity})`; // #333 with alpha
+		// const c = `rgba(34,34,34,${opacity})`; // #222 with alpha
+		// const c = `rgba(17,17,17,${opacity})`; // #111 with alpha
+		// css.backgroundImage = `linear-gradient(0deg, ${c}, ${c}), url(trans-flag.png)`;
+		css.backgroundImage = `url(trans-flag-dim.png)`;
+		css.color = "#888";
+	}
+
+	return <div css={css}>{text}</div>;
 }
 
 export function User({
@@ -184,7 +214,7 @@ export function User({
 						right: 0,
 						bottom: 0,
 						left: 0,
-						textShadow: "2px 2px 0px rgba(17, 17, 17, 0.4)",
+						textShadow: styleVars.userShadow,
 					}}
 				>
 					<div
@@ -221,22 +251,12 @@ export function User({
 					{name}
 					{imageTraits}
 					{user.traits.includes("bot") ? (
-						<div
-							css={{
-								padding: "0 4px",
-								borderRadius: 4,
-								fontSize: 12,
-								fontWeight: 800,
-								letterSpacing: 0,
-								backgroundColor: "#333",
-								color: "#888",
-								textShadow: "none",
-								marginLeft: styleVars.userSpacing * 1,
-								opacity: 1,
-							}}
-						>
-							bot
-						</div>
+						<TextTrait text="bot" />
+					) : (
+						<></>
+					)}
+					{user.traits.includes("janny") ? (
+						<TextTrait text="janny" janny />
 					) : (
 						<></>
 					)}
