@@ -1,6 +1,6 @@
 import Cron from "croner";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FaFilter, FaGithub, FaRobot } from "react-icons/fa6";
+import { FaFilter, FaGithub, FaRobot, FaSort } from "react-icons/fa6";
 import type { IApiUser } from "../../server/main";
 import { FlexGrow } from "./FlexGrow";
 import { User } from "./User";
@@ -11,11 +11,17 @@ enum UsersFilter {
 	Offline,
 }
 
+enum UsersSort {
+	TotalTimeOnline,
+	TimeSinceOnline,
+}
+
 export function App() {
 	const [users, setUsers] = useState<IApiUser[]>([]);
 
 	const [usersFilter, setUsersFilter] = useState(UsersFilter.Off);
 	const [showBots, setShowBots] = useState(true);
+	const [usersSort, setUsersSort] = useState(UsersSort.TotalTimeOnline);
 
 	const updateUsers = useCallback(async () => {
 		const res = await fetch("/api/users");
@@ -34,7 +40,12 @@ export function App() {
 	const toggleFilter = useCallback(() => {
 		const length = Object.keys(UsersFilter).length / 2;
 		setUsersFilter((usersFilter + 1) % length);
-	}, [users, setUsers, usersFilter, setUsersFilter]);
+	}, [usersFilter, setUsersFilter]);
+
+	const toggleSort = useCallback(() => {
+		const length = Object.keys(UsersSort).length / 2;
+		setUsersSort((usersSort + 1) % length);
+	}, [usersSort, setUsersSort]);
 
 	const shownUsers = useMemo(() => {
 		let outputUsers = users;
@@ -52,8 +63,19 @@ export function App() {
 			outputUsers = outputUsers.filter(u => !u.traits.includes("bot"));
 		}
 
-		return outputUsers.sort((a, b) => b.minutes - a.minutes);
-	}, [users, usersFilter, showBots]);
+		outputUsers = outputUsers.sort((a, b) => b.minutes - a.minutes);
+
+		if (usersSort == UsersSort.TimeSinceOnline) {
+			outputUsers = outputUsers.sort((a, b) =>
+				a.online && b.online
+					? 0
+					: new Date(b.lastSeen).getTime() -
+					  new Date(a.lastSeen).getTime(),
+			);
+		}
+
+		return outputUsers;
+	}, [users, usersFilter, showBots, usersSort]);
 
 	const highestMinutes = useMemo(() => {
 		let highest = 0;
@@ -75,6 +97,15 @@ export function App() {
 				return "offline only";
 		}
 	}, [usersFilter]);
+
+	const sortText = useMemo(() => {
+		switch (usersSort) {
+			case UsersSort.TotalTimeOnline:
+				return "total time online";
+			case UsersSort.TimeSinceOnline:
+				return "time since online";
+		}
+	}, [usersSort]);
 
 	return (
 		<>
@@ -141,6 +172,24 @@ export function App() {
 				>
 					<FaRobot size={16} style={{ marginRight: 4 }} />
 					{showBots ? "with bots" : "no bots"}
+				</span>
+				<span
+					css={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "center",
+						fontWeight: 800,
+						opacity: 0.4,
+						marginLeft: 24,
+						fontSize: 16,
+						cursor: "pointer",
+						userSelect: "none",
+					}}
+					onClick={toggleSort}
+				>
+					<FaSort size={16} style={{ marginRight: 4 }} />
+					{sortText}
 				</span>
 				<FlexGrow />
 				<a

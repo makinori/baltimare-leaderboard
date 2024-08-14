@@ -85,7 +85,6 @@ export function User({
 	let imageTraits: React.JSX.Element[] = [];
 
 	for (const traitName of user.traits) {
-		console.log(traitName);
 		if (!imageTraitKeys.includes(traitName)) continue;
 		const imageTrait = imageTraitMap[traitName] as ImageTrait;
 		imageTraits.push(
@@ -167,11 +166,13 @@ export function User({
 							// dynamic
 						}}
 						style={{
-							backgroundImage: nullUuidRegex.test(user.imageId)
-								? "url(anon-avatar.png)"
-								: "url(https://picture-service.secondlife.com/" +
-								  user.imageId +
-								  "/256x192.jpg)",
+							backgroundImage:
+								user.imageId == "" ||
+								nullUuidRegex.test(user.imageId)
+									? "url(anon-avatar.png)"
+									: "url(https://picture-service.secondlife.com/" +
+									  user.imageId +
+									  "/256x192.jpg)",
 						}}
 						href={
 							"https://world.secondlife.com/resident/" + user._id
