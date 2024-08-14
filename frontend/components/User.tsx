@@ -41,7 +41,7 @@ const Username = styled.div({
 });
 
 const bots = ["BaltiMare", "Camarea2", "horseheights"];
-const anonfillies = ["Camarea2"];
+const anonfillies = ["Camarea2", "SunshineYelloww"];
 
 export function User({
 	i,
