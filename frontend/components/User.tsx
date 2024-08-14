@@ -26,10 +26,18 @@ function addSeperators(n: number) {
 	return out.reverse().join("");
 }
 
+function plural(n: number, single: string, plural: string = null) {
+	if (plural == null) plural = single + "s";
+	if (n == 1 || n == -1) return single;
+	else return plural;
+}
+
 function formatMinutes(m: number) {
-	if (m < 60) return `${m}m`;
+	// if (m < 60) return `${m}m`;
+	if (m < 60) return `${m} ${plural(m, "min")}`;
 	const h = Math.floor(m / 60);
-	return `${addSeperators(h)}h ${m % 60}m`;
+	// return `${addSeperators(h)}h ${m % 60}m`;
+	return `${addSeperators(h)} ${plural(h, "hour")}`;
 }
 
 function randomInt(max: number) {
