@@ -45,7 +45,7 @@ export const imageTraitMap: Partial<Record<Trait, ImageTraitType>> = {
 	},
 	strawberry: {
 		image: "strawberry.png",
-		url: "",
+		url: "https://www.youtube.com/watch?v=yYSNp1JgkA8",
 		size: 20,
 	},
 	fish: {
