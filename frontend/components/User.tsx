@@ -85,7 +85,7 @@ export function User({
 				traitImg
 			) : (
 				<a key={traitName} href={imageTrait.url}>
-					traitImg
+					{traitImg}
 				</a>
 			),
 		);
