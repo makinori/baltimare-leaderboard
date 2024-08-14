@@ -2,10 +2,14 @@ import { formatDistanceToNow } from "date-fns";
 import express from "express";
 import * as path from "path";
 import { initCron, IUser, users } from "./users";
+import compression from "compression";
 
 initCron();
 
 const app = express();
+
+app.use(compression());
+
 
 export interface IApiUser extends IUser {
 	online: boolean;
