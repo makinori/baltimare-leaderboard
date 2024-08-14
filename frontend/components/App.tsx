@@ -6,6 +6,7 @@ import type { IApiUser } from "../../server/users";
 import { FlexGrow } from "./FlexGrow";
 import { HStack } from "./Stack";
 import { User } from "./User";
+import { useSoundManager } from "../services/SoundManager";
 
 enum UsersFilter {
 	Off,
@@ -42,6 +43,9 @@ function HeaderToggleButton(props: {
 }
 
 export function App() {
+	const soundManager = useSoundManager();
+	soundManager.init();
+
 	const [users, setUsers] = useState<IApiUser[]>([]);
 
 	const [usersFilter, setUsersFilter] = useState(UsersFilter.Off);
@@ -152,7 +156,6 @@ export function App() {
 					fontSize: 20,
 					width: "calc(100vw - 16px - 8px)",
 					maxWidth: 800 - 8,
-
 					alignItems: "flex-end", // move to bottom
 				}}
 			>

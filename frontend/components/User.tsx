@@ -1,10 +1,15 @@
 import styled from "@emotion/styled";
-import React from "react";
+import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import type { IApiUser } from "../../server/users";
-import { ImageTrait, imageTraitKeys, imageTraitMap } from "../../shared/traits";
+import {
+	ImageTraitType,
+	imageTraitKeys,
+	imageTraitMap,
+} from "../../shared/traits";
 import { styleVars } from "../vars";
 import { FlexGrow } from "./FlexGrow";
 import { HStack } from "./Stack";
+import { useSoundManager } from "../services/SoundManager";
 
 const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
 
@@ -26,6 +31,10 @@ function formatMinutes(m: number) {
 	return `${addSeperators(h)}h ${m % 60}m`;
 }
 
+function randomInt(max: number) {
+	return Math.floor(Math.random() * max);
+}
+
 const DisplayName = styled.div({
 	marginLeft: styleVars.userSpacing,
 	fontWeight: 800,
@@ -39,6 +48,45 @@ const Username = styled.div({
 	opacity: 0.4,
 });
 
+function ImageTrait({ imageTrait }: { imageTrait: ImageTraitType }) {
+	const soundManager = useSoundManager();
+
+	const onClick = useCallback(() => {
+		soundManager.play("vine-boom.wav", 0.15);
+	}, [imageTrait]);
+
+	const hasUrl = imageTrait.url != "";
+
+	const traitImg = (
+		<img
+			src={"traits/" + imageTrait.image}
+			css={{
+				height: imageTrait.size,
+				marginLeft: styleVars.userSpacing * 1,
+				opacity: 1,
+			}}
+		/>
+	);
+
+	return hasUrl ? (
+		<a
+			href={imageTrait.url}
+			css={{
+				transition: styleVars.transition,
+				":hover": {
+					transform: "scale(1.1)",
+				},
+			}}
+			target="_blank"
+			onClick={onClick}
+		>
+			{traitImg}
+		</a>
+	) : (
+		traitImg
+	);
+}
+
 export function User({
 	i,
 	user,
@@ -48,48 +96,48 @@ export function User({
 	user: IApiUser;
 	highestMinutes: number;
 }) {
-	let name: React.JSX.Element;
+	const soundManager = useSoundManager();
 
-	if (user.displayName == "") {
-		name = <DisplayName>{user.username}</DisplayName>;
-	} else {
-		name = (
-			<>
-				<DisplayName>{user.displayName}</DisplayName>
-				<Username>{user.username}</Username>
-			</>
-		);
-	}
+	const [boopSide, setBoopSide] = useState(-1);
 
-	const percentage = user.minutes / highestMinutes;
+	const name = useMemo(() => {
+		if (user.displayName == "") {
+			return <DisplayName>{user.username}</DisplayName>;
+		} else {
+			return (
+				<>
+					<DisplayName>{user.displayName}</DisplayName>
+					<Username>{user.username}</Username>
+				</>
+			);
+		}
+	}, [user]);
 
-	let imageTraits: React.JSX.Element[] = [];
+	const percentage = useMemo(() => user.minutes / highestMinutes, [user]);
 
-	for (const traitName of user.traits) {
-		if (!imageTraitKeys.includes(traitName)) continue;
-		const imageTrait = imageTraitMap[traitName] as ImageTrait;
+	const imageTraits = useMemo(
+		() =>
+			user.traits
+				.filter(t => imageTraitKeys.includes(t))
+				.map(t => <ImageTrait key={t} imageTrait={imageTraitMap[t]} />),
+		[user],
+	);
 
-		const traitImg = (
-			<img
-				src={"traits/" + imageTrait.image}
-				css={{
-					height: imageTrait.size,
-					marginLeft: styleVars.userSpacing * 1,
-					opacity: 1,
-				}}
-			/>
-		);
+	const onAvatarDown = useCallback(() => {
+		soundManager.play(`squeak-in/${randomInt(5) + 1}.wav` as any, 0.3);
+		if (Math.random() < 0.4) {
+			if (Math.random() < 0.5) {
+				soundManager.play(`squee.wav`, 0.35);
+			} else {
+				soundManager.play(`boop.wav`, 0.15);
+			}
+		}
+		setBoopSide(boopSide * -1);
+	}, [setBoopSide, boopSide]);
 
-		imageTraits.push(
-			imageTrait.url == "" ? (
-				traitImg
-			) : (
-				<a key={traitName} href={imageTrait.url}>
-					{traitImg}
-				</a>
-			),
-		);
-	}
+	const onAvatarUp = useCallback(() => {
+		soundManager.play(`squeak-out/${randomInt(4) + 1}.wav` as any, 0.3);
+	}, []);
 
 	return (
 		<HStack
@@ -107,7 +155,7 @@ export function User({
 					width: "100%",
 					height: "100%",
 					borderRadius: styleVars.userCorner,
-					overflow: "hidden",
+					// overflow: "hidden",
 					backgroundColor: "#222",
 				}}
 			>
@@ -136,19 +184,30 @@ export function User({
 						right: 0,
 						bottom: 0,
 						left: 0,
-
 						textShadow: "2px 2px 0px rgba(17, 17, 17, 0.4)",
 					}}
 				>
-					<a
+					<div
 						css={{
 							width: styleVars.userHeight,
 							height: styleVars.userHeight,
-							borderRadius: `0 ${styleVars.userCorner}px ${styleVars.userCorner}px 0`,
+							borderRadius: styleVars.userCorner,
 							backgroundColor: "#333",
 							backgroundSize: "100% 100%",
-							// dynamic
+							userSelect: "none",
+							transition: styleVars.transition,
+							cursor: "pointer",
+							":hover": {
+								transform: "scale(1.1)",
+							},
+							":active": {
+								transform: `scale(0.9) rotate(${
+									5 * boopSide
+								}deg)`,
+							},
 						}}
+						onPointerDown={onAvatarDown}
+						onPointerUp={onAvatarUp}
 						style={{
 							backgroundImage:
 								user.imageId == "" ||
@@ -158,11 +217,9 @@ export function User({
 									  user.imageId +
 									  "/256x192.jpg)",
 						}}
-						href={
-							"https://world.secondlife.com/resident/" + user._id
-						}
-					></a>
+					></div>
 					{name}
+					{imageTraits}
 					{user.traits.includes("bot") ? (
 						<div
 							css={{
@@ -183,7 +240,6 @@ export function User({
 					) : (
 						<></>
 					)}
-					{imageTraits}
 					<FlexGrow />
 					<div
 						css={{
@@ -197,28 +253,32 @@ export function User({
 					</div>
 				</HStack>
 			</div>
-			<HStack
-				css={{
-					width: 80,
-					height: "100%",
-					fontSize: 16,
-					fontWeight: 700,
-					justifyContent: "flex-start",
-					marginLeft: styleVars.userSpacing * 0.75,
-					whiteSpace: "nowrap",
-				}}
-			>
-				<div
+			<a href={"https://world.secondlife.com/resident/" + user._id}>
+				<HStack
 					css={{
-						width: 6,
-						height: 24,
-						borderRadius: 4,
-						backgroundColor: user.online ? "#8BC34A" : "#F44336",
-						marginRight: styleVars.userSpacing * 0.75,
+						width: 80,
+						height: "100%",
+						fontSize: 16,
+						fontWeight: 700,
+						justifyContent: "flex-start",
+						marginLeft: styleVars.userSpacing * 0.75,
+						whiteSpace: "nowrap",
 					}}
-				></div>
-				<div css={{ opacity: 0.4 }}>{user.lastSeenText}</div>
-			</HStack>
+				>
+					<div
+						css={{
+							width: 6,
+							height: 24,
+							borderRadius: 4,
+							backgroundColor: user.online
+								? "#8BC34A"
+								: "#F44336",
+							marginRight: styleVars.userSpacing * 0.75,
+						}}
+					></div>
+					<div css={{ opacity: 0.4 }}>{user.lastSeenText}</div>
+				</HStack>
+			</a>
 		</HStack>
 	);
 }

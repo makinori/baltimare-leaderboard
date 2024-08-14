@@ -5,7 +5,7 @@
 	"scripts": {
 		"start": "concurrently npm:start:*",
 		"start:server": "tsx --watch server/main.ts",
-		"start:frontend": "parcel watch --watch-dir frontend --watch-dir shared --dist-dir frontend/dist frontend/index.html",
+		"start:frontend": "parcel watch --dist-dir frontend/dist frontend/index.html",
 		"build": "rimraf frontend/dist && parcel build --dist-dir frontend/dist frontend/index.html",
 		"serve": "tsx server/main.ts"
 	},
@@ -19,7 +19,8 @@
 		"croner": "^8.1.1",
 		"express": "^4.19.2",
 		"jsdom": "^24.1.1",
-		"tsx": "^4.17.0"
+		"tsx": "^4.17.0",
+		"zustand": "^4.5.4"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.12.0",

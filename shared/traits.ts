@@ -16,13 +16,13 @@ export const userTraitsMap = {
 
 export type Trait = keyof typeof userTraitsMap;
 
-export interface ImageTrait {
+export interface ImageTraitType {
 	image: string;
 	url: string;
 	size: number;
 }
 
-export const imageTraitMap: Partial<Record<Trait, ImageTrait>> = {
+export const imageTraitMap: Partial<Record<Trait, ImageTraitType>> = {
 	anonfilly: {
 		image: "happy-anonfilly.png",
 		url: "https://anonfilly.horse",
