@@ -40,6 +40,9 @@ const Username = styled.div({
 	opacity: 0.4,
 });
 
+const bots = ["BaltiMare", "Camarea2", "horseheights"];
+const anonfillies = ["Camarea2"];
+
 export function User({
 	i,
 	user,
@@ -50,20 +53,25 @@ export function User({
 	highestMinutes: number;
 }) {
 	let name: React.JSX.Element;
+	let slUsername = "";
 
 	const usernameMatches = user.name.match(usernameRegex);
 	if (usernameMatches != null) {
 		const displayName = user.name.replace(usernameRegex, "").trim();
-
+		slUsername = usernameMatches[1];
 		name = (
 			<>
 				<DisplayName>{displayName}</DisplayName>
-				<Username>{usernameMatches[1]}</Username>
+				<Username>{slUsername}</Username>
 			</>
 		);
 	} else {
-		name = <DisplayName>{user.name}</DisplayName>;
+		slUsername = user.name;
+		name = <DisplayName>{slUsername}</DisplayName>;
 	}
+
+	const isBot = bots.includes(slUsername);
+	const isAnonfilly = anonfillies.includes(slUsername);
 
 	const percentage = user.minutes / highestMinutes;
 
@@ -160,6 +168,40 @@ export function User({
 						}
 					></a>
 					{name}
+					{isBot ? (
+						<div
+							css={{
+								padding: "0 4px",
+								borderRadius: 4,
+								fontSize: 12,
+								fontWeight: 800,
+								letterSpacing: 0,
+								backgroundColor: "#333",
+								color: "#888",
+								textShadow: "none",
+								marginLeft: styleVars.userSpacing * 1,
+								opacity: 1,
+							}}
+						>
+							bot
+						</div>
+					) : (
+						<></>
+					)}
+					{isAnonfilly ? (
+						<a href="https://anonfilly.horse">
+							<img
+								src="happy-anonfilly.png"
+								css={{
+									height: 24,
+									marginLeft: styleVars.userSpacing * 1,
+									opacity: 1,
+								}}
+							/>
+						</a>
+					) : (
+						<></>
+					)}
 					<FlexGrow />
 					<div
 						css={{
@@ -195,7 +237,7 @@ export function User({
 						marginRight: styleVars.userSpacing * 0.75,
 					}}
 				></div>
-				<div css={{ opacity: 0.2 }}>{lastSeenText}</div>
+				<div css={{ opacity: 0.4 }}>{lastSeenText}</div>
 			</div>
 		</div>
 	);
