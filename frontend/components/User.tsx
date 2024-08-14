@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
-import { formatDistanceToNow } from "date-fns";
 import React from "react";
-import type { IUser } from "../../server/users";
+import type { IApiUser } from "../../server/main";
 import { styleVars } from "../vars";
 import { FlexGrow } from "./FlexGrow";
 
@@ -49,7 +48,7 @@ export function User({
 	highestMinutes,
 }: {
 	i: number;
-	user: IUser;
+	user: IApiUser;
 	highestMinutes: number;
 }) {
 	let name: React.JSX.Element;
@@ -74,23 +73,6 @@ export function User({
 	const isAnonfilly = anonfillies.includes(slUsername);
 
 	const percentage = user.minutes / highestMinutes;
-
-	const lastSeen = new Date(user.lastSeen);
-	const lastSeenSeconds = (Date.now() - lastSeen.getTime()) / 1000;
-	const online = lastSeenSeconds < 60 * 2; // within 2 minutes
-
-	let lastSeenText = "online";
-	if (!online) {
-		lastSeenText = formatDistanceToNow(lastSeen, {
-			addSuffix: false,
-		})
-			.replace("about", "")
-			.replace("minute", "min")
-			.replace("less than a", "<")
-			.trim();
-	}
-
-	const statusColorWidth = 4;
 
 	return (
 		<div
@@ -233,11 +215,11 @@ export function User({
 						width: 6,
 						height: 24,
 						borderRadius: 4,
-						backgroundColor: online ? "#8BC34A" : "#F44336",
+						backgroundColor: user.online ? "#8BC34A" : "#F44336",
 						marginRight: styleVars.userSpacing * 0.75,
 					}}
 				></div>
-				<div css={{ opacity: 0.4 }}>{lastSeenText}</div>
+				<div css={{ opacity: 0.4 }}>{user.lastSeenText}</div>
 			</div>
 		</div>
 	);

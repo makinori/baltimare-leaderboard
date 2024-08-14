@@ -1,12 +1,19 @@
 import Cron from "croner";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FaArrowRight } from "react-icons/fa6";
-import type { IUser } from "../../server/users";
+import { FaArrowRight, FaFilter } from "react-icons/fa6";
+import type { IApiUser } from "../../server/main";
 import { FlexGrow } from "./FlexGrow";
 import { User } from "./User";
 
+enum UsersFilter {
+	Off,
+	Online,
+	Offline,
+}
+
 export function App() {
-	const [users, setUsers] = useState<IUser[]>([]);
+	const [users, setUsers] = useState<IApiUser[]>([]);
+	const [usersFilter, setUsersFilter] = useState(UsersFilter.Off);
 
 	const updateUsers = useCallback(async () => {
 		const res = await fetch("/api/users");
@@ -22,15 +29,46 @@ export function App() {
 		};
 	}, [updateUsers]);
 
+	const toggleFilter = useCallback(() => {
+		const length = Object.keys(UsersFilter).length / 2;
+		setUsersFilter((usersFilter + 1) % length);
+	}, [users, setUsers, usersFilter, setUsersFilter]);
+
+	const shownUsers = useMemo(() => {
+		let outputUsers = users;
+
+		switch (usersFilter) {
+			case UsersFilter.Online:
+				outputUsers = outputUsers.filter(u => u.online);
+				break;
+			case UsersFilter.Offline:
+				outputUsers = outputUsers.filter(u => !u.online);
+				break;
+		}
+
+		return outputUsers.sort((a, b) => b.minutes - a.minutes);
+	}, [users, usersFilter]);
+
 	const highestMinutes = useMemo(() => {
 		let highest = 0;
-		for (const user of users) {
+		for (const user of shownUsers) {
 			if (user.minutes > highest) {
 				highest = user.minutes;
 			}
 		}
 		return highest;
-	}, [users]);
+	}, [shownUsers]);
+
+	const filterText = useMemo(() => {
+		switch (usersFilter) {
+			case UsersFilter.Off:
+				return "no filter";
+			case UsersFilter.Online:
+				return "online only";
+			case UsersFilter.Offline:
+				return "offline only";
+		}
+	}, [usersFilter]);
 
 	return (
 		<>
@@ -60,6 +98,24 @@ export function App() {
 			>
 				<span css={{ opacity: 0.6 }}>{`${users.length} popens`}</span>
 				<span css={{ opacity: 0.2, fontSize: 16 }}>/tourists</span>
+				<span
+					css={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "center",
+						fontWeight: 800,
+						opacity: 0.4,
+						marginLeft: 24,
+						fontSize: 16,
+						cursor: "pointer",
+						userSelect: "none",
+					}}
+					onClick={toggleFilter}
+				>
+					<FaFilter size={16} style={{ marginRight: 4 }} />
+					{filterText}
+				</span>
 				<FlexGrow />
 				<a
 					css={{
@@ -88,7 +144,7 @@ export function App() {
 					marginBottom: 32,
 				}}
 			>
-				{users.map((user, i) => (
+				{shownUsers.map((user, i) => (
 					<User
 						key={i}
 						i={i}
