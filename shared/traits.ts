@@ -9,7 +9,7 @@ export const userTraitsMap = {
 	nugget: ["horsehiney"],
 	strawberry: ["makidoll", "trixishy"],
 	fish: ["fish.enthusiast"],
-	// floppy: ["wolvan"],
+	floppy: ["wolvan"],
 	portalBlue: ["omniportal"],
 	portalOrange: ["sophia.naumova"],
 };
@@ -43,12 +43,11 @@ export const imageTraitMap: Partial<Record<Trait, ImageTrait>> = {
 		url: "https://www.youtube.com/watch?v=RHuQqLxmEyg",
 		size: 20,
 	},
-	// TODO: get floopy image
-	// floppy: {
-	// 	image: "floppy.png",
-	// 	url: "https://www.youtube.com/watch?v=bLHL75H_VEM",
-	// 	size: 20,
-	// },
+	floppy: {
+		image: "floppy.png",
+		url: "https://www.youtube.com/watch?v=bLHL75H_VEM",
+		size: 20,
+	},
 	portalBlue: {
 		image: "portal-blue.png",
 		url: "https://www.youtube.com/watch?v=iuAbwbqNc3A",
