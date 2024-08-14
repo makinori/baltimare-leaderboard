@@ -1,8 +1,10 @@
 import styled from "@emotion/styled";
 import React from "react";
-import type { IApiUser, Trait } from "../../server/main";
+import type { IApiUser } from "../../server/main";
+import { ImageTrait, imageTraitKeys, imageTraitMap } from "../image-traits";
 import { styleVars } from "../vars";
 import { FlexGrow } from "./FlexGrow";
+import { HStack } from "./Stack";
 
 const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
 
@@ -37,27 +39,6 @@ const Username = styled.div({
 	opacity: 0.4,
 });
 
-interface ImageTrait {
-	image: string;
-	url: string;
-	size: number;
-}
-
-const imageTraitMap: Partial<Record<Trait, ImageTrait>> = {
-	anonfilly: {
-		image: "happy-anonfilly.png",
-		url: "https://anonfilly.horse",
-		size: 24,
-	},
-	nugget: {
-		image: "nugget.png",
-		url: "https://www.youtube.com/watch?v=h_CaoxnX_Vc",
-		size: 20,
-	},
-};
-
-const imageTraitKeys = Object.keys(imageTraitMap);
-
 export function User({
 	i,
 	user,
@@ -87,31 +68,36 @@ export function User({
 	for (const traitName of user.traits) {
 		if (!imageTraitKeys.includes(traitName)) continue;
 		const imageTrait = imageTraitMap[traitName] as ImageTrait;
+
+		const traitImg = (
+			<img
+				src={"traits/" + imageTrait.image}
+				css={{
+					height: imageTrait.size,
+					marginLeft: styleVars.userSpacing * 1,
+					opacity: 1,
+				}}
+			/>
+		);
+
 		imageTraits.push(
-			<a href={imageTrait.url}>
-				<img
-					src={imageTrait.image}
-					css={{
-						height: imageTrait.size,
-						marginLeft: styleVars.userSpacing * 1,
-						opacity: 1,
-					}}
-				/>
-			</a>,
+			imageTrait.url == "" ? (
+				traitImg
+			) : (
+				<a key={traitName} href={imageTrait.url}>
+					traitImg
+				</a>
+			),
 		);
 	}
 
 	return (
-		<div
+		<HStack
 			css={{
 				height: styleVars.userHeight,
 				color: "#fff",
 				fontSize: 20,
 				letterSpacing: -1,
-				display: "flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
 			}}
 		>
 			<div
@@ -142,7 +128,7 @@ export function User({
 					}}
 				></div>
 				{/* content */}
-				<div
+				<HStack
 					css={{
 						position: "absolute",
 						margin: "auto",
@@ -150,9 +136,7 @@ export function User({
 						right: 0,
 						bottom: 0,
 						left: 0,
-						display: "flex",
-						flexDirection: "row",
-						alignItems: "center",
+
 						textShadow: "2px 2px 0px rgba(17, 17, 17, 0.4)",
 					}}
 				>
@@ -211,16 +195,14 @@ export function User({
 					>
 						{formatMinutes(user.minutes)}
 					</div>
-				</div>
+				</HStack>
 			</div>
-			<div
+			<HStack
 				css={{
 					width: 80,
 					height: "100%",
 					fontSize: 16,
 					fontWeight: 700,
-					display: "flex",
-					alignItems: "center",
 					justifyContent: "flex-start",
 					marginLeft: styleVars.userSpacing * 0.75,
 					whiteSpace: "nowrap",
@@ -236,7 +218,7 @@ export function User({
 					}}
 				></div>
 				<div css={{ opacity: 0.4 }}>{user.lastSeenText}</div>
-			</div>
-		</div>
+			</HStack>
+		</HStack>
 	);
 }

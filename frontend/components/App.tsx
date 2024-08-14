@@ -1,10 +1,11 @@
 import Cron from "croner";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { IconType } from "react-icons";
 import { FaFilter, FaGithub, FaRobot, FaSort } from "react-icons/fa6";
 import type { IApiUser } from "../../server/main";
 import { FlexGrow } from "./FlexGrow";
+import { HStack } from "./Stack";
 import { User } from "./User";
-import { IconType } from "react-icons";
 
 enum UsersFilter {
 	Off,
@@ -23,12 +24,8 @@ function HeaderToggleButton(props: {
 	text: string;
 }) {
 	return (
-		<span
+		<HStack
 			css={{
-				display: "flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "center",
 				fontWeight: 800,
 				opacity: 0.4,
 				marginLeft: 24,
@@ -38,9 +35,9 @@ function HeaderToggleButton(props: {
 			}}
 			onClick={props.onClick}
 		>
-			<props.icon size={16} style={{ marginRight: 4 }} />
+			<props.icon size={16} css={{ marginRight: 4 }} />
 			{props.text}
-		</span>
+		</HStack>
 	);
 }
 
@@ -147,18 +144,16 @@ export function App() {
 					src="baltimare-opg.png"
 				></img>
 			</a>
-			<div
+			<HStack
 				css={{
 					marginTop: 16,
 					marginBottom: 4,
 					fontWeight: 800,
 					fontSize: 20,
-					display: "flex",
 					width: "calc(100vw - 16px - 8px)",
 					maxWidth: 800 - 8,
-					flexDirection: "row",
+
 					alignItems: "flex-end", // move to bottom
-					justifyContent: "center",
 				}}
 			>
 				<span css={{ opacity: 0.6 }}>{`${users.length} popens`}</span>
@@ -183,10 +178,6 @@ export function App() {
 				<FlexGrow />
 				<a
 					css={{
-						// display: "flex",
-						// flexDirection: "row",
-						// alignItems: "center",
-						// justifyContent: "center",
 						// fontWeight: 800,
 						// fontSize: 16,
 						opacity: 0.4,
@@ -197,7 +188,7 @@ export function App() {
 				>
 					<FaGithub size={20} />
 				</a>
-			</div>
+			</HStack>
 			<div
 				css={{
 					display: "flex",

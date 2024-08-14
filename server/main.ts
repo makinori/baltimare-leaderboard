@@ -10,10 +10,16 @@ const app = express();
 
 app.use(compression());
 
+// keep usernames lowercase
+// use <first>.<last>
+// ignore .resident
+
 const traits = {
-	bot: ["BaltiMare", "Camarea2", "horseheights"],
-	anonfilly: ["Camarea2", "SunshineYelloww"],
+	bot: ["baltimare", "camarea2", "horseheights"],
+	anonfilly: ["camarea2", "sunshineyelloww"],
 	nugget: ["horsehiney"],
+	strawberry: ["makidoll"],
+	fish: ["fish.enthusiast"],
 };
 
 export type Trait = keyof typeof traits;
@@ -70,7 +76,11 @@ app.get("/api/users", (req, res) => {
 			apiUser.traits = [];
 
 			for (const trait of Object.keys(traits) as Trait[]) {
-				if (traits[trait].includes(apiUser.username)) {
+				const apiUsername = apiUser.username
+					.toLowerCase()
+					.replace(/ /g, ".");
+
+				if (traits[trait].includes(apiUsername)) {
 					apiUser.traits.push(trait);
 				}
 			}
