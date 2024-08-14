@@ -69,94 +69,133 @@ export function User({
 
 	const lastSeen = new Date(user.lastSeen);
 	const lastSeenSeconds = (Date.now() - lastSeen.getTime()) / 1000;
-	const seenRecently = lastSeenSeconds < 60 * 2; // within 2 minutes
+	const online = lastSeenSeconds < 60 * 2; // within 2 minutes
 
 	let lastSeenText = "online";
-	if (!seenRecently) {
+	if (!online) {
 		lastSeenText = formatDistanceToNow(lastSeen, {
-			addSuffix: true,
+			addSuffix: false,
 		})
 			.replace("about", "")
+			.replace("minute", "min")
+			.replace("less than a", "<")
 			.trim();
 	}
+
+	const statusColorWidth = 4;
 
 	return (
 		<div
 			css={{
 				height: styleVars.userHeight,
-				backgroundColor: "#222",
-				borderRadius: styleVars.userCorner,
-				overflow: "hidden",
 				color: "#fff",
 				fontSize: 20,
 				letterSpacing: -1,
-				position: "relative",
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "center",
 			}}
 		>
 			<div
 				css={{
-					position: "absolute",
-					margin: "auto",
-					top: 0,
-					bottom: 0,
-					left: styleVars.userHeight - styleVars.userCorner,
+					position: "relative",
+					flexGrow: 1,
+					width: "100%",
+					height: "100%",
 					borderRadius: styleVars.userCorner,
-					// dynamic
-					right: (1 - percentage) * 100 + "%",
-					backgroundColor: `hsl(${i * 10}deg, 20%, 30%)`,
-				}}
-			></div>
-			<div
-				css={{
-					position: "absolute",
-					margin: "auto",
-					top: 0,
-					right: 0,
-					bottom: 0,
-					left: 0,
-					display: "flex",
-					flexDirection: "row",
-					alignItems: "center",
-					textShadow: "2px 2px 0px rgba(17, 17, 17, 0.4)",
+					overflow: "hidden",
+					backgroundColor: "#222",
 				}}
 			>
-				<a
-					css={{
-						width: styleVars.userHeight,
-						height: styleVars.userHeight,
-						borderRadius: `0 ${styleVars.userCorner}px ${styleVars.userCorner}px 0`,
-						backgroundColor: "#333",
-						backgroundSize: "100% 100%",
-						// dynamic
-						backgroundImage: nullUuidRegex.test(user.imageId)
-							? "url(anon-avatar.png)"
-							: "url(https://picture-service.secondlife.com/" +
-							  user.imageId +
-							  "/256x192.jpg)",
-					}}
-					href={"https://world.secondlife.com/resident/" + user._id}
-				></a>
-				{name}
-				<FlexGrow />
+				{/* progress bar */}
 				<div
 					css={{
-						marginRight: styleVars.userSpacing * 1.5,
-						fontSize: 16,
-						fontWeight: 700,
-						opacity: 0.4,
+						position: "absolute",
+						margin: "auto",
+						top: 0,
+						bottom: 0,
+						// right before the border of the player icon
+						left: styleVars.userHeight - styleVars.userCorner,
+						borderRadius: styleVars.userCorner,
 					}}
-				>
-					{lastSeenText}
-				</div>
+					style={{
+						right: (1 - percentage) * 100 + "%",
+						backgroundColor: `hsl(${i * 10}deg, 20%, 30%)`,
+					}}
+				></div>
+				{/* content */}
 				<div
 					css={{
-						marginRight: styleVars.userSpacing * 1.5,
-						fontWeight: 700,
-						opacity: 0.6,
+						position: "absolute",
+						margin: "auto",
+						top: 0,
+						right: 0,
+						bottom: 0,
+						left: 0,
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						textShadow: "2px 2px 0px rgba(17, 17, 17, 0.4)",
 					}}
 				>
-					{formatMinutes(user.minutes)}
+					<a
+						css={{
+							width: styleVars.userHeight,
+							height: styleVars.userHeight,
+							borderRadius: `0 ${styleVars.userCorner}px ${styleVars.userCorner}px 0`,
+							backgroundColor: "#333",
+							backgroundSize: "100% 100%",
+							// dynamic
+						}}
+						style={{
+							backgroundImage: nullUuidRegex.test(user.imageId)
+								? "url(anon-avatar.png)"
+								: "url(https://picture-service.secondlife.com/" +
+								  user.imageId +
+								  "/256x192.jpg)",
+						}}
+						href={
+							"https://world.secondlife.com/resident/" + user._id
+						}
+					></a>
+					{name}
+					<FlexGrow />
+					<div
+						css={{
+							marginRight: styleVars.userSpacing * 1.5,
+							fontWeight: 700,
+							opacity: 0.6,
+							textAlign: "right",
+						}}
+					>
+						{formatMinutes(user.minutes)}
+					</div>
 				</div>
+			</div>
+			<div
+				css={{
+					width: 80,
+					height: "100%",
+					fontSize: 16,
+					fontWeight: 700,
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "flex-start",
+					marginLeft: styleVars.userSpacing * 0.75,
+					whiteSpace: "nowrap",
+				}}
+			>
+				<div
+					css={{
+						width: 6,
+						height: 24,
+						borderRadius: 4,
+						backgroundColor: online ? "#8BC34A" : "#F44336",
+						marginRight: styleVars.userSpacing * 0.75,
+					}}
+				></div>
+				<div css={{ opacity: 0.2 }}>{lastSeenText}</div>
 			</div>
 		</div>
 	);

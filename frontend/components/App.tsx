@@ -47,16 +47,19 @@ export function App() {
 			<div
 				css={{
 					marginTop: 16,
-					marginBottom: 8,
+					marginBottom: 4,
 					fontWeight: 800,
 					fontSize: 20,
 					display: "flex",
 					width: "calc(100vw - 16px - 8px)",
 					maxWidth: 800 - 8,
-					opacity: 0.4,
+					flexDirection: "row",
+					alignItems: "flex-end", // move to bottom
+					justifyContent: "center",
 				}}
 			>
-				{`${users.length} popens`}
+				<span css={{ opacity: 0.6 }}>{`${users.length} popens`}</span>
+				<span css={{ opacity: 0.2, fontSize: 16 }}>/tourists</span>
 				<FlexGrow />
 				<a
 					css={{
@@ -65,7 +68,9 @@ export function App() {
 						alignItems: "center",
 						justifyContent: "center",
 						fontWeight: 800,
-						opacity: 0.4,
+						opacity: 0.2,
+						marginRight: 80,
+						fontSize: 16,
 					}}
 					href="https://github.com/makidoll/baltimare-leaderboard"
 				>
