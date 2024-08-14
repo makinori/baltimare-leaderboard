@@ -135,18 +135,6 @@ async function logUsers() {
 	}
 }
 
-let cronInitialized = false;
-
-export function initCron() {
-	if (cronInitialized) return;
-	cronInitialized = true;
-
-	console.log("Initializing cron for once a minute");
-
-	// every minute at 0 seconds
-	Cron("0 * * * * *", logUsers);
-}
-
 export interface IApiUser extends IUser {
 	online: boolean;
 	lastSeenText: string;
@@ -157,9 +145,7 @@ export interface IApiUser extends IUser {
 
 const usernameRegex = / \(([^(]+?)\)$/;
 
-// TODO: cache these in db maybe? idk do better
-
-export function getApiUsers() {
+function getApiUsersResponse() {
 	const sortedUsers = users
 		.getAllData()
 		.sort((a, b) => b.minutes - a.minutes);
@@ -208,4 +194,34 @@ export function getApiUsers() {
 
 		return apiUser;
 	});
+}
+
+let cachedApiUsersResponse: IApiUser[];
+
+export function getApiUsers() {
+	if (cachedApiUsersResponse == null) {
+		cachedApiUsersResponse = getApiUsersResponse();
+	}
+
+	return cachedApiUsersResponse;
+}
+
+let cronInitialized = false;
+
+export function initCron() {
+	if (cronInitialized) return;
+	cronInitialized = true;
+
+	console.log("Initializing cron for once a minute");
+
+	// every minute at 0 seconds
+	Cron("0 * * * * *", logUsers);
+
+	// every minute at 15 seconds
+	Cron("15 * * * * *", () => {
+		// invalidate cache
+		cachedApiUsersResponse = null;
+	});
+
+	// cause at 30 seconds the client will pull
 }
