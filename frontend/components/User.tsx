@@ -4,8 +4,6 @@ import type { IApiUser } from "../../server/main";
 import { styleVars } from "../vars";
 import { FlexGrow } from "./FlexGrow";
 
-const usernameRegex = / \(([^(]+?)\)$/;
-
 const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
 
 function addSeperators(n: number) {
@@ -39,9 +37,6 @@ const Username = styled.div({
 	opacity: 0.4,
 });
 
-const bots = ["BaltiMare", "Camarea2", "horseheights"];
-const anonfillies = ["Camarea2", "SunshineYelloww"];
-
 export function User({
 	i,
 	user,
@@ -52,25 +47,17 @@ export function User({
 	highestMinutes: number;
 }) {
 	let name: React.JSX.Element;
-	let slUsername = "";
 
-	const usernameMatches = user.name.match(usernameRegex);
-	if (usernameMatches != null) {
-		const displayName = user.name.replace(usernameRegex, "").trim();
-		slUsername = usernameMatches[1];
+	if (user.displayName == "") {
+		name = <DisplayName>{user.username}</DisplayName>;
+	} else {
 		name = (
 			<>
-				<DisplayName>{displayName}</DisplayName>
-				<Username>{slUsername}</Username>
+				<DisplayName>{user.displayName}</DisplayName>
+				<Username>{user.username}</Username>
 			</>
 		);
-	} else {
-		slUsername = user.name;
-		name = <DisplayName>{slUsername}</DisplayName>;
 	}
-
-	const isBot = bots.includes(slUsername);
-	const isAnonfilly = anonfillies.includes(slUsername);
 
 	const percentage = user.minutes / highestMinutes;
 
@@ -150,7 +137,7 @@ export function User({
 						}
 					></a>
 					{name}
-					{isBot ? (
+					{user.traits.includes("bot") ? (
 						<div
 							css={{
 								padding: "0 4px",
@@ -170,7 +157,7 @@ export function User({
 					) : (
 						<></>
 					)}
-					{isAnonfilly ? (
+					{user.traits.includes("anonfilly") ? (
 						<a href="https://anonfilly.horse">
 							<img
 								src="happy-anonfilly.png"

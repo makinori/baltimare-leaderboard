@@ -1,6 +1,6 @@
 import Cron from "croner";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FaArrowRight, FaFilter } from "react-icons/fa6";
+import { FaFilter, FaGithub, FaRobot } from "react-icons/fa6";
 import type { IApiUser } from "../../server/main";
 import { FlexGrow } from "./FlexGrow";
 import { User } from "./User";
@@ -13,7 +13,9 @@ enum UsersFilter {
 
 export function App() {
 	const [users, setUsers] = useState<IApiUser[]>([]);
+
 	const [usersFilter, setUsersFilter] = useState(UsersFilter.Off);
+	const [showBots, setShowBots] = useState(true);
 
 	const updateUsers = useCallback(async () => {
 		const res = await fetch("/api/users");
@@ -46,8 +48,12 @@ export function App() {
 				break;
 		}
 
+		if (!showBots) {
+			outputUsers = outputUsers.filter(u => !u.traits.includes("bot"));
+		}
+
 		return outputUsers.sort((a, b) => b.minutes - a.minutes);
-	}, [users, usersFilter]);
+	}, [users, usersFilter, showBots]);
 
 	const highestMinutes = useMemo(() => {
 		let highest = 0;
@@ -116,22 +122,42 @@ export function App() {
 					<FaFilter size={16} style={{ marginRight: 4 }} />
 					{filterText}
 				</span>
-				<FlexGrow />
-				<a
+				<span
 					css={{
 						display: "flex",
 						flexDirection: "row",
 						alignItems: "center",
 						justifyContent: "center",
 						fontWeight: 800,
-						opacity: 0.2,
-						marginRight: 80,
+						opacity: 0.4,
+						marginLeft: 24,
 						fontSize: 16,
+						cursor: "pointer",
+						userSelect: "none",
+					}}
+					onClick={() => {
+						setShowBots(!showBots);
+					}}
+				>
+					<FaRobot size={16} style={{ marginRight: 4 }} />
+					{showBots ? "with bots" : "no bots"}
+				</span>
+				<FlexGrow />
+				<a
+					css={{
+						// display: "flex",
+						// flexDirection: "row",
+						// alignItems: "center",
+						// justifyContent: "center",
+						// fontWeight: 800,
+						// fontSize: 16,
+						opacity: 0.4,
+						marginRight: 80,
+						alignSelf: "center",
 					}}
 					href="https://github.com/makidoll/baltimare-leaderboard"
 				>
-					source code
-					<FaArrowRight size={16} style={{ marginLeft: 4 }} />
+					<FaGithub size={20} />
 				</a>
 			</div>
 			<div

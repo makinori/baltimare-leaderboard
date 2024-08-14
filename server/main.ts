@@ -10,12 +10,24 @@ const app = express();
 
 app.use(compression());
 
+const traits = {
+	bot: ["BaltiMare", "Camarea2", "horseheights"],
+	anonfilly: ["Camarea2", "SunshineYelloww"],
+};
+
+type Traits = (keyof typeof traits)[];
 
 export interface IApiUser extends IUser {
 	online: boolean;
 	lastSeenText: string;
+	traits: Traits;
+	username: string;
+	displayName: string;
 }
 
+const usernameRegex = / \(([^(]+?)\)$/;
+
+// TODO: move this and migrate db and idk make better
 app.get("/api/users", (req, res) => {
 	const sortedUsers = users
 		.getAllData()
@@ -42,6 +54,24 @@ app.get("/api/users", (req, res) => {
 
 			apiUser.online = online;
 			apiUser.lastSeenText = lastSeenText;
+			apiUser.traits = [];
+
+			for (const trait of Object.keys(traits) as Traits) {
+				if (traits[trait].includes(apiUser.name)) {
+					apiUser.traits.push(trait);
+				}
+			}
+
+			const usernameMatches = user.name.match(usernameRegex);
+			if (usernameMatches != null) {
+				apiUser.username = usernameMatches[1];
+				apiUser.displayName = user.name
+					.replace(usernameRegex, "")
+					.trim();
+			} else {
+				apiUser.username = user.name;
+				apiUser.displayName = "";
+			}
 
 			return apiUser;
 		}),
