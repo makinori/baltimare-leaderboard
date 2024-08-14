@@ -13,14 +13,15 @@ app.use(compression());
 const traits = {
 	bot: ["BaltiMare", "Camarea2", "horseheights"],
 	anonfilly: ["Camarea2", "SunshineYelloww"],
+	nugget: ["horsehiney"],
 };
 
-type Traits = (keyof typeof traits)[];
+export type Trait = keyof typeof traits;
 
 export interface IApiUser extends IUser {
 	online: boolean;
 	lastSeenText: string;
-	traits: Traits;
+	traits: Trait[];
 	username: string;
 	displayName: string;
 }
@@ -54,13 +55,6 @@ app.get("/api/users", (req, res) => {
 
 			apiUser.online = online;
 			apiUser.lastSeenText = lastSeenText;
-			apiUser.traits = [];
-
-			for (const trait of Object.keys(traits) as Traits) {
-				if (traits[trait].includes(apiUser.name)) {
-					apiUser.traits.push(trait);
-				}
-			}
 
 			const usernameMatches = user.name.match(usernameRegex);
 			if (usernameMatches != null) {
@@ -71,6 +65,14 @@ app.get("/api/users", (req, res) => {
 			} else {
 				apiUser.username = user.name;
 				apiUser.displayName = "";
+			}
+
+			apiUser.traits = [];
+
+			for (const trait of Object.keys(traits) as Trait[]) {
+				if (traits[trait].includes(apiUser.username)) {
+					apiUser.traits.push(trait);
+				}
 			}
 
 			return apiUser;

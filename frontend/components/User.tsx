@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
-import type { IApiUser } from "../../server/main";
+import type { IApiUser, Trait } from "../../server/main";
 import { styleVars } from "../vars";
 import { FlexGrow } from "./FlexGrow";
 
@@ -37,6 +37,27 @@ const Username = styled.div({
 	opacity: 0.4,
 });
 
+interface ImageTrait {
+	image: string;
+	url: string;
+	size: number;
+}
+
+const imageTraitMap: Partial<Record<Trait, ImageTrait>> = {
+	anonfilly: {
+		image: "happy-anonfilly.png",
+		url: "https://anonfilly.horse",
+		size: 24,
+	},
+	nugget: {
+		image: "nugget.png",
+		url: "https://www.youtube.com/watch?v=h_CaoxnX_Vc",
+		size: 20,
+	},
+};
+
+const imageTraitKeys = Object.keys(imageTraitMap);
+
 export function User({
 	i,
 	user,
@@ -60,6 +81,26 @@ export function User({
 	}
 
 	const percentage = user.minutes / highestMinutes;
+
+	let imageTraits: React.JSX.Element[] = [];
+
+	for (const traitName of user.traits) {
+		console.log(traitName);
+		if (!imageTraitKeys.includes(traitName)) continue;
+		const imageTrait = imageTraitMap[traitName] as ImageTrait;
+		imageTraits.push(
+			<a href={imageTrait.url}>
+				<img
+					src={imageTrait.image}
+					css={{
+						height: imageTrait.size,
+						marginLeft: styleVars.userSpacing * 1,
+						opacity: 1,
+					}}
+				/>
+			</a>,
+		);
+	}
 
 	return (
 		<div
@@ -157,20 +198,7 @@ export function User({
 					) : (
 						<></>
 					)}
-					{user.traits.includes("anonfilly") ? (
-						<a href="https://anonfilly.horse">
-							<img
-								src="happy-anonfilly.png"
-								css={{
-									height: 24,
-									marginLeft: styleVars.userSpacing * 1,
-									opacity: 1,
-								}}
-							/>
-						</a>
-					) : (
-						<></>
-					)}
+					{imageTraits}
 					<FlexGrow />
 					<div
 						css={{
