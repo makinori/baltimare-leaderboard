@@ -2,6 +2,8 @@ import Datastore from "@seald-io/nedb";
 import { Cron } from "croner";
 import { JSDOM } from "jsdom";
 import * as path from "path";
+import { Trait, userTraitsMap } from "../shared/traits";
+import { formatDistanceToNow } from "date-fns";
 
 export interface IUser {
 	_id: string;
@@ -12,7 +14,7 @@ export interface IUser {
 	lastUpdated: Date;
 }
 
-const users = new Datastore<IUser>({
+export const users = new Datastore<IUser>({
 	filename: path.resolve(__dirname, "../db/users.db"),
 	autoload: true,
 });
@@ -135,7 +137,7 @@ async function logUsers() {
 
 let cronInitialized = false;
 
-function initCron() {
+export function initCron() {
 	if (cronInitialized) return;
 	cronInitialized = true;
 
@@ -145,4 +147,65 @@ function initCron() {
 	Cron("0 * * * * *", logUsers);
 }
 
-export { initCron, users };
+export interface IApiUser extends IUser {
+	online: boolean;
+	lastSeenText: string;
+	traits: Trait[];
+	username: string;
+	displayName: string;
+}
+
+const usernameRegex = / \(([^(]+?)\)$/;
+
+// TODO: cache these in db maybe? idk do better
+
+export function getApiUsers() {
+	const sortedUsers = users
+		.getAllData()
+		.sort((a, b) => b.minutes - a.minutes);
+
+	return sortedUsers.map(user => {
+		const lastSeen = new Date(user.lastSeen);
+		const lastSeenSeconds = (Date.now() - lastSeen.getTime()) / 1000;
+		const online = lastSeenSeconds < 60 * 2; // within 2 minutes
+
+		let lastSeenText = "online";
+		if (!online) {
+			lastSeenText = formatDistanceToNow(lastSeen, {
+				addSuffix: false,
+			})
+				.replace("about", "")
+				.replace("minute", "min")
+				.replace("less than a", "<")
+				.trim();
+		}
+
+		let apiUser = user as IApiUser;
+
+		apiUser.online = online;
+		apiUser.lastSeenText = lastSeenText;
+
+		const usernameMatches = user.name.match(usernameRegex);
+		if (usernameMatches != null) {
+			apiUser.username = usernameMatches[1];
+			apiUser.displayName = user.name.replace(usernameRegex, "").trim();
+		} else {
+			apiUser.username = user.name;
+			apiUser.displayName = "";
+		}
+
+		apiUser.traits = [];
+
+		for (const trait of Object.keys(userTraitsMap) as Trait[]) {
+			const apiUsername = apiUser.username
+				.toLowerCase()
+				.replace(/ /g, ".");
+
+			if (userTraitsMap[trait].includes(apiUsername)) {
+				apiUser.traits.push(trait);
+			}
+		}
+
+		return apiUser;
+	});
+}

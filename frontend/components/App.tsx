@@ -2,7 +2,7 @@ import Cron from "croner";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { IconType } from "react-icons";
 import { FaFilter, FaGithub, FaRobot, FaSort } from "react-icons/fa6";
-import type { IApiUser } from "../../server/main";
+import type { IApiUser } from "../../server/users";
 import { FlexGrow } from "./FlexGrow";
 import { HStack } from "./Stack";
 import { User } from "./User";

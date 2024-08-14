@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
-import type { IApiUser } from "../../server/main";
-import { ImageTrait, imageTraitKeys, imageTraitMap } from "../image-traits";
+import type { IApiUser } from "../../server/users";
+import { ImageTrait, imageTraitKeys, imageTraitMap } from "../../shared/traits";
 import { styleVars } from "../vars";
 import { FlexGrow } from "./FlexGrow";
 import { HStack } from "./Stack";

@@ -1,8 +1,7 @@
-import { formatDistanceToNow } from "date-fns";
+import compression from "compression";
 import express from "express";
 import * as path from "path";
-import { initCron, IUser, users } from "./users";
-import compression from "compression";
+import { getApiUsers, initCron } from "./users";
 
 initCron();
 
@@ -10,84 +9,8 @@ const app = express();
 
 app.use(compression());
 
-// keep usernames lowercase
-// use <first>.<last>
-// ignore .resident
-
-const traits = {
-	bot: ["baltimare", "camarea2", "horseheights"],
-	anonfilly: ["camarea2", "sunshineyelloww"],
-	nugget: ["horsehiney"],
-	strawberry: ["makidoll"],
-	fish: ["fish.enthusiast"],
-};
-
-export type Trait = keyof typeof traits;
-
-export interface IApiUser extends IUser {
-	online: boolean;
-	lastSeenText: string;
-	traits: Trait[];
-	username: string;
-	displayName: string;
-}
-
-const usernameRegex = / \(([^(]+?)\)$/;
-
-// TODO: move this and migrate db and idk make better
 app.get("/api/users", (req, res) => {
-	const sortedUsers = users
-		.getAllData()
-		.sort((a, b) => b.minutes - a.minutes);
-
-	res.json(
-		sortedUsers.map(user => {
-			const lastSeen = new Date(user.lastSeen);
-			const lastSeenSeconds = (Date.now() - lastSeen.getTime()) / 1000;
-			const online = lastSeenSeconds < 60 * 2; // within 2 minutes
-
-			let lastSeenText = "online";
-			if (!online) {
-				lastSeenText = formatDistanceToNow(lastSeen, {
-					addSuffix: false,
-				})
-					.replace("about", "")
-					.replace("minute", "min")
-					.replace("less than a", "<")
-					.trim();
-			}
-
-			let apiUser = user as IApiUser;
-
-			apiUser.online = online;
-			apiUser.lastSeenText = lastSeenText;
-
-			const usernameMatches = user.name.match(usernameRegex);
-			if (usernameMatches != null) {
-				apiUser.username = usernameMatches[1];
-				apiUser.displayName = user.name
-					.replace(usernameRegex, "")
-					.trim();
-			} else {
-				apiUser.username = user.name;
-				apiUser.displayName = "";
-			}
-
-			apiUser.traits = [];
-
-			for (const trait of Object.keys(traits) as Trait[]) {
-				const apiUsername = apiUser.username
-					.toLowerCase()
-					.replace(/ /g, ".");
-
-				if (traits[trait].includes(apiUsername)) {
-					apiUser.traits.push(trait);
-				}
-			}
-
-			return apiUser;
-		}),
-	);
+	res.json(getApiUsers());
 });
 
 const frontendDir = path.resolve(__dirname, "../frontend/dist");

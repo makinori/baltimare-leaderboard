@@ -1,4 +1,17 @@
-import type { Trait } from "../server/main";
+// keep usernames lowercase
+// use <first>.<last>
+// ignore .resident
+
+export const userTraitsMap = {
+	bot: ["baltimare", "camarea2", "horseheights"],
+	anonfilly: ["camarea2", "sunshineyelloww"],
+	nugget: ["horsehiney"],
+	strawberry: ["makidoll"],
+	fish: ["fish.enthusiast"],
+	// floppy: ["wolvan"],
+};
+
+export type Trait = keyof typeof userTraitsMap;
 
 export interface ImageTrait {
 	image: string;
@@ -27,6 +40,12 @@ export const imageTraitMap: Partial<Record<Trait, ImageTrait>> = {
 		url: "https://www.youtube.com/watch?v=RHuQqLxmEyg",
 		size: 20,
 	},
+	// TODO: get floopy image
+	// floppy: {
+	// 	image: "floppy.png",
+	// 	url: "https://www.youtube.com/watch?v=bLHL75H_VEM",
+	// 	size: 20,
+	// },
 };
 
 export const imageTraitKeys = Object.keys(imageTraitMap);
