@@ -4,11 +4,14 @@
 
 export const userTraitsMap = {
 	bot: ["baltimare", "camarea2", "horseheights"],
+	// image traits
 	anonfilly: ["camarea2", "sunshineyelloww"],
 	nugget: ["horsehiney"],
-	strawberry: ["makidoll"],
+	strawberry: ["makidoll", "trixishy"],
 	fish: ["fish.enthusiast"],
 	// floppy: ["wolvan"],
+	portalBlue: ["omniportal"],
+	portalOrange: ["sophia.naumova"],
 };
 
 export type Trait = keyof typeof userTraitsMap;
@@ -46,6 +49,16 @@ export const imageTraitMap: Partial<Record<Trait, ImageTrait>> = {
 	// 	url: "https://www.youtube.com/watch?v=bLHL75H_VEM",
 	// 	size: 20,
 	// },
+	portalBlue: {
+		image: "portal-blue.png",
+		url: "https://www.youtube.com/watch?v=iuAbwbqNc3A",
+		size: 20,
+	},
+	portalOrange: {
+		image: "portal-orange.png",
+		url: "https://www.youtube.com/watch?v=iuAbwbqNc3A",
+		size: 20,
+	},
 };
 
 export const imageTraitKeys = Object.keys(imageTraitMap);

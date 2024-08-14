@@ -5,7 +5,7 @@
 	"scripts": {
 		"start": "concurrently npm:start:*",
 		"start:server": "tsx --watch server/main.ts",
-		"start:frontend": "parcel watch --watch-dir frontend --dist-dir frontend/dist frontend/index.html",
+		"start:frontend": "parcel watch --watch-dir frontend --watch-dir shared --dist-dir frontend/dist frontend/index.html",
 		"build": "rimraf frontend/dist && parcel build --dist-dir frontend/dist frontend/index.html",
 		"serve": "tsx server/main.ts"
 	},
