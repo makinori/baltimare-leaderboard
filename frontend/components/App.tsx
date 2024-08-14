@@ -4,6 +4,7 @@ import { FaFilter, FaGithub, FaRobot, FaSort } from "react-icons/fa6";
 import type { IApiUser } from "../../server/main";
 import { FlexGrow } from "./FlexGrow";
 import { User } from "./User";
+import { IconType } from "react-icons";
 
 enum UsersFilter {
 	Off,
@@ -14,6 +15,33 @@ enum UsersFilter {
 enum UsersSort {
 	TotalTimeOnline,
 	TimeSinceOnline,
+}
+
+function HeaderToggleButton(props: {
+	onClick: () => any;
+	icon: IconType;
+	text: string;
+}) {
+	return (
+		<span
+			css={{
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "center",
+				fontWeight: 800,
+				opacity: 0.4,
+				marginLeft: 24,
+				fontSize: 16,
+				cursor: "pointer",
+				userSelect: "none",
+			}}
+			onClick={props.onClick}
+		>
+			<props.icon size={16} style={{ marginRight: 4 }} />
+			{props.text}
+		</span>
+	);
 }
 
 export function App() {
@@ -101,9 +129,9 @@ export function App() {
 	const sortText = useMemo(() => {
 		switch (usersSort) {
 			case UsersSort.TotalTimeOnline:
-				return "total time online";
+				return "total online";
 			case UsersSort.TimeSinceOnline:
-				return "time since online";
+				return "since online";
 		}
 	}, [usersSort]);
 
@@ -135,62 +163,23 @@ export function App() {
 			>
 				<span css={{ opacity: 0.6 }}>{`${users.length} popens`}</span>
 				<span css={{ opacity: 0.2, fontSize: 16 }}>/tourists</span>
-				<span
-					css={{
-						display: "flex",
-						flexDirection: "row",
-						alignItems: "center",
-						justifyContent: "center",
-						fontWeight: 800,
-						opacity: 0.4,
-						marginLeft: 24,
-						fontSize: 16,
-						cursor: "pointer",
-						userSelect: "none",
-					}}
+				<HeaderToggleButton
 					onClick={toggleFilter}
-				>
-					<FaFilter size={16} style={{ marginRight: 4 }} />
-					{filterText}
-				</span>
-				<span
-					css={{
-						display: "flex",
-						flexDirection: "row",
-						alignItems: "center",
-						justifyContent: "center",
-						fontWeight: 800,
-						opacity: 0.4,
-						marginLeft: 24,
-						fontSize: 16,
-						cursor: "pointer",
-						userSelect: "none",
-					}}
+					icon={FaFilter}
+					text={filterText}
+				/>
+				<HeaderToggleButton
 					onClick={() => {
 						setShowBots(!showBots);
 					}}
-				>
-					<FaRobot size={16} style={{ marginRight: 4 }} />
-					{showBots ? "with bots" : "no bots"}
-				</span>
-				<span
-					css={{
-						display: "flex",
-						flexDirection: "row",
-						alignItems: "center",
-						justifyContent: "center",
-						fontWeight: 800,
-						opacity: 0.4,
-						marginLeft: 24,
-						fontSize: 16,
-						cursor: "pointer",
-						userSelect: "none",
-					}}
+					icon={FaRobot}
+					text={showBots ? "with bots" : "no bots"}
+				/>
+				<HeaderToggleButton
 					onClick={toggleSort}
-				>
-					<FaSort size={16} style={{ marginRight: 4 }} />
-					{sortText}
-				</span>
+					icon={FaSort}
+					text={sortText}
+				/>
 				<FlexGrow />
 				<a
 					css={{
