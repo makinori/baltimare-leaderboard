@@ -93,7 +93,7 @@ function TextTrait({ text, janny }: { text: string; janny?: boolean }) {
 		padding: "0 5px",
 		borderRadius: 4,
 		fontSize: 12,
-		fontWeight: 800,
+		fontWeight: 700,
 		letterSpacing: 0,
 		backgroundColor: "#333",
 		backgroundSize: "100% 100%",
