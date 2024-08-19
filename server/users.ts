@@ -52,6 +52,11 @@ async function getOnlineUuids() {
 
 async function getUserInfo(uuid: string) {
 	const res = await fetch("https://world.secondlife.com/resident/" + uuid);
+
+	if (!res.ok || res.status != 200) {
+		throw new Error("Failed to get user info");
+	}
+
 	const html = await res.text();
 	const document = new JSDOM(html).window.document;
 
