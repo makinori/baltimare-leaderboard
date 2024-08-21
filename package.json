@@ -2,46 +2,40 @@
 	"name": "baltimare-leaderboard",
 	"license": "AGPL-3.0-only",
 	"packageManager": "pnpm@9.7.0",
+	"type": "module",
 	"scripts": {
-		"start": "concurrently npm:start:*",
-		"start:server": "tsx --watch server/main.ts",
-		"start:frontend": "parcel watch --dist-dir frontend/dist frontend/index.html",
-		"build": "rimraf frontend/dist && parcel build --dist-dir frontend/dist frontend/index.html",
-		"serve": "tsx server/main.ts"
+		"start": "cross-env NODE_ENV=development tsx --watch --watch-path=server server/main.ts",
+		"build": "npm run build:client && npm run build:server",
+		"build:client": "vite build --ssrManifest --outDir dist/client",
+		"build:server": "vite build --ssr frontend/entry-server.tsx --outDir dist/server",
+		"serve": "cross-env NODE_ENV=production tsx server/main.ts"
 	},
-	"parcelIgnore": [
-		".*\\.png",
-		".*\\.jpg"
-	],
 	"dependencies": {
+		"@emotion/react": "^11.13.0",
+		"@emotion/styled": "^11.13.0",
 		"@seald-io/nedb": "^4.0.4",
 		"compression": "^1.7.4",
 		"croner": "^8.1.1",
+		"cross-env": "^7.0.3",
+		"date-fns": "^3.6.0",
 		"express": "^4.19.2",
 		"jsdom": "^24.1.1",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
+		"react-icons": "^5.3.0",
+		"sirv": "^2.0.4",
 		"tsx": "^4.17.0",
-		"zustand": "^4.5.4"
+		"zustand": "^4.5.5"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.12.0",
 		"@emotion/babel-plugin": "^11.12.0",
-		"@emotion/react": "^11.13.0",
-		"@emotion/styled": "^11.13.0",
-		"@parcel/config-default": "^2.12.0",
 		"@types/compression": "^1.7.5",
 		"@types/express": "^4.17.21",
 		"@types/jsdom": "^21.1.7",
 		"@types/node": "^22.2.0",
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
-		"concurrently": "^8.2.2",
-		"date-fns": "^3.6.0",
-		"parcel": "^2.12.0",
-		"parcel-resolver-ignore": "^2.2.0",
-		"process": "^0.11.10",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
-		"react-icons": "^5.2.1",
-		"rimraf": "^6.0.1"
+		"@vitejs/plugin-react": "^4.3.1",
+		"vite": "^5.4.2"
 	}
 }

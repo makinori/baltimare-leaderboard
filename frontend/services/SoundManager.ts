@@ -39,6 +39,7 @@ export const useSoundManager = create<SoundManager>()((set, get) => ({
 	},
 	init() {
 		if (get().active) return;
+		if (import.meta.env.SSR) return;
 
 		set(m => {
 			m.active = true;

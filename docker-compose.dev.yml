@@ -1,0 +1,8 @@
+services:
+    baltimare-leaderboard:
+        build: .
+        restart: always
+        volumes:
+            - ./db:/app/db
+        ports:
+            - 8080:8080

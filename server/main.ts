@@ -1,33 +1,32 @@
 import compression from "compression";
 import express from "express";
-import * as path from "path";
+import { initFrontend } from "./frontend";
 import { getApiUsers, initCron } from "./users";
+import { isProduction } from "./utils";
 
-initCron();
+if (isProduction) {
+	console.log("Starting in production mode");
+} else {
+	console.log("Starting in development mode");
+}
 
-const app = express();
+(async () => {
+	initCron();
 
-app.use(compression());
+	const app = express();
 
-app.get("/api/users", (req, res) => {
-	res.json(getApiUsers());
-});
+	if (isProduction) {
+		app.use(compression());
+	}
 
-const frontendDir = path.resolve(__dirname, "../frontend/dist");
-const staticDir = path.resolve(__dirname, "../static");
+	app.get("/api/users", (req, res) => {
+		res.json(getApiUsers());
+	});
 
-app.use(express.static(frontendDir));
-app.use(express.static(staticDir));
+	await initFrontend(app);
 
-app.get("/", (req, res) => {
-	res.sendFile(path.resolve(frontendDir, "index.html"));
-});
-
-app.get("*", (req, res) => {
-	res.redirect("/");
-});
-
-const port = Number.parseInt(process.env.PORT ?? "8080");
-app.listen(port, () => {
-	console.log("Starting web server at http://127.0.0.1:" + port);
-});
+	const port = Number.parseInt(process.env.PORT ?? "8080");
+	app.listen(port, () => {
+		console.log("Starting web server at http://127.0.0.1:" + port);
+	});
+})();

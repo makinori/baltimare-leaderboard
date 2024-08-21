@@ -1,9 +1,12 @@
 import Datastore from "@seald-io/nedb";
 import { Cron } from "croner";
+import { formatDistanceToNow } from "date-fns";
 import { JSDOM } from "jsdom";
 import * as path from "path";
 import { Trait, userTraitsMap } from "../shared/traits";
-import { formatDistanceToNow } from "date-fns";
+import { getDirname } from "./utils";
+
+const __dirname = getDirname(import.meta);
 
 export interface IUser {
 	_id: string;

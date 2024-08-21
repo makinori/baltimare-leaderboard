@@ -127,6 +127,8 @@ export function App() {
 	}, [setUsers]);
 
 	useEffect(() => {
+		if (import.meta.env.SSR) return;
+
 		updateUsers();
 		// every minute, 30 seconds in
 		const job = Cron("30 * * * * *", updateUsers);
@@ -204,7 +206,8 @@ export function App() {
 					fontWeight: 800,
 					fontSize: 20,
 					width: "calc(100% - 8px)",
-					alignItems: "flex-end", // move to bottom
+					justifyContent: "flex-end",
+					alignItems: "flex-end",
 				}}
 			>
 				<VStack css={{ alignItems: "flex-start" }}>

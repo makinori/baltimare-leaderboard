@@ -1,0 +1,17 @@
+body {
+	background-color: #111;
+	font-family: "SN Pro", sans-serif;
+	color: #fff;
+}
+
+a {
+	text-decoration: none;
+	color: #fff;
+}
+
+#app {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
