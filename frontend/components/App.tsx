@@ -1,44 +1,112 @@
 import Cron from "croner";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { IconType } from "react-icons";
-import { FaFilter, FaGithub, FaRobot, FaSort } from "react-icons/fa6";
+import {
+	FaFilter,
+	FaGithub,
+	FaRegCircle,
+	FaRegCircleCheck,
+	FaRobot,
+	FaSort,
+	FaUmbrellaBeach,
+} from "react-icons/fa6";
 import type { IApiUser } from "../../server/users";
-import { FlexGrow } from "./FlexGrow";
-import { HStack } from "./Stack";
-import { User } from "./User";
 import { useSoundManager } from "../services/SoundManager";
+import { FlexGrow } from "./FlexGrow";
+import { HStack, VStack } from "./Stack";
+import { User } from "./User";
 
 enum UsersFilter {
-	Off,
-	Online,
-	Offline,
+	ShowAll = "show all",
+	Online = "online",
+	Offline = "offline",
 }
 
 enum UsersSort {
-	TotalTimeOnline,
-	TimeSinceOnline,
+	TotalTime = "total time",
+	SinceOnline = "since online",
 }
 
+/*
 function HeaderToggleButton(props: {
-	onClick: () => any;
+	onClick: (value: boolean) => any;
 	icon: IconType;
 	text: string;
+	value: boolean;
 }) {
 	return (
 		<HStack
 			css={{
-				fontWeight: 800,
-				opacity: 0.4,
-				marginLeft: 24,
-				fontSize: 16,
-				cursor: "pointer",
-				userSelect: "none",
+				// marginLeft: 24,
+				marginLeft: 20,
+				background: props.value ? "#666" : "transparent",
+				color: props.value ? "#222" : "#666",
+				borderRadius: 4,
+				padding: "0 4px",
+				// border: "solid 2px #666",
 			}}
-			onClick={props.onClick}
+			onClick={() => {
+				props.onClick(!props.value);
+			}}
 		>
-			<props.icon size={16} css={{ marginRight: 4 }} />
-			{props.text}
+			<props.icon size={16} css={{ marginLeft: 0 }} />
+			<span
+				css={{
+					fontWeight: 800,
+					marginLeft: 4,
+					fontSize: 16,
+					cursor: "pointer",
+					userSelect: "none",
+				}}
+			>
+				{props.text}
+			</span>
 		</HStack>
+	);
+}
+*/
+
+function HeaderOptionPicker(props: {
+	icon: IconType;
+	text: string;
+	values: string[];
+	value: string;
+	onClick: (value: string) => any;
+}) {
+	return (
+		<VStack
+			css={{
+				alignItems: "flex-start",
+				fontWeight: 700,
+				fontSize: 16,
+				userSelect: "none",
+				opacity: 0.8,
+			}}
+		>
+			<HStack css={{ fontWeight: 900, marginBottom: 4 }}>
+				<props.icon size={16} css={{ marginRight: 4 }} />
+				{props.text}
+			</HStack>
+			{props.values.map((value, i) => (
+				<HStack
+					key={i}
+					onClick={() => {
+						props.onClick(value);
+					}}
+					css={{
+						opacity: value == props.value ? 0.75 : 0.5,
+						cursor: "pointer",
+					}}
+				>
+					{props.value == value ? (
+						<FaRegCircleCheck size={16} css={{ marginRight: 4 }} />
+					) : (
+						<FaRegCircle size={16} css={{ marginRight: 4 }} />
+					)}
+					{value}
+				</HStack>
+			))}
+		</VStack>
 	);
 }
 
@@ -48,9 +116,10 @@ export function App() {
 
 	const [users, setUsers] = useState<IApiUser[]>([]);
 
-	const [usersFilter, setUsersFilter] = useState(UsersFilter.Off);
-	const [showBots, setShowBots] = useState(true);
-	const [usersSort, setUsersSort] = useState(UsersSort.TotalTimeOnline);
+	const [usersFilter, setUsersFilter] = useState(UsersFilter.ShowAll);
+	const [usersSort, setUsersSort] = useState(UsersSort.TotalTime);
+	const [showTourists, setShowTourists] = useState(false);
+	const [showBots, setShowBots] = useState(false);
 
 	const updateUsers = useCallback(async () => {
 		const res = await fetch("/api/users");
@@ -66,18 +135,16 @@ export function App() {
 		};
 	}, [updateUsers]);
 
-	const toggleFilter = useCallback(() => {
-		const length = Object.keys(UsersFilter).length / 2;
-		setUsersFilter((usersFilter + 1) % length);
-	}, [usersFilter, setUsersFilter]);
-
-	const toggleSort = useCallback(() => {
-		const length = Object.keys(UsersSort).length / 2;
-		setUsersSort((usersSort + 1) % length);
-	}, [usersSort, setUsersSort]);
-
 	const shownUsers = useMemo(() => {
 		let outputUsers = users;
+
+		if (!showBots) {
+			outputUsers = outputUsers.filter(u => !u.traits.includes("bot"));
+		}
+
+		if (!showTourists) {
+			outputUsers = outputUsers.filter(u => u.minutes > 60);
+		}
 
 		switch (usersFilter) {
 			case UsersFilter.Online:
@@ -88,13 +155,10 @@ export function App() {
 				break;
 		}
 
-		if (!showBots) {
-			outputUsers = outputUsers.filter(u => !u.traits.includes("bot"));
-		}
+		// api should already have sorted it
+		// outputUsers = outputUsers.sort((a, b) => b.minutes - a.minutes);
 
-		outputUsers = outputUsers.sort((a, b) => b.minutes - a.minutes);
-
-		if (usersSort == UsersSort.TimeSinceOnline) {
+		if (usersSort == UsersSort.SinceOnline) {
 			outputUsers = outputUsers.sort((a, b) =>
 				a.online && b.online
 					? 0
@@ -104,7 +168,7 @@ export function App() {
 		}
 
 		return outputUsers;
-	}, [users, usersFilter, showBots, usersSort]);
+	}, [users, usersFilter, usersSort, showTourists, showBots]);
 
 	const highestMinutes = useMemo(() => {
 		let highest = 0;
@@ -116,33 +180,18 @@ export function App() {
 		return highest;
 	}, [shownUsers]);
 
-	const filterText = useMemo(() => {
-		switch (usersFilter) {
-			case UsersFilter.Off:
-				return "no filter";
-			case UsersFilter.Online:
-				return "online only";
-			case UsersFilter.Offline:
-				return "offline only";
-		}
-	}, [usersFilter]);
-
-	const sortText = useMemo(() => {
-		switch (usersSort) {
-			case UsersSort.TotalTimeOnline:
-				return "total online";
-			case UsersSort.TimeSinceOnline:
-				return "since online";
-		}
-	}, [usersSort]);
-
 	return (
-		<>
+		<VStack
+			css={{
+				width: "calc(100vw - 16px)",
+				maxWidth: 800,
+			}}
+		>
 			<a href="https://baltimare.pages.dev">
 				<img
 					css={{
-						width: "calc(100vw - 16px)",
-						maxWidth: 600,
+						width: 600,
+						maxWidth: "100%",
 						marginTop: 32,
 					}}
 					src="baltimare-opg.png"
@@ -151,33 +200,72 @@ export function App() {
 			<HStack
 				css={{
 					marginTop: 16,
-					marginBottom: 4,
+					marginBottom: 8,
 					fontWeight: 800,
 					fontSize: 20,
-					width: "calc(100vw - 16px - 8px)",
-					maxWidth: 800 - 8,
+					width: "calc(100% - 8px)",
 					alignItems: "flex-end", // move to bottom
 				}}
 			>
-				<span css={{ opacity: 0.6 }}>{`${users.length} popens`}</span>
-				<span css={{ opacity: 0.2, fontSize: 16 }}>/tourists</span>
-				<HeaderToggleButton
-					onClick={toggleFilter}
-					icon={FaFilter}
-					text={filterText}
-				/>
-				<HeaderToggleButton
-					onClick={() => {
-						setShowBots(!showBots);
-					}}
-					icon={FaRobot}
-					text={showBots ? "with bots" : "no bots"}
-				/>
-				<HeaderToggleButton
-					onClick={toggleSort}
-					icon={FaSort}
-					text={sortText}
-				/>
+				<VStack css={{ alignItems: "flex-start" }}>
+					<div css={{ opacity: 0.8 }}>
+						{`${shownUsers.length} popens`}
+						{showTourists ? (
+							<span css={{ opacity: 0.6, fontSize: 16 }}>
+								/tourists
+							</span>
+						) : (
+							<></>
+						)}
+					</div>
+					<HStack
+						css={{
+							gap: 32,
+							width: "100%",
+							alignItems: "flex-start",
+							justifyContent: "flex-start",
+							marginTop: 16,
+							marginBottom: 12,
+						}}
+					>
+						<HeaderOptionPicker
+							text="filter"
+							icon={FaFilter}
+							values={Object.values(UsersFilter)}
+							value={usersFilter}
+							onClick={v => {
+								setUsersFilter(v as UsersFilter);
+							}}
+						/>
+						<HeaderOptionPicker
+							text="sort"
+							icon={FaSort}
+							values={Object.values(UsersSort)}
+							value={usersSort}
+							onClick={v => {
+								setUsersSort(v as UsersSort);
+							}}
+						/>
+						<HeaderOptionPicker
+							text="tourists"
+							icon={FaUmbrellaBeach}
+							values={["hide", "show"]}
+							value={showTourists ? "show" : "hide"}
+							onClick={v => {
+								setShowTourists(v == "show");
+							}}
+						/>
+						<HeaderOptionPicker
+							text="bots"
+							icon={FaRobot}
+							values={["hide", "show"]}
+							value={showBots ? "show" : "hide"}
+							onClick={v => {
+								setShowBots(v == "show");
+							}}
+						/>
+					</HStack>
+				</VStack>
 				<FlexGrow />
 				<a
 					css={{
@@ -185,7 +273,7 @@ export function App() {
 						// fontSize: 16,
 						opacity: 0.4,
 						marginRight: 80,
-						alignSelf: "center",
+						// alignSelf: "center",
 					}}
 					href="https://github.com/makidoll/baltimare-leaderboard"
 				>
@@ -197,9 +285,8 @@ export function App() {
 					display: "flex",
 					flexDirection: "column",
 					gap: 4,
-					width: "calc(100vw - 16px)",
-					maxWidth: 800,
 					marginBottom: 32,
+					width: "100%",
 				}}
 			>
 				{shownUsers.map((user, i) => (
@@ -211,6 +298,6 @@ export function App() {
 					/>
 				))}
 			</div>
-		</>
+		</VStack>
 	);
 }
