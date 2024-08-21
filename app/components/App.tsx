@@ -301,7 +301,7 @@ export function App(props: { data: IApiUser[] }) {
 						display: "flex",
 						flexDirection: "column",
 						gap: 4,
-						marginBottom: 32,
+
 						width: "100%",
 					}}
 				>
@@ -313,6 +313,16 @@ export function App(props: { data: IApiUser[] }) {
 							highestMinutes={highestMinutes}
 						/>
 					))}
+				</div>
+				<div
+					css={{
+						marginTop: 16,
+						marginBottom: 128,
+						fontWeight: 800,
+						opacity: 0.4,
+					}}
+				>
+					since august 6th 2024
 				</div>
 			</VStack>
 		</HStack>
