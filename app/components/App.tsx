@@ -1,3 +1,6 @@
+/** @jsxImportSource @emotion/react */
+"use client";
+
 import Cron from "croner";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { IconType } from "react-icons";
@@ -110,11 +113,15 @@ function HeaderOptionPicker(props: {
 	);
 }
 
-export function App() {
+export function App(props: { data: IApiUser[] }) {
 	const soundManager = useSoundManager();
-	soundManager.init();
 
-	const [users, setUsers] = useState<IApiUser[]>([]);
+	// will only run on client
+	useEffect(() => {
+		soundManager.init();
+	}, [soundManager]);
+
+	const [users, setUsers] = useState<IApiUser[]>(props.data);
 
 	const [usersFilter, setUsersFilter] = useState(UsersFilter.ShowAll);
 	const [usersSort, setUsersSort] = useState(UsersSort.TotalTime);
@@ -122,14 +129,14 @@ export function App() {
 	const [showBots, setShowBots] = useState(false);
 
 	const updateUsers = useCallback(async () => {
-		const res = await fetch("/api/users");
-		setUsers(await res.json());
+		try {
+			const res = await fetch("/api/users");
+			setUsers(await res.json());
+		} catch (error) {}
 	}, [setUsers]);
 
 	useEffect(() => {
-		if (import.meta.env.SSR) return;
-
-		updateUsers();
+		// updateUsers(); // ssr has initial data
 		// every minute, 30 seconds in
 		const job = Cron("30 * * * * *", updateUsers);
 		return () => {
@@ -183,124 +190,131 @@ export function App() {
 	}, [shownUsers]);
 
 	return (
-		<VStack
+		<HStack
 			css={{
-				width: "calc(100vw - 16px)",
-				maxWidth: 800,
+				display: "flex",
+				width: "100%",
 			}}
 		>
-			<a href="https://baltimare.pages.dev">
-				<img
-					css={{
-						width: 600,
-						maxWidth: "100%",
-						marginTop: 32,
-					}}
-					src="baltimare-opg.png"
-				></img>
-			</a>
-			<HStack
+			<VStack
 				css={{
-					marginTop: 16,
-					marginBottom: 8,
-					fontWeight: 800,
-					fontSize: 20,
-					width: "calc(100% - 8px)",
-					justifyContent: "flex-end",
-					alignItems: "flex-end",
+					width: "calc(100vw - 16px)",
+					maxWidth: 800,
 				}}
 			>
-				<VStack css={{ alignItems: "flex-start" }}>
-					<div css={{ opacity: 0.8 }}>
-						{`${shownUsers.length} popens`}
-						{showTourists ? (
-							<span css={{ opacity: 0.6, fontSize: 16 }}>
-								/tourists
-							</span>
-						) : (
-							<></>
-						)}
-					</div>
-					<HStack
+				<a href="https://baltimare.pages.dev">
+					<img
 						css={{
-							gap: 32,
-							width: "100%",
-							alignItems: "flex-start",
-							justifyContent: "flex-start",
-							marginTop: 16,
-							marginBottom: 12,
+							width: 600,
+							maxWidth: "100%",
+							marginTop: 32,
 						}}
-					>
-						<HeaderOptionPicker
-							text="filter"
-							icon={FaFilter}
-							values={Object.values(UsersFilter)}
-							value={usersFilter}
-							onClick={v => {
-								setUsersFilter(v as UsersFilter);
-							}}
-						/>
-						<HeaderOptionPicker
-							text="sort"
-							icon={FaSort}
-							values={Object.values(UsersSort)}
-							value={usersSort}
-							onClick={v => {
-								setUsersSort(v as UsersSort);
-							}}
-						/>
-						<HeaderOptionPicker
-							text="tourists"
-							icon={FaUmbrellaBeach}
-							values={["hide", "show"]}
-							value={showTourists ? "show" : "hide"}
-							onClick={v => {
-								setShowTourists(v == "show");
-							}}
-						/>
-						<HeaderOptionPicker
-							text="bots"
-							icon={FaRobot}
-							values={["hide", "show"]}
-							value={showBots ? "show" : "hide"}
-							onClick={v => {
-								setShowBots(v == "show");
-							}}
-						/>
-					</HStack>
-				</VStack>
-				<FlexGrow />
-				<a
-					css={{
-						// fontWeight: 800,
-						// fontSize: 16,
-						opacity: 0.4,
-						marginRight: 80,
-						// alignSelf: "center",
-					}}
-					href="https://github.com/makidoll/baltimare-leaderboard"
-				>
-					<FaGithub size={20} />
+						src="baltimare-opg.png"
+					></img>
 				</a>
-			</HStack>
-			<div
-				css={{
-					display: "flex",
-					flexDirection: "column",
-					gap: 4,
-					marginBottom: 32,
-					width: "100%",
-				}}
-			>
-				{shownUsers.map((user, i) => (
-					<User
-						key={i}
-						i={i}
-						user={user}
-						highestMinutes={highestMinutes}
-					/>
-				))}
-			</div>
-		</VStack>
+				<HStack
+					css={{
+						marginTop: 16,
+						marginBottom: 8,
+						fontWeight: 800,
+						fontSize: 20,
+						width: "calc(100% - 8px)",
+						justifyContent: "flex-end",
+						alignItems: "flex-end",
+					}}
+				>
+					<VStack css={{ alignItems: "flex-start" }}>
+						<div css={{ opacity: 0.8 }}>
+							{`${shownUsers.length} popens`}
+							{showTourists ? (
+								<span css={{ opacity: 0.6, fontSize: 16 }}>
+									/tourists
+								</span>
+							) : (
+								<></>
+							)}
+						</div>
+						<HStack
+							css={{
+								gap: 32,
+								width: "100%",
+								alignItems: "flex-start",
+								justifyContent: "flex-start",
+								marginTop: 16,
+								marginBottom: 12,
+							}}
+						>
+							<HeaderOptionPicker
+								text="filter"
+								icon={FaFilter}
+								values={Object.values(UsersFilter)}
+								value={usersFilter}
+								onClick={v => {
+									setUsersFilter(v as UsersFilter);
+								}}
+							/>
+							<HeaderOptionPicker
+								text="sort"
+								icon={FaSort}
+								values={Object.values(UsersSort)}
+								value={usersSort}
+								onClick={v => {
+									setUsersSort(v as UsersSort);
+								}}
+							/>
+							<HeaderOptionPicker
+								text="tourists"
+								icon={FaUmbrellaBeach}
+								values={["hide", "show"]}
+								value={showTourists ? "show" : "hide"}
+								onClick={v => {
+									setShowTourists(v == "show");
+								}}
+							/>
+							<HeaderOptionPicker
+								text="bots"
+								icon={FaRobot}
+								values={["hide", "show"]}
+								value={showBots ? "show" : "hide"}
+								onClick={v => {
+									setShowBots(v == "show");
+								}}
+							/>
+						</HStack>
+					</VStack>
+					<FlexGrow />
+					<a
+						css={{
+							// fontWeight: 800,
+							// fontSize: 16,
+							opacity: 0.4,
+							marginRight: 80,
+							// alignSelf: "center",
+						}}
+						href="https://github.com/makidoll/baltimare-leaderboard"
+					>
+						<FaGithub size={20} />
+					</a>
+				</HStack>
+				<div
+					css={{
+						display: "flex",
+						flexDirection: "column",
+						gap: 4,
+						marginBottom: 32,
+						width: "100%",
+					}}
+				>
+					{shownUsers.map((user, i) => (
+						<User
+							key={i}
+							i={i}
+							user={user}
+							highestMinutes={highestMinutes}
+						/>
+					))}
+				</div>
+			</VStack>
+		</HStack>
 	);
 }

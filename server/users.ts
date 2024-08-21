@@ -4,9 +4,6 @@ import { formatDistanceToNow } from "date-fns";
 import { JSDOM } from "jsdom";
 import * as path from "path";
 import { Trait, userTraitsMap } from "../shared/traits";
-import { getDirname } from "./utils";
-
-const __dirname = getDirname(import.meta);
 
 export interface IUser {
 	_id: string;
@@ -19,7 +16,6 @@ export interface IUser {
 
 export const users = new Datastore<IUser>({
 	filename: path.resolve(__dirname, "../db/users.db"),
-	autoload: true,
 });
 
 const cacheUserInfoSeconds = 60 * 60 * 24; // 1 day
@@ -153,7 +149,7 @@ export interface IApiUser extends IUser {
 
 const usernameRegex = / \(([^(]+?)\)$/;
 
-function getApiUsersResponse() {
+function getApiUsersResponse(): IApiUser[] {
 	const sortedUsers = users
 		.getAllData()
 		.sort((a, b) => b.minutes - a.minutes);
@@ -204,32 +200,21 @@ function getApiUsersResponse() {
 	});
 }
 
-let cachedApiUsersResponse: IApiUser[];
-
-export function getApiUsers() {
-	if (cachedApiUsersResponse == null) {
-		cachedApiUsersResponse = getApiUsersResponse();
-	}
-
-	return cachedApiUsersResponse;
-}
-
 let cronInitialized = false;
 
-export function initCron() {
+export async function initUsersCron(onApiUsers: (apiUsers: IApiUser[]) => any) {
 	if (cronInitialized) return;
 	cronInitialized = true;
 
-	console.log("Initializing cron for once a minute");
+	console.log("Initializing db and cron for once a minute");
+
+	await users.loadDatabaseAsync();
+
+	onApiUsers(getApiUsersResponse());
 
 	// every minute at 0 seconds
-	Cron("0 * * * * *", logUsers);
-
-	// every minute at 15 seconds
-	Cron("15 * * * * *", () => {
-		// invalidate cache
-		cachedApiUsersResponse = null;
+	Cron("0 * * * * *", async () => {
+		await logUsers();
+		onApiUsers(getApiUsersResponse());
 	});
-
-	// cause at 30 seconds the client will pull
 }

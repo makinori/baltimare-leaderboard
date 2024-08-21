@@ -1,6 +1,4 @@
-# syntax=docker.io/docker/dockerfile:1.7-labs
-
-FROM node:lts-alpine AS core
+FROM node:lts-alpine
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -9,22 +7,11 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml .
 
-# build frontend
-
-FROM core AS builder
-
+ADD package.json pnpm-lock.yaml /app/
 RUN pnpm install --frozen-lockfile
 
-COPY . .
+ADD . .
 RUN pnpm build
 
-# server
+CMD pnpm serve
 
-FROM core
-
-RUN pnpm install --prod --frozen-lockfile
-
-COPY --exclude=frontend . .
-COPY --from=builder /app/dist /app/dist
-
-CMD ["pnpm", "serve"]

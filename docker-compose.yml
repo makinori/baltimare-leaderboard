@@ -11,7 +11,7 @@ services:
             - traefik.http.routers.baltimare-leaderboard.entrypoints=websecure
             - traefik.http.routers.baltimare-leaderboard.service=baltimare-leaderboard
             - traefik.http.routers.baltimare-leaderboard.tls.certResolver=le
-            - traefik.http.services.baltimare-leaderboard.loadbalancer.server.port=8080
+            - traefik.http.services.baltimare-leaderboard.loadbalancer.server.port=3000
             - traefik.docker.network=traefik
         volumes:
             - ./db:/app/db
