@@ -322,7 +322,7 @@ export function App(props: { data: IApiUser[] }) {
 						opacity: 0.4,
 					}}
 				>
-					since august 6th 2024
+					since august 12th 2024
 				</div>
 			</VStack>
 		</HStack>
