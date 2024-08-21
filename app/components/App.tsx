@@ -145,7 +145,7 @@ export function App(props: { data: IApiUser[] }) {
 	}, [updateUsers]);
 
 	const shownUsers = useMemo(() => {
-		let outputUsers = users;
+		let outputUsers = JSON.parse(JSON.stringify(users)); // deep copy
 
 		if (!showBots) {
 			outputUsers = outputUsers.filter(u => !u.traits.includes("bot"));
