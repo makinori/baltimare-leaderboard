@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import RootStyleRegistry from "./emotion";
-import "./fonts/sn-pro/sn-pro.css";
 import "./globals.css";
+import { snPro } from "./fonts/fonts";
 
 export const metadata: Metadata = {
 	title: "Baltimare Leaderboard",
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body>
+			<body className={snPro.className}>
 				<RootStyleRegistry>{children}</RootStyleRegistry>
 			</body>
 		</html>
