@@ -190,11 +190,12 @@ export function User({
 
 	const avatar = getImageProps({
 		...imageProps,
-		src: nullUuidRegex.test(user.imageId)
-			? ""
-			: "https://picture-service.secondlife.com/" +
-			  user.imageId +
-			  "/256x192.jpg",
+		src:
+			user.imageId == "" || nullUuidRegex.test(user.imageId)
+				? ""
+				: "https://picture-service.secondlife.com/" +
+				  user.imageId +
+				  "/256x192.jpg",
 	});
 
 	const unknownAvatar = getImageProps({
