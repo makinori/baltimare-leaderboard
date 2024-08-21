@@ -7,11 +7,20 @@ services:
         restart: always
         labels:
             - traefik.enable=true
+
             - traefik.http.routers.baltimare-leaderboard.rule=Host(`baltimare.hotmilk.space`)
             - traefik.http.routers.baltimare-leaderboard.entrypoints=websecure
             - traefik.http.routers.baltimare-leaderboard.service=baltimare-leaderboard
             - traefik.http.routers.baltimare-leaderboard.tls.certResolver=le
+
+            - >
+                traefik.http.routers.baltimare-leaderboard-tor.rule=
+                Host(`baltimare.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion`)
+            - traefik.http.routers.baltimare-leaderboard-tor.entrypoints=webtor
+            - traefik.http.routers.baltimare-leaderboard-tor.service=baltimare-leaderboard
+
             - traefik.http.services.baltimare-leaderboard.loadbalancer.server.port=3000
+
             - traefik.docker.network=traefik
         volumes:
             - ./db:/app/db
