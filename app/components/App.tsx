@@ -8,7 +8,7 @@ import {
 	FaFilter,
 	FaGithub,
 	FaRegCircle,
-	FaRegCircleCheck,
+	FaRegCircleDot,
 	FaRobot,
 	FaSort,
 	FaUmbrellaBeach,
@@ -102,7 +102,7 @@ function HeaderOptionPicker(props: {
 					}}
 				>
 					{props.value == value ? (
-						<FaRegCircleCheck size={16} css={{ marginRight: 4 }} />
+						<FaRegCircleDot size={16} css={{ marginRight: 4 }} />
 					) : (
 						<FaRegCircle size={16} css={{ marginRight: 4 }} />
 					)}
