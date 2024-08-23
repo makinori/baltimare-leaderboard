@@ -18,6 +18,7 @@ import { useSoundManager } from "../services/SoundManager";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
 import { User } from "./User";
+import { OnionIcon } from "./icons/OnionIcon";
 
 enum UsersFilter {
 	ShowAll = "show all",
@@ -145,7 +146,7 @@ export function App(props: { data: IApiUser[] }) {
 	}, [updateUsers]);
 
 	const shownUsers = useMemo(() => {
-		let outputUsers = JSON.parse(JSON.stringify(users)); // deep copy
+		let outputUsers: IApiUser[] = JSON.parse(JSON.stringify(users)); // deep copy
 
 		if (!showBots) {
 			outputUsers = outputUsers.filter(u => !u.traits.includes("bot"));
@@ -240,8 +241,8 @@ export function App(props: { data: IApiUser[] }) {
 								width: "100%",
 								alignItems: "flex-start",
 								justifyContent: "flex-start",
-								marginTop: 16,
-								marginBottom: 12,
+								marginTop: 12,
+								marginBottom: 8,
 							}}
 						>
 							<HeaderOptionPicker
@@ -285,15 +286,21 @@ export function App(props: { data: IApiUser[] }) {
 					<FlexGrow />
 					<a
 						css={{
-							// fontWeight: 800,
-							// fontSize: 16,
 							opacity: 0.4,
-							marginRight: 80,
-							// alignSelf: "center",
+							marginRight: 4,
 						}}
 						href="https://github.com/makidoll/baltimare-leaderboard"
 					>
 						<FaGithub size={20} />
+					</a>
+					<a
+						css={{
+							opacity: 0.4,
+							marginRight: 80,
+						}}
+						href="http://baltimare.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion"
+					>
+						<OnionIcon size={28} color="white" />
 					</a>
 				</HStack>
 				<div
