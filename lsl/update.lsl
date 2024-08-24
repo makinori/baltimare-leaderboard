@@ -1,7 +1,7 @@
-integer updateInterval = 15;
 // string updateUrl = "http://hotmilk.space:4845/api/lsl/online";
 string updateUrl = "https://baltimare.hotmilk.space/api/lsl/online";
 string updateSecret = "dcumwoidaksdjlkajsd";
+integer updateInterval = 30;
 
 updateOnline() {
     list avatars = llGetAgentList(AGENT_LIST_REGION, []);

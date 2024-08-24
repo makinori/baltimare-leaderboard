@@ -1,9 +1,9 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 
-// lsl script should update every 15 seconds
-// will fail if error 500 more than 5 times in a minute, hence 15 seconds
-// script could handle this and just pause sending for a minute
+// lsl script should update every 30 seconds
+// will fail if http error code 500 more than 5 times in a minute
+// script could handle this and just pause sending for a minute, but doesnt
 
 // uuids will expire here on server after 30 seconds
 
@@ -65,7 +65,7 @@ export class ApiLsl {
 				if (expire > now) continue;
 				this.currentlyOnline.delete(uuid);
 			}
-		}, avatarExpire / 2);
+		}, avatarExpire);
 
 		return this;
 	}
