@@ -348,21 +348,21 @@ export function App(props: { initialData: IApiUser[] }) {
 								}}
 							/>
 							<HeaderOptionPicker
-								text="tourists"
-								icon={FaUmbrellaBeach}
-								values={["hide", "show"]}
-								value={showTourists ? "show" : "hide"}
-								onClick={v => {
-									setShowTourists(v == "show");
-								}}
-							/>
-							<HeaderOptionPicker
 								text="bots"
 								icon={FaRobot}
 								values={["hide", "show"]}
 								value={showBots ? "show" : "hide"}
 								onClick={v => {
 									setShowBots(v == "show");
+								}}
+							/>
+							<HeaderOptionPicker
+								text="tourists"
+								icon={FaUmbrellaBeach}
+								values={["hide", "show"]}
+								value={showTourists ? "show" : "hide"}
+								onClick={v => {
+									setShowTourists(v == "show");
 								}}
 							/>
 						</HStack>
