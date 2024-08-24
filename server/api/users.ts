@@ -161,9 +161,11 @@ export class ApiUsers {
 
 		return sortedUsers.map(user => {
 			const lastSeen = new Date(user.lastSeen);
-			// const lastSeenSeconds = (Date.now() - lastSeen.getTime()) / 1000;
-			// const online = lastSeenSeconds < 60 * 2; // within 2 minutes
-			const online = this.apiLsl.isOnline(user._id);
+			const lastSeenSeconds = (Date.now() - lastSeen.getTime()) / 1000;
+			const online = lastSeenSeconds < 60; // within last minute
+
+			// const online = this.apiLsl.isOnline(user._id);
+			// ^ not a good idea cause when server restart it'll be false
 
 			let lastSeenText = "online";
 			if (!online) {
