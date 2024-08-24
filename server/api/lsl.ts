@@ -10,6 +10,8 @@ import * as bodyParser from "body-parser";
 const secret = process.env.API_SECRET ?? "dcumwoidaksdjlkajsd";
 const avatarExpire = 1000 * 30;
 
+console.log("Secret is " + secret);
+
 function hexStrToUuid(hexStr: string) {
 	return [
 		hexStr.substring(0, 8),
@@ -44,6 +46,9 @@ export class ApiLsl {
 		this.router.use(bodyParser.text());
 
 		this.router.put("/api/lsl/online", (req, res) => {
+			console.log(req.body);
+			console.log(req.header("Authorization"));
+
 			if (
 				req.body == false ||
 				req.header("Authorization") != "Bearer " + secret

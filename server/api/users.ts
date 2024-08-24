@@ -220,7 +220,7 @@ export class ApiUsers {
 
 		await this.users.loadDatabaseAsync();
 
-		// client should request at 30 seconds mark
+		// client should request at 15 or 30 second mark
 
 		// log users at 0 second mark and when done, cache api users response
 
