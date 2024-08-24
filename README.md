@@ -6,6 +6,8 @@ Available at https://baltimare.hotmilk.space/
 
 Place cubes in-world using `lsl/update.lsl` script to start logging
 
+See API endpoints at https://baltimare.hotmilk.space/api/
+
 #
 
 -   Environment variables `PORT` and `API_SECRET` are used
