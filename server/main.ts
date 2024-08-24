@@ -26,7 +26,7 @@ import { ApiUsers } from "./api/users";
 				"GET /api/users/online - output from in-world lsl cube, updates every 15 seconds",
 				"",
 				"PUT /api/lsl/online - for the in-world lsl cube to send data to",
-			].join("<br>"),
+			].join("<br />"),
 		);
 	});
 

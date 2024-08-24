@@ -17,7 +17,7 @@ import { HStack } from "./Stack";
 
 const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
 
-function addSeperators(n: number) {
+export function addSeperators(n: number) {
 	let out: string[] = [];
 	const chars = Math.floor(n).toString().split("").reverse();
 
@@ -29,13 +29,13 @@ function addSeperators(n: number) {
 	return out.reverse().join("");
 }
 
-function plural(n: number, single: string, plural: string = null) {
+export function plural(n: number, single: string, plural: string = null) {
 	if (plural == null) plural = single + "s";
 	if (n == 1 || n == -1) return single;
 	else return plural;
 }
 
-function formatMinutes(m: number) {
+export function formatMinutes(m: number) {
 	// if (m < 60) return `${m}m`;
 	if (m < 60) return `${m} ${plural(m, "min")}`;
 	const h = Math.floor(m / 60);

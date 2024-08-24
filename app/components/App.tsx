@@ -17,7 +17,7 @@ import type { IApiUser } from "../../server/api/users";
 import { useSoundManager } from "../services/SoundManager";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
-import { User } from "./User";
+import { formatMinutes, User } from "./User";
 import { OnionIcon } from "./icons/OnionIcon";
 
 enum UsersFilter {
@@ -192,6 +192,14 @@ export function App(props: { data: IApiUser[] }) {
 		return highest;
 	}, [shownUsers]);
 
+	const totalMinutes = useMemo(() => {
+		let total = 0;
+		for (const user of shownUsers) {
+			total += user.minutes;
+		}
+		return total;
+	}, [shownUsers]);
+
 	return (
 		<HStack
 			css={{
@@ -219,23 +227,44 @@ export function App(props: { data: IApiUser[] }) {
 					css={{
 						marginTop: 16,
 						marginBottom: 8,
-						fontWeight: 800,
-						fontSize: 20,
 						width: "calc(100% - 8px)",
 						justifyContent: "flex-end",
 						alignItems: "flex-end",
 					}}
 				>
 					<VStack css={{ alignItems: "flex-start" }}>
-						<div css={{ opacity: 0.8 }}>
-							{`${shownUsers.length} popens`}
+						<div
+							css={{
+								opacity: 0.8,
+								fontSize: 20,
+								fontWeight: 800,
+							}}
+						>
+							{`${shownUsers.length} popens seen`}
 							{showTourists ? (
-								<span css={{ opacity: 0.6, fontSize: 16 }}>
-									/tourists
+								<span css={{ opacity: 0.4, fontSize: 16 }}>
+									{" "}
+									and tourists
 								</span>
 							) : (
 								<></>
 							)}
+						</div>
+						<div
+							css={{
+								opacity: 0.8,
+								fontSize: 16,
+								marginTop: 4,
+								fontWeight: 700,
+								color: "#8BC34A",
+							}}
+						>
+							&gt; total time online since august 24th 2024
+							<br />
+							&gt; also how long ago since last online
+							<br />
+							&gt; collectively online for{" "}
+							{formatMinutes(totalMinutes)} so far
 						</div>
 						<HStack
 							css={{
@@ -243,8 +272,8 @@ export function App(props: { data: IApiUser[] }) {
 								width: "100%",
 								alignItems: "flex-start",
 								justifyContent: "flex-start",
-								marginTop: 12,
-								marginBottom: 8,
+								marginTop: 16,
+								marginBottom: 12,
 							}}
 						>
 							<HeaderOptionPicker
@@ -327,12 +356,23 @@ export function App(props: { data: IApiUser[] }) {
 					css={{
 						marginTop: 16,
 						marginBottom: 128,
+						fontWeight: 700,
+						opacity: 0.4,
+					}}
+				>
+					there might be some users outside of baltimate that
+					accidentally got logged
+				</div>
+				{/* <div
+					css={{
+						marginTop: 16,
+						marginBottom: 128,
 						fontWeight: 800,
 						opacity: 0.4,
 					}}
 				>
-					since august 12th 2024
-				</div>
+					total hours since august 12th 2024
+				</div> */}
 			</VStack>
 		</HStack>
 	);
