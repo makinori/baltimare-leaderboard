@@ -13,9 +13,9 @@ import {
 	FaUmbrellaBeach,
 } from "react-icons/fa6";
 import io, { Socket } from "socket.io-client";
-import type { IApiUser } from "../../server/api/users";
-import { useSoundManager } from "../services/SoundManager";
-import { addSeperators, formatMinutes } from "../utils";
+import type { IApiUser } from "../server/api/users";
+import { useSoundManager } from "./services/SoundManager";
+import { addSeperators, formatMinutes } from "../shared/utils";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
 import { User } from "./User";

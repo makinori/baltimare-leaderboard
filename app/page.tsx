@@ -1,7 +1,7 @@
 "use server";
 
 import type { IApiUser } from "../server/api/users";
-import { App } from "./components/App";
+import { App } from "../components/App";
 import { unstable_noStore as noStore } from "next/cache";
 
 export default async function Page() {

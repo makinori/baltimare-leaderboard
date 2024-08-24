@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import { snPro } from "../fonts/fonts";
 import RootStyleRegistry from "./emotion";
 import "./globals.css";
-import { snPro } from "./fonts/fonts";
 
 export const metadata: Metadata = {
 	title: "Baltimare Leaderboard",

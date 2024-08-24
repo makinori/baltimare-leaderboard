@@ -4,15 +4,15 @@ import { CSSObject } from "@emotion/react";
 import styled from "@emotion/styled";
 import { getImageProps, ImageProps } from "next/image";
 import { useCallback, useMemo, useState } from "react";
-import type { IApiUser } from "../../server/api/users";
+import type { IApiUser } from "../server/api/users";
+import { useSoundManager } from "./services/SoundManager";
 import {
 	imageTraitKeys,
 	imageTraitMap,
 	ImageTraitType,
-} from "../../shared/traits";
-import { useSoundManager } from "../services/SoundManager";
-import { formatMinutes, randomInt } from "../utils";
-import { styleVars } from "../vars";
+} from "../shared/traits";
+import { formatMinutes, randomInt } from "../shared/utils";
+import { styleVars } from "../shared/vars";
 import { FlexGrow } from "./FlexGrow";
 import { HStack } from "./Stack";
 
