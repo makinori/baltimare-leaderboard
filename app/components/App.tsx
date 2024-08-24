@@ -13,7 +13,7 @@ import {
 	FaSort,
 	FaUmbrellaBeach,
 } from "react-icons/fa6";
-import type { IApiUser } from "../../server/users";
+import type { IApiUser } from "../../server/api/users";
 import { useSoundManager } from "../services/SoundManager";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";

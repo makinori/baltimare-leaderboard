@@ -1,5 +1,5 @@
-integer updateInterval = 4;
-string updateUrl = "http://hotmilk.space:4845";
+integer updateInterval = 15;
+string updateUrl = "http://hotmilk.space:4845/api/lsl/online";
 string updateSecret = "dcumwoidaksdjlkajsd";
 
 updateOnline() {
@@ -16,7 +16,7 @@ updateOnline() {
 
     llHTTPRequest(updateUrl, [
         HTTP_METHOD, "PUT",
-        HTTP_MIMETYPE, "application/json",
+        HTTP_MIMETYPE, "text/plain",
         // if 100 avatars, will be 3200, so this is ok
         HTTP_BODY_MAXLENGTH, 4096,
         HTTP_CUSTOM_HEADER, "Authorization", "Bearer " + updateSecret

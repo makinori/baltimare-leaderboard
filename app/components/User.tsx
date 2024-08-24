@@ -4,7 +4,7 @@ import { CSSObject } from "@emotion/react";
 import styled from "@emotion/styled";
 import { getImageProps, ImageProps } from "next/image";
 import { useCallback, useMemo, useState } from "react";
-import type { IApiUser } from "../../server/users";
+import type { IApiUser } from "../../server/api/users";
 import {
 	imageTraitKeys,
 	imageTraitMap,

@@ -5,6 +5,9 @@ services:
     baltimare-leaderboard:
         build: .
         restart: always
+        # put in .env
+        # environment:
+        #     API_SECRET: ""
         labels:
             - traefik.enable=true
 
@@ -27,3 +30,4 @@ services:
         networks:
             - default
             - traefik
+q
