@@ -1,10 +1,11 @@
 import Datastore from "@seald-io/nedb";
 import { Cron } from "croner";
 import { formatDistanceToNow } from "date-fns";
+import express from "express";
 import { JSDOM } from "jsdom";
 import * as path from "path";
+import * as socketIo from "socket.io";
 import { Trait, userTraitsMap } from "../../shared/traits";
-import express from "express";
 import { ApiLsl } from "./lsl";
 
 export interface IUser {
@@ -207,7 +208,10 @@ export class ApiUsers {
 		});
 	}
 
-	constructor(public readonly apiLsl: ApiLsl) {}
+	constructor(
+		public readonly apiLsl: ApiLsl,
+		public readonly io: socketIo.Server,
+	) {}
 
 	router = express.Router();
 
@@ -232,6 +236,8 @@ export class ApiUsers {
 			await this.logUsers();
 
 			cachedApiUsersResponse = this.getApiUsersResponse();
+
+			this.io.emit("users", cachedApiUsersResponse);
 		});
 
 		// init api

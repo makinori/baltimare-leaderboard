@@ -2,7 +2,7 @@
 "use client";
 
 import Cron from "croner";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { IconType } from "react-icons";
 import {
 	FaFilter,
@@ -19,6 +19,7 @@ import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
 import { formatMinutes, User } from "./User";
 import { OnionIcon } from "./icons/OnionIcon";
+import io, { Socket } from "socket.io-client";
 
 enum UsersFilter {
 	ShowAll = "show all",
@@ -114,7 +115,7 @@ function HeaderOptionPicker(props: {
 	);
 }
 
-export function App(props: { data: IApiUser[] }) {
+export function App(props: { initialData: IApiUser[] }) {
 	const soundManager = useSoundManager();
 
 	// will only run on client
@@ -122,30 +123,45 @@ export function App(props: { data: IApiUser[] }) {
 		soundManager.init();
 	}, [soundManager]);
 
-	const [users, setUsers] = useState<IApiUser[]>(props.data);
+	const [users, setUsers] = useState<IApiUser[]>(props.initialData);
 
 	const [usersFilter, setUsersFilter] = useState(UsersFilter.ShowAll);
 	const [usersSort, setUsersSort] = useState(UsersSort.TotalTime);
 	const [showTourists, setShowTourists] = useState(false);
 	const [showBots, setShowBots] = useState(false);
 
-	const updateUsers = useCallback(async () => {
-		try {
-			const res = await fetch("/api/users");
-			setUsers(await res.json());
-		} catch (error) {}
-	}, [setUsers]);
+	// const updateUsers = useCallback(async () => {
+	// 	try {
+	// 		const res = await fetch("/api/users");
+	// 		setUsers(await res.json());
+	// 	} catch (error) {}
+	// }, [setUsers]);
+
+	const socket = useRef<Socket>();
 
 	useEffect(() => {
-		// TODO: replace with web sockets
-
+		/*
 		// updateUsers(); // ssr has initial data
 		// every minute, 15 seconds in
 		const job = Cron("15 * * * * *", updateUsers);
 		return () => {
 			job.stop();
 		};
-	}, [updateUsers]);
+		*/
+
+		socket.current = io({
+			autoConnect: true,
+			secure: window.location.protocol.includes("https"),
+		});
+
+		socket.current.on("users", data => {
+			setUsers(data);
+		});
+
+		return () => {
+			socket.current.disconnect();
+		};
+	}, [setUsers]);
 
 	const shownUsers = useMemo(() => {
 		let outputUsers: IApiUser[] = JSON.parse(JSON.stringify(users)); // deep copy

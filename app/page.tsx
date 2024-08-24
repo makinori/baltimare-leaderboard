@@ -14,5 +14,5 @@ export default async function Page() {
 		data = await res.json();
 	} catch (error) {}
 
-	return <App data={data} />;
+	return <App initialData={data} />;
 }
