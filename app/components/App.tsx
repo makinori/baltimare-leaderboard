@@ -259,7 +259,7 @@ export function App(props: { data: IApiUser[] }) {
 								color: "#8BC34A",
 							}}
 						>
-							&gt; total time online since august 24th 2024
+							&gt; total time online since august 12th 2024
 							<br />
 							&gt; also how long ago since last online
 							<br />
