@@ -5,9 +5,11 @@ services:
     baltimare-leaderboard:
         build: .
         restart: always
-        # put in .env
+        # place in .env
         # environment:
         #     API_SECRET: ""
+        env_file:
+            - .env
         labels:
             - traefik.enable=true
 
