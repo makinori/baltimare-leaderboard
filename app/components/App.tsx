@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 "use client";
 
-import Cron from "croner";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IconType } from "react-icons";
 import {
 	FaFilter,
@@ -13,13 +12,14 @@ import {
 	FaSort,
 	FaUmbrellaBeach,
 } from "react-icons/fa6";
+import io, { Socket } from "socket.io-client";
 import type { IApiUser } from "../../server/api/users";
 import { useSoundManager } from "../services/SoundManager";
+import { addSeperators, formatMinutes } from "../utils";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
-import { formatMinutes, User } from "./User";
+import { User } from "./User";
 import { OnionIcon } from "./icons/OnionIcon";
-import io, { Socket } from "socket.io-client";
 
 enum UsersFilter {
 	ShowAll = "show all",
@@ -216,6 +216,20 @@ export function App(props: { initialData: IApiUser[] }) {
 		return total;
 	}, [shownUsers]);
 
+	const totalOnline = useMemo(() => {
+		let total = 0;
+		for (const user of shownUsers) {
+			if (user.online) total++;
+		}
+		return total;
+	}, [shownUsers]);
+
+	const green = "rgb(139, 195, 74)"; // green 500
+	const greenDim = "rgba(139, 195, 74, 0.6)"; // green 500
+
+	const lime = "rgb(205, 220, 57)"; // lime 500
+	const limeDim = "rgba(205, 220, 57, 0.6)"; // lime 500
+
 	return (
 		<HStack
 			css={{
@@ -249,7 +263,7 @@ export function App(props: { initialData: IApiUser[] }) {
 					}}
 				>
 					<VStack css={{ alignItems: "flex-start" }}>
-						<div
+						{/* <div
 							css={{
 								opacity: 0.8,
 								fontSize: 20,
@@ -265,22 +279,45 @@ export function App(props: { initialData: IApiUser[] }) {
 							) : (
 								<></>
 							)}
+						</div> */}
+						<div
+							css={{
+								fontSize: 16,
+								marginTop: 0,
+								fontWeight: 700,
+								color: greenDim,
+							}}
+						>
+							&gt;{" "}
+							<span css={{ color: green }}>
+								{addSeperators(totalOnline)} online
+							</span>{" "}
+							right now
+							<br />
+							&gt;{" "}
+							<span css={{ color: green }}>
+								{addSeperators(shownUsers.length)} popens
+							</span>{" "}
+							{showTourists ? "and tourists" : ""} seen in total
+							<br />
+							&gt;{" "}
+							<span css={{ color: green }}>
+								{formatMinutes(totalMinutes)}
+							</span>{" "}
+							collectively together
 						</div>
 						<div
 							css={{
-								opacity: 0.8,
 								fontSize: 16,
-								marginTop: 4,
+								marginTop: 8,
 								fontWeight: 700,
-								color: "#8BC34A",
+								color: limeDim,
 							}}
 						>
-							&gt; total time online since august 12th 2024
+							&gt; total time online since{" "}
+							<span css={{ color: lime }}>august 12th 2024</span>
 							<br />
 							&gt; also how long ago since last online
-							<br />
-							&gt; collectively online for{" "}
-							{formatMinutes(totalMinutes)} so far
 						</div>
 						<HStack
 							css={{

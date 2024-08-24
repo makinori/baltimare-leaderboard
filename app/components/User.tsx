@@ -14,38 +14,10 @@ import { useSoundManager } from "../services/SoundManager";
 import { styleVars } from "../vars";
 import { FlexGrow } from "./FlexGrow";
 import { HStack } from "./Stack";
+import { randomInt } from "crypto";
+import { formatMinutes } from "../utils";
 
 const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
-
-export function addSeperators(n: number) {
-	let out: string[] = [];
-	const chars = Math.floor(n).toString().split("").reverse();
-
-	for (let i = 0; i < chars.length; i += 3) {
-		if (i != 0) out = [...out, ","];
-		out = [...out, ...chars.slice(i, i + 3)];
-	}
-
-	return out.reverse().join("");
-}
-
-export function plural(n: number, single: string, plural: string = null) {
-	if (plural == null) plural = single + "s";
-	if (n == 1 || n == -1) return single;
-	else return plural;
-}
-
-export function formatMinutes(m: number) {
-	// if (m < 60) return `${m}m`;
-	if (m < 60) return `${m} ${plural(m, "min")}`;
-	const h = Math.floor(m / 60);
-	// return `${addSeperators(h)}h ${m % 60}m`;
-	return `${addSeperators(h)} ${plural(h, "hour")}`;
-}
-
-function randomInt(max: number) {
-	return Math.floor(Math.random() * max);
-}
 
 const DisplayName = styled.div({
 	marginLeft: styleVars.userSpacing,
