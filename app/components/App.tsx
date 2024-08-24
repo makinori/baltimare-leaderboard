@@ -137,6 +137,8 @@ export function App(props: { data: IApiUser[] }) {
 	}, [setUsers]);
 
 	useEffect(() => {
+		// TODO: replace with web sockets
+
 		// updateUsers(); // ssr has initial data
 		// every minute, 15 seconds in
 		const job = Cron("15 * * * * *", updateUsers);
