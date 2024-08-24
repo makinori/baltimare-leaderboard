@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 
-// lsl script should update every 30 seconds
+// lsl script should update every 15 seconds
 // will fail if http error code 500 more than 5 times in a minute
 // script could handle this and just pause sending for a minute, but doesnt
 
@@ -28,6 +28,7 @@ export class ApiLsl {
 	getOnlineUuids() {
 		const now = Date.now();
 
+		// filter out expired
 		return Array.from(this.currentlyOnline.entries())
 			.filter(o => o[1] > now)
 			.map(o => o[0]);
