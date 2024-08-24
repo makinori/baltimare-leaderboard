@@ -28,6 +28,8 @@ export class ApiLsl {
 	router = express.Router();
 
 	getOnlineUuids() {
+		// TODO: if developing, maybe add a way to get data from baltimare.hotmilk.space
+
 		const now = Date.now();
 
 		// filter out expired
