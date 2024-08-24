@@ -138,8 +138,8 @@ export function App(props: { data: IApiUser[] }) {
 
 	useEffect(() => {
 		// updateUsers(); // ssr has initial data
-		// every minute, 30 seconds in
-		const job = Cron("30 * * * * *", updateUsers);
+		// every minute, 15 seconds in
+		const job = Cron("15 * * * * *", updateUsers);
 		return () => {
 			job.stop();
 		};
