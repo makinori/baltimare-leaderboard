@@ -239,6 +239,10 @@ export class ApiUsers {
 			res.json(cachedApiUsersResponse);
 		});
 
+		this.router.get("/api/users/online", (req, res) => {
+			res.json(this.apiLsl.getOnlineUuids());
+		});
+
 		return this;
 	}
 }
