@@ -19,10 +19,21 @@ import { ApiUsers } from "./api/users";
 	const apiUsers = await new ApiUsers(apiLsl).init();
 	expressApp.use(apiUsers.router);
 
+	expressApp.get("/api", (req, res) => {
+		res.contentType("html").send(
+			[
+				"GET /api/users - data for leaderboard site, refreshes once a minute",
+				"GET /api/users/online - output from in-world lsl cube, updates every 15 seconds",
+				"",
+				"PUT /api/lsl/online - for the in-world lsl cube to send data to",
+			].join("<br>"),
+		);
+	});
+
 	function handler(req: http.IncomingMessage, res: http.ServerResponse) {
 		const parsedUrl = url.parse(req.url!, true);
 
-		if (parsedUrl.path.startsWith("/api/")) {
+		if (parsedUrl.path.startsWith("/api")) {
 			expressApp(req, res);
 		} else {
 			nextHandler(req, res, parsedUrl);
