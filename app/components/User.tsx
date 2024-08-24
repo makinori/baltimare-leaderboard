@@ -11,11 +11,10 @@ import {
 	ImageTraitType,
 } from "../../shared/traits";
 import { useSoundManager } from "../services/SoundManager";
+import { formatMinutes, randomInt } from "../utils";
 import { styleVars } from "../vars";
 import { FlexGrow } from "./FlexGrow";
 import { HStack } from "./Stack";
-import { randomInt } from "crypto";
-import { formatMinutes } from "../utils";
 
 const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
 
