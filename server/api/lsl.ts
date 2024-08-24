@@ -17,7 +17,9 @@ function hexStrToUuid(hexStr: string) {
 		hexStr.substring(12, 16),
 		hexStr.substring(16, 20),
 		hexStr.substring(20, 32),
-	].join("-");
+	]
+		.join("-")
+		.toLowerCase();
 }
 
 export class ApiLsl {
@@ -32,6 +34,11 @@ export class ApiLsl {
 		return Array.from(this.currentlyOnline.entries())
 			.filter(o => o[1] > now)
 			.map(o => o[0]);
+	}
+
+	isOnline(uuid: string) {
+		// currentlyOnline should have lower case uuids for keys
+		return this.getOnlineUuids().includes(uuid.toLowerCase());
 	}
 
 	private initialized = false;
