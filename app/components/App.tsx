@@ -413,7 +413,7 @@ export function App(props: { initialData: IApiUser[] }) {
 						opacity: 0.4,
 					}}
 				>
-					there might be some users outside of baltimate that
+					there might be some users outside of baltimare that
 					accidentally got logged
 				</div>
 				{/* <div
