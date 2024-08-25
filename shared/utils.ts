@@ -27,3 +27,7 @@ export function formatMinutes(m: number) {
 export function randomInt(max: number) {
 	return Math.floor(Math.random() * max);
 }
+
+export function isTourist(minutes: number) {
+	return minutes < 60 * 2; // hours
+}

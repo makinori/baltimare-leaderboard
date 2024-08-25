@@ -15,7 +15,7 @@ import {
 import io, { Socket } from "socket.io-client";
 import type { IApiUser } from "../server/api/users";
 import { useSoundManager } from "./services/SoundManager";
-import { addSeperators, formatMinutes } from "../shared/utils";
+import { addSeperators, formatMinutes, isTourist } from "../shared/utils";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
 import { User } from "./User";
@@ -130,6 +130,9 @@ export function App(props: { initialData: IApiUser[] }) {
 	const [showTourists, setShowTourists] = useState(false);
 	const [showBots, setShowBots] = useState(false);
 
+	const [totalSeenWithFilter, setTotalSeenWithFilter] = useState(0);
+	const [totalMinutesWithFilter, setTotalMinutesWithFilter] = useState(0);
+
 	// const updateUsers = useCallback(async () => {
 	// 	try {
 	// 		const res = await fetch("/api/users");
@@ -171,8 +174,17 @@ export function App(props: { initialData: IApiUser[] }) {
 		}
 
 		if (!showTourists) {
-			outputUsers = outputUsers.filter(u => u.minutes > 60);
+			outputUsers = outputUsers.filter(u => !isTourist(u.minutes));
 		}
+
+		setTotalSeenWithFilter(outputUsers.length);
+
+		let totalMinutes = 0;
+		for (const user of outputUsers) {
+			totalMinutes += user.minutes;
+		}
+
+		setTotalMinutesWithFilter(totalMinutes);
 
 		switch (usersFilter) {
 			case UsersFilter.Online:
@@ -196,33 +208,54 @@ export function App(props: { initialData: IApiUser[] }) {
 		}
 
 		return outputUsers;
-	}, [users, usersFilter, usersSort, showTourists, showBots]);
+	}, [
+		users,
+		showBots,
+		showTourists,
+		usersFilter,
+		usersSort,
+		setTotalSeenWithFilter,
+		setTotalMinutesWithFilter,
+	]);
 
-	const highestMinutes = useMemo(() => {
-		let highest = 0;
+	const { highestMinutes, totalOnline } = useMemo(() => {
+		let highestMinutes = 0;
+		let totalOnline = 0;
+
 		for (const user of shownUsers) {
-			if (user.minutes > highest) {
-				highest = user.minutes;
+			if (user.online) totalOnline++;
+			if (user.minutes > highestMinutes) {
+				highestMinutes = user.minutes;
 			}
 		}
-		return highest;
+
+		return { highestMinutes, totalOnline };
 	}, [shownUsers]);
 
-	const totalMinutes = useMemo(() => {
-		let total = 0;
-		for (const user of shownUsers) {
-			total += user.minutes;
+	const statusRightNow = useMemo(() => {
+		if (usersFilter == UsersFilter.Offline) {
+			return addSeperators(shownUsers.length) + " offline";
+		} else {
+			return addSeperators(totalOnline) + " online";
 		}
-		return total;
-	}, [shownUsers]);
+	}, [usersFilter, shownUsers, totalOnline]);
 
-	const totalOnline = useMemo(() => {
-		let total = 0;
-		for (const user of shownUsers) {
-			if (user.online) total++;
+	const seenInTotal = useMemo(() => {
+		let others: string[] = [];
+		if (showBots) others.push("bots");
+		if (showTourists) others.push("tourists");
+
+		let secondary = "";
+		if (others.length >= 2) {
+			secondary = ", " + others.join(" and ");
+		} else if (others.length == 1) {
+			secondary = " and " + others[0];
+		} else {
+			secondary = " ";
 		}
-		return total;
-	}, [shownUsers]);
+
+		return [addSeperators(totalSeenWithFilter) + " popens", secondary];
+	}, [totalSeenWithFilter, showBots, showTourists]);
 
 	const green = "rgb(139, 195, 74)"; // green 500
 	const greenDim = "rgba(139, 195, 74, 0.6)"; // green 500
@@ -289,22 +322,18 @@ export function App(props: { initialData: IApiUser[] }) {
 							}}
 						>
 							&gt;{" "}
-							<span css={{ color: green }}>
-								{addSeperators(totalOnline)} online
-							</span>{" "}
+							<span css={{ color: green }}>{statusRightNow}</span>{" "}
 							right now
 							<br />
 							&gt;{" "}
-							<span css={{ color: green }}>
-								{addSeperators(shownUsers.length)} popens
-							</span>{" "}
-							{showTourists ? "and tourists" : ""} seen in total
+							<span css={{ color: green }}>{seenInTotal[0]}</span>
+							{seenInTotal[1]} seen in total
 							<br />
 							&gt;{" "}
 							<span css={{ color: green }}>
-								{formatMinutes(totalMinutes)}
+								{formatMinutes(totalMinutesWithFilter)}
 							</span>{" "}
-							collectively together
+							collectively
 						</div>
 						<div
 							css={{
