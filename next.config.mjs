@@ -5,7 +5,8 @@ import { fileURLToPath } from "url";
 
 const nextConfig = {
 	// https://stackoverflow.com/questions/60618844/react-hooks-useeffect-is-called-twice-even-if-an-empty-array-is-used-as-an-ar
-	reactStrictMode: false,
+	// wasnt rerendering when necessary
+	reactStrictMode: true,
 	images: {
 		remotePatterns: [
 			{ protocol: "https", hostname: "picture-service.secondlife.com" },

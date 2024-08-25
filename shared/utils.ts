@@ -1,3 +1,5 @@
+import { getImageProps, ImageProps } from "next/image";
+
 export function addSeperators(n: number) {
 	let out: string[] = [];
 	const chars = Math.floor(n).toString().split("").reverse();
@@ -26,6 +28,37 @@ export function formatMinutes(m: number) {
 
 export function randomInt(max: number) {
 	return Math.floor(Math.random() * max);
+}
+
+export const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
+
+export function getAvatarImage(imageId: string) {
+	if (imageId == null || imageId == "" || nullUuidRegex.test(imageId)) {
+		return "";
+	}
+	return `https://picture-service.secondlife.com/${imageId}/256x192.jpg`;
+}
+
+export function getAvatarImageOptimized(imageId: string, size: number) {
+	const imageProps: ImageProps = {
+		width: size,
+		height: size,
+		quality: 90,
+		src: "",
+		alt: "",
+	};
+
+	const avatar = getImageProps({
+		...imageProps,
+		src: getAvatarImage(imageId),
+	});
+
+	const unknownAvatar = getImageProps({
+		...imageProps,
+		src: "/anon-avatar.png",
+	});
+
+	return `url(${avatar.props.src}), url(${unknownAvatar.props.src})`;
 }
 
 export function isTourist(minutes: number) {

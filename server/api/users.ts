@@ -140,11 +140,11 @@ export class ApiUsers {
 
 	private async logUsers() {
 		try {
-			for (const uuid of this.apiLsl.getOnlineUuids()) {
+			for (const user of this.apiLsl.getOnlineCombined()) {
 				try {
-					await this.processUser(uuid);
+					await this.processUser(user.uuid);
 				} catch (error) {
-					console.error("Failed to process user: " + uuid);
+					console.error("Failed to process user: " + user.uuid);
 				}
 			}
 
@@ -161,11 +161,11 @@ export class ApiUsers {
 
 		return sortedUsers.map(user => {
 			const lastSeen = new Date(user.lastSeen);
-			const lastSeenSeconds = (Date.now() - lastSeen.getTime()) / 1000;
-			const online = lastSeenSeconds < 60 * 2; // within last 2 minutes
+			// const lastSeenSeconds = (Date.now() - lastSeen.getTime()) / 1000;
+			// const online = lastSeenSeconds < 60 * 2; // within last 2 minutes
 
-			// const online = this.apiLsl.isOnline(user._id);
-			// ^ not a good idea cause when server restart it'll be false
+			const online = this.apiLsl.isOnline(user._id);
+			// ^ not a good idea cause when server restarts it'll be false
 
 			let lastSeenText = "online";
 			if (!online) {
@@ -248,8 +248,8 @@ export class ApiUsers {
 			res.json(cachedApiUsersResponse);
 		});
 
-		this.router.get("/api/users/online", (req, res) => {
-			res.json(this.apiLsl.getOnlineUuids());
+		this.router.get("/api/users/positions", (req, res) => {
+			res.json(this.apiLsl.getOnlineSeperated());
 		});
 
 		return this;

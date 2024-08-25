@@ -1,5 +1,6 @@
-import * as express from "express";
 import * as bodyParser from "body-parser";
+import * as express from "express";
+import * as socketIo from "socket.io";
 
 // lsl script should update every 15 seconds
 // will fail if http error code 500 more than 5 times in a minute
@@ -22,26 +23,70 @@ function hexStrToUuid(hexStr: string) {
 		.toLowerCase();
 }
 
+const OnlineWhere = ["baltimare", "horseheights"] as const;
+type OnlineWhere = (typeof OnlineWhere)[number];
+
+export interface IApiOnlineUsers {
+	uuid: string;
+	x: number;
+	y: number;
+}
+
+export type IApiOnlineUsersSeperated = Record<OnlineWhere, IApiOnlineUsers[]>;
+
+export interface IApiOnlineUserCombined extends IApiOnlineUsers {
+	where: OnlineWhere;
+}
+
+export interface IOnlineUser extends IApiOnlineUserCombined {
+	expire: number; // date
+}
+
 export class ApiLsl {
-	private currentlyOnline: Map<string, number> = new Map();
+	private online: Map<string, IOnlineUser> = new Map();
 
 	router = express.Router();
 
-	getOnlineUuids() {
-		// TODO: if developing, maybe add a way to get data from baltimare.hotmilk.space
+	getOnlineCombined(): IApiOnlineUserCombined[] {
+		// TODO: when developing, maybe add a way to get data from baltimare.hotmilk.space
 
 		const now = Date.now();
 
-		// filter out expired
-		return Array.from(this.currentlyOnline.entries())
-			.filter(o => o[1] > now)
-			.map(o => o[0]);
+		return Array.from(this.online.values())
+			.filter(user => user.expire > now)
+			.map(user => {
+				user = JSON.parse(JSON.stringify(user)); // hard copy
+				delete user.expire;
+				return user;
+			});
+	}
+
+	getOnlineSeperated(): IApiOnlineUsersSeperated {
+		const result = OnlineWhere.reduce((obj, where) => {
+			obj[where] = [];
+			return obj;
+		}, {} as IApiOnlineUsersSeperated);
+
+		const online = this.getOnlineCombined();
+
+		for (const user of online) {
+			const where = user.where;
+			delete user.where;
+			result[where].push(user);
+		}
+
+		return result;
 	}
 
 	isOnline(uuid: string) {
-		// currentlyOnline should have lower case uuids for keys
-		return this.getOnlineUuids().includes(uuid.toLowerCase());
+		// getOnline() should have lower case uuids for keys
+		uuid = uuid.toLowerCase();
+		return (
+			this.getOnlineCombined().findIndex(user => user.uuid == uuid) > -1
+		);
 	}
+
+	constructor(public readonly io: socketIo.Server) {}
 
 	private initialized = false;
 
@@ -53,27 +98,56 @@ export class ApiLsl {
 
 		this.router.use(bodyParser.text());
 
-		this.router.put("/api/lsl/online", (req, res) => {
+		this.router.put("/api/lsl/:where", (req, res) => {
+			const where = req.params.where as OnlineWhere;
+
 			if (
 				req.body == false ||
-				req.header("Authorization") != "Bearer " + secret
+				req.header("Authorization") != "Bearer " + secret ||
+				!OnlineWhere.includes(where)
 			) {
 				return res.status(400).json({ error: "Bad request" });
 			}
 
-			for (let i = 0; i < req.body.length; i += 32) {
-				const uuid = hexStrToUuid(req.body.substring(i, i + 32));
-				this.currentlyOnline.set(uuid, Date.now() + avatarExpire);
+			const onlineUsers: IOnlineUser[] = req.body
+				.split(";")
+				.map((line: string) =>
+					line.match(/([0-9a-f]{32})([0-9]+),([0-9]+)/i),
+				)
+				.map((line: RegExpMatchArray) => ({
+					uuid: hexStrToUuid(line[1]),
+					x: parseInt(line[2]),
+					y: parseInt(line[3]),
+					where,
+					expire: Date.now() + avatarExpire,
+				}));
+
+			for (const user of onlineUsers) {
+				this.online.set(user.uuid, user);
 			}
+
+			// send output to socket io
+
+			// TODO: this needs to be on a cron
+
+			this.io.emit("positions", {
+				[where]: onlineUsers.map(user => {
+					user = JSON.parse(JSON.stringify(user));
+					delete user.where;
+					delete user.expire;
+					return user;
+				}),
+			});
 		});
 
 		// reaper reaps so we dont get a massive dictionary
 
 		setInterval(() => {
 			const now = Date.now();
-			for (const [uuid, expire] of this.currentlyOnline.entries()) {
-				if (expire > now) continue;
-				this.currentlyOnline.delete(uuid);
+
+			for (const [uuid, user] of this.online.entries()) {
+				if (user.expire > now) continue;
+				this.online.delete(uuid);
 			}
 		}, avatarExpire);
 

@@ -2,21 +2,22 @@
 
 import { CSSObject } from "@emotion/react";
 import styled from "@emotion/styled";
-import { getImageProps, ImageProps } from "next/image";
 import { useCallback, useMemo, useState } from "react";
 import type { IApiUser } from "../server/api/users";
-import { useSoundManager } from "./services/SoundManager";
 import {
 	imageTraitKeys,
 	imageTraitMap,
 	ImageTraitType,
 } from "../shared/traits";
-import { formatMinutes, randomInt } from "../shared/utils";
+import {
+	formatMinutes,
+	getAvatarImageOptimized,
+	randomInt,
+} from "../shared/utils";
 import { styleVars } from "../shared/vars";
 import { FlexGrow } from "./FlexGrow";
+import { useSoundManager } from "./services/SoundManager";
 import { HStack } from "./Stack";
-
-const nullUuidRegex = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
 
 const DisplayName = styled.div({
 	marginLeft: styleVars.userSpacing,
@@ -151,29 +152,6 @@ export function User({
 		soundManager.play(`squeak-out/${randomInt(4) + 1}.wav` as any, 0.3);
 	}, []);
 
-	const imageProps: ImageProps = {
-		alt: "",
-		width: styleVars.userHeight,
-		height: styleVars.userHeight,
-		quality: 90,
-		src: "",
-	};
-
-	const avatar = getImageProps({
-		...imageProps,
-		src:
-			user.imageId == "" || nullUuidRegex.test(user.imageId)
-				? ""
-				: "https://picture-service.secondlife.com/" +
-				  user.imageId +
-				  "/256x192.jpg",
-	});
-
-	const unknownAvatar = getImageProps({
-		...imageProps,
-		src: "/anon-avatar.png",
-	});
-
 	return (
 		<HStack
 			css={{
@@ -244,7 +222,10 @@ export function User({
 						onPointerDown={onAvatarDown}
 						onPointerUp={onAvatarUp}
 						style={{
-							backgroundImage: `url(${avatar.props.src}), url(${unknownAvatar.props.src})`,
+							backgroundImage: getAvatarImageOptimized(
+								user.imageId,
+								styleVars.userHeight,
+							),
 						}}
 					></div>
 					{name}

@@ -33,9 +33,11 @@ const dev = process.env.NODE_ENV !== "production";
 
 	// create apis
 
+	// TODO: need to refactor. make a user data cache and push data more frequently
+
 	const io = new socketIo.Server(server);
 
-	const apiLsl = new ApiLsl().init();
+	const apiLsl = new ApiLsl(io).init();
 	expressApp.use(apiLsl.router);
 
 	const apiUsers = await new ApiUsers(apiLsl, io).init();
@@ -44,12 +46,12 @@ const dev = process.env.NODE_ENV !== "production";
 	expressApp.get("/api", (req, res) => {
 		res.contentType("html").send(
 			[
-				"GET /api/users - data for leaderboard site, refreshes once a minute",
-				"GET /api/users/online - output from in-world lsl cube, updates every 15 seconds",
+				"a socket.io endpoint with events: users, positions",
 				"",
-				'also a socket.io endpoint with events: "users"',
+				"GET /api/users - data for leaderboard, refreshes once a minute",
+				"GET /api/users/positions - output from in-world lsl cube, updates every 15 seconds",
 				"",
-				"PUT /api/lsl/online - for the in-world lsl cube to send data to",
+				"PUT /api/lsl/:where - for the in-world lsl cube to send data to",
 			].join("<br />"),
 		);
 	});

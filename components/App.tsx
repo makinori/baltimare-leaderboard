@@ -13,13 +13,15 @@ import {
 	FaUmbrellaBeach,
 } from "react-icons/fa6";
 import io, { Socket } from "socket.io-client";
+import { IApiOnlineUsersSeperated } from "../server/api/lsl";
 import type { IApiUser } from "../server/api/users";
-import { useSoundManager } from "./services/SoundManager";
 import { addSeperators, formatMinutes, isTourist } from "../shared/utils";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
 import { User } from "./User";
+import { UsersMap } from "./UsersMap";
 import { OnionIcon } from "./icons/OnionIcon";
+import { useSoundManager } from "./services/SoundManager";
 
 enum UsersFilter {
 	ShowAll = "show all",
@@ -115,7 +117,12 @@ function HeaderOptionPicker(props: {
 	);
 }
 
-export function App(props: { initialData: IApiUser[] }) {
+export function App(props: {
+	initial: {
+		users: IApiUser[];
+		positions: IApiOnlineUsersSeperated;
+	};
+}) {
 	const soundManager = useSoundManager();
 
 	// will only run on client
@@ -123,7 +130,10 @@ export function App(props: { initialData: IApiUser[] }) {
 		soundManager.init();
 	}, [soundManager]);
 
-	const [users, setUsers] = useState<IApiUser[]>(props.initialData);
+	const [users, setUsers] = useState<IApiUser[]>(props.initial.users);
+	const [positions, setPositions] = useState<IApiOnlineUsersSeperated>(
+		props.initial.positions,
+	);
 
 	const [usersFilter, setUsersFilter] = useState(UsersFilter.ShowAll);
 	const [usersSort, setUsersSort] = useState(UsersSort.TotalTime);
@@ -140,6 +150,7 @@ export function App(props: { initialData: IApiUser[] }) {
 	// 	} catch (error) {}
 	// }, [setUsers]);
 
+	// never deinit cause this is the rorot component
 	const socket = useRef<Socket>();
 
 	useEffect(() => {
@@ -157,14 +168,31 @@ export function App(props: { initialData: IApiUser[] }) {
 			secure: window.location.protocol.includes("https"),
 		});
 
-		socket.current.on("users", data => {
-			setUsers(data);
-		});
-
 		return () => {
 			socket.current.disconnect();
 		};
-	}, [setUsers]);
+	}, [socket]);
+
+	useEffect(() => {
+		const onUsers = (data: IApiUser[]) => {
+			setUsers(data);
+		};
+
+		const onPositions = (data: Partial<IApiOnlineUsersSeperated>) => {
+			for (const [where, users] of Object.entries(data)) {
+				positions[where] = users;
+			}
+			setPositions(positions);
+		};
+
+		socket.current.on("users", onUsers);
+		socket.current.on("positions", onPositions);
+
+		return () => {
+			socket.current.off("users", onUsers);
+			socket.current.off("positions", onPositions);
+		};
+	}, [positions, setUsers, setPositions]);
 
 	const shownUsers = useMemo(() => {
 		let outputUsers: IApiUser[] = JSON.parse(JSON.stringify(users)); // deep copy
@@ -289,7 +317,7 @@ export function App(props: { initialData: IApiUser[] }) {
 				<HStack
 					css={{
 						marginTop: 16,
-						marginBottom: 8,
+						marginBottom: 4,
 						width: "calc(100% - 8px)",
 						justifyContent: "flex-end",
 						alignItems: "flex-end",
@@ -409,13 +437,18 @@ export function App(props: { initialData: IApiUser[] }) {
 					<a
 						css={{
 							opacity: 0.4,
-							marginRight: 80,
+							// marginRight: 80,
 						}}
 						href="http://baltimare.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion"
 					>
 						<OnionIcon size={28} color="white" />
 					</a>
 				</HStack>
+				<UsersMap
+					users={users}
+					positions={positions}
+					css={{ marginBottom: 12 }}
+				/>
 				<div
 					css={{
 						display: "flex",

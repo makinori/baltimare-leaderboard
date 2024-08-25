@@ -1,35 +1,60 @@
-// string updateUrl = "http://hotmilk.space:4845/api/lsl/online";
-string updateUrl = "https://baltimare.hotmilk.space/api/lsl/online";
+// string updateUrl = "https://baltimare.hotmilk.space/api/lsl/baltimare";
+string updateUrl = "http://hotmilk.space:4845/api/lsl/baltimare"; // or horseheights
 string updateSecret = "dcumwoidaksdjlkajsd";
 integer updateInterval = 15;
 
+integer currentlyThrottled = 0;
+
 updateOnline() {
     list avatars = llGetAgentList(AGENT_LIST_REGION, []);
+    integer avatarsLength = llGetListLength(avatars);
 
-    string combinedHexStr = "";
+    string avatarsResult = "";
 
     integer i = 0;
-    for (i = 0; i < llGetListLength(avatars); i++) {
+    for (i = 0; i < avatarsLength; i++) {
         string keyStrFull = llList2String(avatars, i);
         string keyStr = llReplaceSubString(keyStrFull, "-", "", 0);
-        combinedHexStr += keyStr;
+
+        avatarsResult += keyStr; // + ":"; no need cause above 32 bytes
+
+        list posResult = llGetObjectDetails(llList2Key(avatars, i), [OBJECT_POS]);
+        vector position = llList2Vector(posResult, 0);
+
+        avatarsResult += (string)llFloor(position.x) + ",";
+        avatarsResult += (string)llFloor(position.y);
+
+        if (i < avatarsLength - 1) {
+            avatarsResult += ";";
+        }
     }
 
-    llHTTPRequest(updateUrl, [
+    key result = llHTTPRequest(updateUrl, [
         HTTP_METHOD, "PUT",
         HTTP_MIMETYPE, "text/plain",
-        // if 100 avatars, will be 3200, so this is ok
-        HTTP_BODY_MAXLENGTH, 4096,
+        // if 110 avatars, will be around 4400 at most, so this is ok
+        HTTP_BODY_MAXLENGTH, 8192,
         HTTP_CUSTOM_HEADER, "Authorization", "Bearer " + updateSecret
-    ], combinedHexStr);
+    ], avatarsResult);
+
+    if (result == NULL_KEY) {
+        // throttle, lets wait
+        currentlyThrottled = 1;
+        llSetTimerEvent(60);
+        llOwnerSay("script throttled, waiting a minute");
+    } else if (currentlyThrottled == 1) {
+        // reset
+        currentlyThrottled = 0;
+        llSetTimerEvent(updateInterval);
+    }
 }
 
 default
 {
     state_entry()
     {
-        updateOnline();
         llSetTimerEvent(updateInterval);
+        updateOnline();
     }
 
     timer()
