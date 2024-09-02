@@ -15,7 +15,7 @@ export const userTraitsMap = {
 		"b0gdanoff",
 	],
 	// image traits
-	anonfilly: ["camarea2", "sunshineyelloww"],
+	anonfilly: ["camarea2", "sunshineyelloww", "vrnl"],
 	nugget: ["horsehiney"],
 	strawberry: ["makidoll", "trixishy"],
 	fish: ["fish.enthusiast"],

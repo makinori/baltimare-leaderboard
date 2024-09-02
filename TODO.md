@@ -1,0 +1,2 @@
+-   send message on discord if updater goes down
+-   do a rewrite for the server
