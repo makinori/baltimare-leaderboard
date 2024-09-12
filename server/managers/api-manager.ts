@@ -3,7 +3,7 @@ import express from "express";
 import Pako from "pako";
 import socketIo from "socket.io";
 import { Trait, userTraitsMap } from "../../shared/traits";
-import { LslManager, Region } from "./lsl-manager";
+import { LslManager, LslScriptInterval, Region } from "./lsl-manager";
 import { IUser, UserManager } from "./user-manager";
 
 export interface IApiUser extends IUser {
@@ -141,7 +141,11 @@ export class ApiManager {
 			}
 		});
 
-		this.lslManager.events.on("update", async () => {
+		// this.lslManager.events.on("update", async () => {})
+
+		// if we use above, will send twice every 5 seconds
+
+		setInterval(async () => {
 			try {
 				this.io.emit(
 					"online",
@@ -150,7 +154,7 @@ export class ApiManager {
 			} catch (error) {
 				console.log(error);
 			}
-		});
+		}, LslScriptInterval);
 
 		return this;
 	}
