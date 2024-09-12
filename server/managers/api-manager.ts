@@ -1,9 +1,10 @@
 import bodyParser from "body-parser";
 import express from "express";
+import Pako from "pako";
+import socketIo from "socket.io";
+import { Trait, userTraitsMap } from "../../shared/traits";
 import { LslManager, Region } from "./lsl-manager";
 import { IUser, UserManager } from "./user-manager";
-import { Trait, userTraitsMap } from "../../shared/traits";
-import socketIo from "socket.io";
 
 export interface IApiUser extends IUser {
 	traits: Trait[];
@@ -117,7 +118,7 @@ export class ApiManager {
 		this.router.get("/api", (req, res) => {
 			res.contentType("html").send(
 				[
-					"a socket.io endpoint with events: users, online",
+					"a socket.io endpoint with events: users, online (gzip encoded)",
 					"",
 					"GET /api/users - data for leaderboard, refreshes once a minute",
 					"GET /api/users/online - output from in-world lsl cube, updates every 15 seconds",
@@ -131,7 +132,10 @@ export class ApiManager {
 
 		this.userManager.events.on("update", async () => {
 			try {
-				this.io.emit("users", await this.getApiUsers());
+				this.io.emit(
+					"users",
+					Pako.gzip(JSON.stringify(await this.getApiUsers())),
+				);
 			} catch (error) {
 				console.log(error);
 			}
@@ -139,7 +143,10 @@ export class ApiManager {
 
 		this.lslManager.events.on("update", async () => {
 			try {
-				this.io.emit("online", await this.getApiOnlineUsers());
+				this.io.emit(
+					"online",
+					Pako.gzip(JSON.stringify(await this.getApiOnlineUsers())),
+				);
 			} catch (error) {
 				console.log(error);
 			}

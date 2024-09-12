@@ -1,9 +1,9 @@
+import Datastore from "@seald-io/nedb";
 import Cron from "croner";
 import { JSDOM } from "jsdom";
-import { LslManager } from "./lsl-manager";
 import mitt from "mitt";
-import Datastore from "@seald-io/nedb";
 import * as path from "path";
+import { LslManager } from "./lsl-manager";
 
 interface IUserInfo {
 	lastUpdated: Date;

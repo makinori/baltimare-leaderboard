@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 "use client";
 
+import Pako from "pako";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconType } from "react-icons";
 import {
@@ -169,12 +170,20 @@ export function App(props: { initial: IAppInitialData }) {
 	}, [socket]);
 
 	useEffect(() => {
-		const onUsers = (data: IApiUser[]) => {
-			setUsers(data);
+		const onUsers = (data: ArrayBuffer) => {
+			try {
+				setUsers(JSON.parse(Pako.ungzip(data, { to: "string" })));
+			} catch (error) {
+				console.error(error);
+			}
 		};
 
-		const onOnlineUsers = (data: IApiOnlineUser[]) => {
-			setOnlineUsers(data);
+		const onOnlineUsers = (data: ArrayBuffer) => {
+			try {
+				setOnlineUsers(JSON.parse(Pako.ungzip(data, { to: "string" })));
+			} catch (error) {
+				console.error(error);
+			}
 		};
 
 		socket.current.on("users", onUsers);

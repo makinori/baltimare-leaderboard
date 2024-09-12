@@ -1,11 +1,12 @@
+import shrinkRay from "@nitedani/shrink-ray-current";
 import express from "express";
 import * as http from "http";
 import next from "next";
+import socketIo from "socket.io";
 import * as url from "url";
 import { ApiManager } from "./managers/api-manager";
 import { LslManager } from "./managers/lsl-manager";
 import { UserManager } from "./managers/user-manager";
-import socketIo from "socket.io";
 
 const port = process.env.PORT ?? 3000;
 const dev = process.env.NODE_ENV !== "production";
@@ -14,6 +15,7 @@ const dev = process.env.NODE_ENV !== "production";
 	// init express and nextjs
 
 	const expressApp = express();
+	expressApp.use(shrinkRay());
 
 	const nextApp = next({ dev });
 	await nextApp.prepare();
