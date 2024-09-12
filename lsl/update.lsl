@@ -1,7 +1,7 @@
 // string updateUrl = "https://baltimare.hotmilk.space/api/lsl/baltimare";
 string updateUrl = "http://hotmilk.space:4845/api/lsl/baltimare"; // or horseheights
 string updateSecret = "dcumwoidaksdjlkajsd";
-integer updateInterval = 15;
+integer updateInterval = 5;
 
 integer currentlyThrottled = 0;
 

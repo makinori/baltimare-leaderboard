@@ -46,6 +46,7 @@ export function UsersMap({
 						height: styleVars.userHeight * 0.75,
 						borderRadius: "999px",
 						position: "absolute",
+						backgroundColor: "#333",
 						backgroundSize: "100% 100%",
 						transformOrigin: "50% 50%",
 						transform: `translate(-50%, -50%)`,

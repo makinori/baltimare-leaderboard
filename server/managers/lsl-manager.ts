@@ -3,11 +3,11 @@ import mitt from "mitt";
 export const Region = ["baltimare", "horseheights"] as const;
 export type Region = (typeof Region)[number];
 
-// lsl script should update every 15 seconds
+// lsl script should update every 5 seconds
 // will fail if http error code 500 more than 5 times in a minute
-// script could handle this and just pause sending for a minute, but doesnt
+// script could handles this and pauses sending for a minute
 
-// online users will expire here on server after 30 seconds
+// online users will expire here on server after 15 seconds
 
 interface IOnlineUser {
 	uuid: string;
@@ -28,7 +28,7 @@ function hexStrToUuid(hexStr: string) {
 }
 
 export class LslManager {
-	private expireTimeMs = 1000 * 30; // 30 seconds
+	private expireTimeMs = 1000 * 15; // seconds
 
 	private online: Map<
 		Region,
