@@ -9,7 +9,7 @@ export type Region = (typeof Region)[number];
 
 // online users will expire here on server after 15 seconds
 
-export const LslScriptInterval = 5 * 1000; // seconds
+export const LslScriptIntervalSeconds = 5;
 
 interface IOnlineUser {
 	uuid: string;

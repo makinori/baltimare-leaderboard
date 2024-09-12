@@ -1,9 +1,15 @@
 import bodyParser from "body-parser";
+import Cron from "croner";
 import express from "express";
 import Pako from "pako";
 import socketIo from "socket.io";
 import { Trait, userTraitsMap } from "../../shared/traits";
-import { LslManager, LslScriptInterval, Region } from "./lsl-manager";
+import {
+	LslManager,
+	LslScriptInterval,
+	LslScriptIntervalSeconds,
+	Region,
+} from "./lsl-manager";
 import { IUser, UserManager } from "./user-manager";
 
 export interface IApiUser extends IUser {
@@ -145,7 +151,7 @@ export class ApiManager {
 
 		// if we use above, will send twice every 5 seconds
 
-		setInterval(async () => {
+		Cron(`*/${LslScriptIntervalSeconds} * * * * *`, async () => {
 			try {
 				this.io.emit(
 					"online",
@@ -154,7 +160,7 @@ export class ApiManager {
 			} catch (error) {
 				console.log(error);
 			}
-		}, LslScriptInterval);
+		});
 
 		return this;
 	}
