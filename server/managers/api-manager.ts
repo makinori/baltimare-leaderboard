@@ -4,12 +4,7 @@ import express from "express";
 import Pako from "pako";
 import socketIo from "socket.io";
 import { Trait, userTraitsMap } from "../../shared/traits";
-import {
-	LslManager,
-	LslScriptInterval,
-	LslScriptIntervalSeconds,
-	Region,
-} from "./lsl-manager";
+import { LslManager, LslScriptIntervalSeconds, Region } from "./lsl-manager";
 import { IUser, UserManager } from "./user-manager";
 
 export interface IApiUser extends IUser {
