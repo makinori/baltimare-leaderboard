@@ -130,7 +130,7 @@ export class UserManager {
 	async getAllUsers(): Promise<IUser[]> {
 		// const users = await User.find({});
 		// return users.map(user => this.userToApiUser(user));
-		return await this.users.findAsync({});
+		return this.users.getAllData();
 	}
 
 	// only run this function once a minute!
