@@ -2,15 +2,16 @@ import express from "express";
 import * as http from "http";
 import next from "next";
 import * as url from "url";
-import { ApiLsl } from "./api/lsl";
-import { ApiUsers } from "./api/users";
+import { ApiManager } from "./managers/api-manager";
+import { LslManager } from "./managers/lsl-manager";
+import { UserManager } from "./managers/user-manager";
 import socketIo from "socket.io";
 
 const port = process.env.PORT ?? 3000;
 const dev = process.env.NODE_ENV !== "production";
 
 (async () => {
-	// create express and next server
+	// init express and nextjs
 
 	const expressApp = express();
 
@@ -31,38 +32,22 @@ const dev = process.env.NODE_ENV !== "production";
 
 	const server = http.createServer(handler);
 
-	// create apis
-
-	// TODO: need to refactor. make a user data cache and push data more frequently
-
 	const io = new socketIo.Server(server);
 
-	const apiLsl = new ApiLsl(io).init();
-	expressApp.use(apiLsl.router);
+	// init managers
 
-	const apiUsers = await new ApiUsers(apiLsl, io).init();
-	expressApp.use(apiUsers.router);
+	const lslManager = new LslManager().init();
 
-	expressApp.get("/api", (req, res) => {
-		res.contentType("html").send(
-			[
-				"a socket.io endpoint with events: users, positions",
-				"",
-				"GET /api/users - data for leaderboard, refreshes once a minute",
-				"GET /api/users/positions - output from in-world lsl cube, updates every 15 seconds",
-				"",
-				"PUT /api/lsl/:where - for the in-world lsl cube to send data to",
-			].join("<br />"),
-		);
-	});
+	const userManager = await new UserManager(lslManager).init();
 
-	// listen
+	const apiManager = new ApiManager(userManager, lslManager, io).init();
+	expressApp.use(apiManager.router);
 
 	server.listen(port);
 
 	console.log(
-		`> Server listening at http://localhost:${port} as ${
-			dev ? "development" : process.env.NODE_ENV
-		}`,
+		`Initializing in ${dev ? "development" : process.env.NODE_ENV} mode`,
 	);
+
+	console.log(`Server listening at http://localhost:${port}`);
 })();

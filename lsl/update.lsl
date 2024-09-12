@@ -53,6 +53,7 @@ default
 {
     state_entry()
     {
+        // TODO: can we make this a cron timer?
         llSetTimerEvent(updateInterval);
         updateOnline();
     }

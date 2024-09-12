@@ -35,5 +35,6 @@ next-env.d.ts
 
 # maki
 db
+db-old
 cache
 .env

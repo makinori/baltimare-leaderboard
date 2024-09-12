@@ -13,8 +13,8 @@ import {
 	FaUmbrellaBeach,
 } from "react-icons/fa6";
 import io, { Socket } from "socket.io-client";
-import { IApiOnlineUsersSeperated } from "../server/api/lsl";
-import type { IApiUser } from "../server/api/users";
+import { IAppInitialData } from "../app/page";
+import type { IApiOnlineUser, IApiUser } from "../server/managers/api-manager";
 import { addSeperators, formatMinutes, isTourist } from "../shared/utils";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
@@ -117,12 +117,7 @@ function HeaderOptionPicker(props: {
 	);
 }
 
-export function App(props: {
-	initial: {
-		users: IApiUser[];
-		positions: IApiOnlineUsersSeperated;
-	};
-}) {
+export function App(props: { initial: IAppInitialData }) {
 	const soundManager = useSoundManager();
 
 	// will only run on client
@@ -131,8 +126,8 @@ export function App(props: {
 	}, [soundManager]);
 
 	const [users, setUsers] = useState<IApiUser[]>(props.initial.users);
-	const [positions, setPositions] = useState<IApiOnlineUsersSeperated>(
-		props.initial.positions,
+	const [onlineUsers, setOnlineUsers] = useState<IApiOnlineUser[]>(
+		props.initial.online,
 	);
 
 	const [usersFilter, setUsersFilter] = useState(UsersFilter.ShowAll);
@@ -150,7 +145,7 @@ export function App(props: {
 	// 	} catch (error) {}
 	// }, [setUsers]);
 
-	// never deinit cause this is the rorot component
+	// never deinit cause this is the root component
 	const socket = useRef<Socket>();
 
 	useEffect(() => {
@@ -178,21 +173,22 @@ export function App(props: {
 			setUsers(data);
 		};
 
-		const onPositions = (data: Partial<IApiOnlineUsersSeperated>) => {
-			for (const [where, users] of Object.entries(data)) {
-				positions[where] = users;
-			}
-			setPositions(positions);
+		const onOnlineUsers = (data: IApiOnlineUser[]) => {
+			setOnlineUsers(data);
 		};
 
 		socket.current.on("users", onUsers);
-		socket.current.on("positions", onPositions);
+		socket.current.on("online", onOnlineUsers);
 
 		return () => {
 			socket.current.off("users", onUsers);
-			socket.current.off("positions", onPositions);
+			socket.current.off("online", onOnlineUsers);
 		};
-	}, [positions, setUsers, setPositions]);
+	}, [setUsers, setOnlineUsers]);
+
+	const onlineUuids = useMemo(() => {
+		return onlineUsers.map(u => u._id);
+	}, [onlineUsers]);
 
 	const shownUsers = useMemo(() => {
 		let outputUsers: IApiUser[] = JSON.parse(JSON.stringify(users)); // deep copy
@@ -216,10 +212,14 @@ export function App(props: {
 
 		switch (usersFilter) {
 			case UsersFilter.Online:
-				outputUsers = outputUsers.filter(u => u.online);
+				outputUsers = outputUsers.filter(u =>
+					onlineUuids.includes(u._id),
+				);
 				break;
 			case UsersFilter.Offline:
-				outputUsers = outputUsers.filter(u => !u.online);
+				outputUsers = outputUsers.filter(
+					u => !onlineUuids.includes(u._id),
+				);
 				break;
 		}
 
@@ -228,7 +228,7 @@ export function App(props: {
 
 		if (usersSort == UsersSort.SinceOnline) {
 			outputUsers = outputUsers.sort((a, b) =>
-				a.online && b.online
+				onlineUuids.includes(a._id) && onlineUuids.includes(b._id)
 					? 0
 					: new Date(b.lastSeen).getTime() -
 					  new Date(a.lastSeen).getTime(),
@@ -238,6 +238,7 @@ export function App(props: {
 		return outputUsers;
 	}, [
 		users,
+		onlineUuids,
 		showBots,
 		showTourists,
 		usersFilter,
@@ -251,14 +252,14 @@ export function App(props: {
 		let totalOnline = 0;
 
 		for (const user of shownUsers) {
-			if (user.online) totalOnline++;
+			if (onlineUuids.includes(user._id)) totalOnline++;
 			if (user.minutes > highestMinutes) {
 				highestMinutes = user.minutes;
 			}
 		}
 
 		return { highestMinutes, totalOnline };
-	}, [shownUsers]);
+	}, [shownUsers, onlineUuids]);
 
 	const statusRightNow = useMemo(() => {
 		if (usersFilter == UsersFilter.Offline) {
@@ -291,6 +292,8 @@ export function App(props: {
 	const lime = "rgb(205, 220, 57)"; // lime 500
 	const limeDim = "rgba(205, 220, 57, 0.6)"; // lime 500
 
+	const mapWidth = 700;
+
 	return (
 		<HStack
 			css={{
@@ -300,7 +303,7 @@ export function App(props: {
 		>
 			<VStack
 				css={{
-					width: "calc(100vw - 16px)",
+					width: "calc(100vw - 32px)",
 					maxWidth: 800,
 				}}
 			>
@@ -318,9 +321,11 @@ export function App(props: {
 					css={{
 						marginTop: 16,
 						marginBottom: 4,
-						width: "calc(100% - 8px)",
+						width: mapWidth,
+						maxWidth: "100%",
 						justifyContent: "flex-end",
 						alignItems: "flex-end",
+						alignSelf: "flex-start",
 					}}
 				>
 					<VStack css={{ alignItems: "flex-start" }}>
@@ -443,18 +448,23 @@ export function App(props: {
 					>
 						<OnionIcon size={28} color="white" />
 					</a>
+					{/* <div css={{ width: 128 }}></div> */}
 				</HStack>
 				<UsersMap
 					users={users}
-					positions={positions}
-					css={{ marginBottom: 12 }}
+					onlineUsers={onlineUsers}
+					css={{
+						marginBottom: 16,
+						maxWidth: mapWidth,
+						width: "100%",
+						alignSelf: "flex-start",
+					}}
 				/>
 				<div
 					css={{
 						display: "flex",
 						flexDirection: "column",
 						gap: 4,
-
 						width: "100%",
 					}}
 				>
@@ -464,6 +474,7 @@ export function App(props: {
 							i={i}
 							user={user}
 							highestMinutes={highestMinutes}
+							onlineUuids={onlineUuids}
 						/>
 					))}
 				</div>

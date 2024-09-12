@@ -2,25 +2,29 @@
 
 import { unstable_noStore as noStore } from "next/cache";
 import { App } from "../components/App";
-import type { IApiOnlineUsersSeperated } from "../server/api/lsl";
-import type { IApiUser } from "../server/api/users";
+import type { IApiOnlineUser, IApiUser } from "../server/managers/api-manager";
+
+export interface IAppInitialData {
+	users: IApiUser[];
+	online: IApiOnlineUser[];
+}
 
 export default async function Page() {
 	noStore();
 
 	const port = process.env.PORT ?? 3000;
 
-	let users: IApiUser[] = [];
+	const initial: IAppInitialData = { users: [], online: [] };
+
 	try {
 		const res = await fetch(`http://127.0.0.1:${port}/api/users`);
-		users = await res.json();
+		initial.users = await res.json();
 	} catch (error) {}
 
-	let positions: IApiOnlineUsersSeperated;
 	try {
-		const res = await fetch(`http://127.0.0.1:${port}/api/users/positions`);
-		positions = await res.json();
+		const res = await fetch(`http://127.0.0.1:${port}/api/users/online`);
+		initial.online = await res.json();
 	} catch (error) {}
 
-	return <App initial={{ users, positions }} />;
+	return <App initial={initial} />;
 }

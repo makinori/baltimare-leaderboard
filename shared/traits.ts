@@ -2,7 +2,7 @@
 // use <first>.<last>
 // ignore .resident
 
-export const userTraitsMap = {
+export const traitsMap = {
 	bot: ["baltimare", "camarea2", "horseheights"],
 	janny: [
 		"rarapony",
@@ -24,7 +24,20 @@ export const userTraitsMap = {
 	portalOrange: ["sophia.naumova"],
 };
 
-export type Trait = keyof typeof userTraitsMap;
+export type Trait = keyof typeof traitsMap;
+
+export const userTraitsMap: Record<string, Trait[]> = Object.entries(
+	traitsMap,
+).reduce((obj, [trait, usernames]) => {
+	for (const username of usernames) {
+		if (obj[username] != null) {
+			obj[username].push(trait);
+		} else {
+			obj[username] = [trait];
+		}
+	}
+	return obj;
+}, {});
 
 export interface ImageTraitType {
 	image: string;

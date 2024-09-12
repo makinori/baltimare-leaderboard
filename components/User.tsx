@@ -2,8 +2,9 @@
 
 import { CSSObject } from "@emotion/react";
 import styled from "@emotion/styled";
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { useCallback, useMemo, useState } from "react";
-import type { IApiUser } from "../server/api/users";
+import type { IApiUser } from "../server/managers/api-manager";
 import {
 	imageTraitKeys,
 	imageTraitMap,
@@ -104,27 +105,49 @@ export function User({
 	i,
 	user,
 	highestMinutes,
+	onlineUuids,
 }: {
 	i: number;
 	user: IApiUser;
 	highestMinutes: number;
+	onlineUuids: string[];
 }) {
 	const soundManager = useSoundManager();
 
 	const [boopSide, setBoopSide] = useState(-1);
 
 	const name = useMemo(() => {
-		if (user.displayName == "") {
-			return <DisplayName>{user.username}</DisplayName>;
+		if (!user.info) return <></>;
+		if (user.info.displayName == "") {
+			return <DisplayName>{user.info.username}</DisplayName>;
 		} else {
 			return (
 				<>
-					<DisplayName>{user.displayName}</DisplayName>
-					<Username>{user.username}</Username>
+					<DisplayName>{user.info.displayName}</DisplayName>
+					<Username>{user.info.username}</Username>
 				</>
 			);
 		}
 	}, [user]);
+
+	const { online, lastSeenText } = useMemo(() => {
+		let online = onlineUuids.includes(user._id);
+
+		let lastSeenText = "";
+		if (onlineUuids.includes(user._id)) {
+			lastSeenText = "online";
+		} else {
+			lastSeenText = formatDistanceToNow(user.lastSeen, {
+				addSuffix: false,
+			})
+				.replace("about", "")
+				.replace("minute", "min")
+				.replace("less than a", "<")
+				.trim();
+		}
+
+		return { online, lastSeenText };
+	}, [user, onlineUuids]);
 
 	const percentage = useMemo(() => user.minutes / highestMinutes, [user]);
 
@@ -223,7 +246,7 @@ export function User({
 						onPointerUp={onAvatarUp}
 						style={{
 							backgroundImage: getAvatarImageOptimized(
-								user.imageId,
+								user.info?.imageId,
 								styleVars.userHeight,
 							),
 						}}
@@ -270,13 +293,11 @@ export function User({
 							width: 6,
 							height: 24,
 							borderRadius: 4,
-							backgroundColor: user.online
-								? "#8BC34A"
-								: "#F44336",
+							backgroundColor: online ? "#8BC34A" : "#F44336",
 							marginRight: styleVars.userSpacing * 0.75,
 						}}
 					></div>
-					<div css={{ opacity: 0.4 }}>{user.lastSeenText}</div>
+					<div css={{ opacity: 0.4 }}>{lastSeenText}</div>
 				</HStack>
 			</a>
 		</HStack>
