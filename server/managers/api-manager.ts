@@ -121,7 +121,7 @@ export class ApiManager {
 		});
 
 		this.router.get("/api", (req, res) => {
-			res.contentType("html").send(
+			res.contentType("txt").send(
 				[
 					"a socket.io endpoint with events: users, online (gzip encoded)",
 					"",
@@ -131,7 +131,7 @@ export class ApiManager {
 					"GET /api/users/online - output from in-world lsl cube, updates every 15 seconds",
 					"",
 					"PUT /api/lsl/:where - for the in-world lsl cube to send data to",
-				].join("<br />"),
+				].join("\n"),
 			);
 		});
 
