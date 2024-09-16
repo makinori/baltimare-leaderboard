@@ -98,6 +98,10 @@ export class ApiManager {
 			return res.status(200).json({ success: true });
 		});
 
+		this.router.get("/api/health", async (req, res) => {
+			res.json(this.lslManager.getHealth());
+		});
+
 		this.router.get("/api/users", async (req, res) => {
 			try {
 				res.json(await this.getApiUsers());
@@ -120,6 +124,8 @@ export class ApiManager {
 			res.contentType("html").send(
 				[
 					"a socket.io endpoint with events: users, online (gzip encoded)",
+					"",
+					"GET /api/health - for monitoring",
 					"",
 					"GET /api/users - data for leaderboard, refreshes once a minute",
 					"GET /api/users/online - output from in-world lsl cube, updates every 15 seconds",

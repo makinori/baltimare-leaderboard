@@ -94,6 +94,24 @@ export class LslManager {
 		return uuids;
 	}
 
+	getHealth() {
+		let healthy = true;
+		let online: Record<Region, boolean> = {} as any;
+
+		const onlineRegions = Object.keys(this.getData()) as Region[];
+
+		for (const region of Region) {
+			const regionHealthy = onlineRegions.includes(region);
+			online[region] = regionHealthy;
+
+			if (!regionHealthy) {
+				healthy = false;
+			}
+		}
+
+		return { healthy, online };
+	}
+
 	private initialized = false;
 
 	init() {
