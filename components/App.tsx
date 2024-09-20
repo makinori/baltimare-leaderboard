@@ -386,7 +386,7 @@ export function App(props: { initial: IAppInitialData }) {
 							}}
 						>
 							&gt; total time online since{" "}
-							<span css={{ color: lime }}>august 12th 2024</span>
+							<span css={{ color: lime }}>august 6th 2024</span>
 							<br />
 							&gt; also how long ago since last online
 						</div>
@@ -506,7 +506,7 @@ export function App(props: { initial: IAppInitialData }) {
 						opacity: 0.4,
 					}}
 				>
-					total hours since august 12th 2024
+					total hours since august 6th 2024
 				</div> */}
 			</VStack>
 		</HStack>
