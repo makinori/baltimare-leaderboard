@@ -50,7 +50,7 @@ export class LslManager {
 		const onlineUsers = data
 			.split(";")
 			.map((line: string) =>
-				line.match(/([0-9a-f]{32})([0-9]+),([0-9]+)/i),
+				line.match(/([0-9a-f]{32})(-?[0-9]+),(-?[0-9]+)/i),
 			)
 			.map((line: RegExpMatchArray) => ({
 				uuid: hexStrToUuid(line[1]),
