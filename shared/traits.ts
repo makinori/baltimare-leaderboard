@@ -22,6 +22,7 @@ export const traitsMap = {
 	floppy: ["wolvan"],
 	portalBlue: ["omniportal"],
 	portalOrange: ["sophia.naumova"],
+	bee: ["zeepon"],
 };
 
 export type Trait = keyof typeof traitsMap;
@@ -79,6 +80,11 @@ export const imageTraitMap: Partial<Record<Trait, ImageTraitType>> = {
 	portalOrange: {
 		image: "portal-orange.png",
 		url: "https://www.youtube.com/watch?v=iuAbwbqNc3A",
+		size: 20,
+	},
+	bee: {
+		image: "bee.png",
+		url: "https://www.youtube.com/watch?v=R4MUPVWMnDQ",
 		size: 20,
 	},
 };
