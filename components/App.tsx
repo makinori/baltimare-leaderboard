@@ -17,6 +17,7 @@ import io, { Socket } from "socket.io-client";
 import { IAppInitialData } from "../app/page";
 import type { IApiOnlineUser, IApiUser } from "../server/managers/api-manager";
 import { addSeperators, formatMinutes, isTourist } from "../shared/utils";
+import { CLOUDSDALE } from "../util";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
 import { User } from "./User";
@@ -206,7 +207,7 @@ export function App(props: { initial: IAppInitialData }) {
 			outputUsers = outputUsers.filter(u => !u.traits.includes("bot"));
 		}
 
-		if (!showTourists) {
+		if (!CLOUDSDALE && !showTourists) {
 			outputUsers = outputUsers.filter(u => !isTourist(u.minutes));
 		}
 
@@ -281,7 +282,7 @@ export function App(props: { initial: IAppInitialData }) {
 	const seenInTotal = useMemo(() => {
 		let others: string[] = [];
 		if (showBots) others.push("bots");
-		if (showTourists) others.push("tourists");
+		if (!CLOUDSDALE && showTourists) others.push("tourists");
 
 		let secondary = "";
 		if (others.length >= 2) {
@@ -316,7 +317,7 @@ export function App(props: { initial: IAppInitialData }) {
 					maxWidth: 800,
 				}}
 			>
-				{process.env.NEXT_PUBLIC_CLOUDSDALE ? (
+				{CLOUDSDALE ? (
 					<VStack
 						css={{
 							marginTop: 48,
@@ -343,7 +344,7 @@ export function App(props: { initial: IAppInitialData }) {
 									marginTop: -12,
 								}}
 							>
-								next to baltimare
+								next to baltimare lmao
 							</h1>
 						</a>
 					</VStack>
@@ -420,7 +421,7 @@ export function App(props: { initial: IAppInitialData }) {
 						>
 							&gt; total time online since{" "}
 							<span css={{ color: lime }}>
-								{process.env.NEXT_PUBLIC_CLOUDSDALE
+								{CLOUDSDALE
 									? "january 13th 2025"
 									: "august 6th 2024"}
 							</span>
@@ -464,15 +465,19 @@ export function App(props: { initial: IAppInitialData }) {
 									setShowBots(v == "show");
 								}}
 							/>
-							<HeaderOptionPicker
-								text="tourists"
-								icon={FaUmbrellaBeach}
-								values={["hide", "show"]}
-								value={showTourists ? "show" : "hide"}
-								onClick={v => {
-									setShowTourists(v == "show");
-								}}
-							/>
+							{CLOUDSDALE ? (
+								<></>
+							) : (
+								<HeaderOptionPicker
+									text="tourists"
+									icon={FaUmbrellaBeach}
+									values={["hide", "show"]}
+									value={showTourists ? "show" : "hide"}
+									onClick={v => {
+										setShowTourists(v == "show");
+									}}
+								/>
+							)}
 						</HStack>
 					</VStack>
 					<FlexGrow />
@@ -491,9 +496,7 @@ export function App(props: { initial: IAppInitialData }) {
 							// marginRight: 80,
 						}}
 						href={`http://${
-							process.env.NEXT_PUBLIC_CLOUDSDALE
-								? "cloudsdale"
-								: "baltimare"
+							CLOUDSDALE ? "cloudsdale" : "baltimare"
 						}.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion`}
 					>
 						<OnionIcon size={28} color="white" />
@@ -537,10 +540,8 @@ export function App(props: { initial: IAppInitialData }) {
 					}}
 				>
 					there might be some users outside of{" "}
-					{process.env.NEXT_PUBLIC_CLOUDSDALE
-						? "cloudsdale"
-						: "baltimare"}{" "}
-					that accidentally got logged
+					{CLOUDSDALE ? "cloudsdale" : "baltimare"} that accidentally
+					got logged
 				</div>
 				{/* <div
 					css={{

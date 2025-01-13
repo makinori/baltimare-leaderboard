@@ -3,6 +3,7 @@
 import type { IApiOnlineUser, IApiUser } from "../server/managers/api-manager";
 import { getAvatarImageOptimized } from "../shared/utils";
 import { styleVars } from "../shared/vars";
+import { CLOUDSDALE } from "../util";
 import mapImage from "./assets/mapcropped3.webp";
 
 const aspectRatio = mapImage.width / mapImage.height;
@@ -26,7 +27,7 @@ export function UsersMap({
 				backgroundColor: "rgba(255,255,255,0.1)",
 				backgroundSize: "100% 100%",
 				borderRadius: styleVars.userCorner,
-				...(process.env.NEXT_PUBLIC_CLOUDSDALE
+				...(CLOUDSDALE
 					? {}
 					: {
 							backgroundImage: `url(${mapImage.src})`,

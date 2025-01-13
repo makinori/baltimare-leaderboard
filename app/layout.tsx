@@ -1,16 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import { snPro } from "../fonts/fonts";
+import { CLOUDSDALE } from "../util";
 import RootStyleRegistry from "./emotion";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title:
-		(process.env.NEXT_PUBLIC_CLOUDSDALE ? "Cloudsdale" : "Baltimare") +
-		" Leaderboard",
+	title: (CLOUDSDALE ? "Cloudsdale" : "Baltimare") + " Leaderboard",
 	icons: [
 		{
 			rel: "icon",
-			url: "/favicon.png",
+			url: CLOUDSDALE ? "/favicon-cloudsdale.png" : "/favicon.png",
 		},
 	],
 };

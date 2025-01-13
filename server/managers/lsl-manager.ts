@@ -1,6 +1,7 @@
 import mitt from "mitt";
+import { CLOUDSDALE } from "../../util";
 
-export const Region = process.env.NEXT_PUBLIC_CLOUDSDALE
+export const Region = CLOUDSDALE
 	? ["cloudsdale", "clouddistrict"]
 	: ["baltimare", "horseheights"];
 export type Region = (typeof Region)[number];
