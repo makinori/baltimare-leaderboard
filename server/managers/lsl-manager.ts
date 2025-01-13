@@ -1,6 +1,8 @@
 import mitt from "mitt";
 
-export const Region = ["baltimare", "horseheights"] as const;
+export const Region = process.env.NEXT_PUBLIC_CLOUDSDALE
+	? ["cloudsdale", "clouddistrict"]
+	: ["baltimare", "horseheights"];
 export type Region = (typeof Region)[number];
 
 // lsl script should update every 5 seconds

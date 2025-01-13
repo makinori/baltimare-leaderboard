@@ -65,7 +65,11 @@ export function UsersMap({
 					style={{
 						left:
 							(onlineUser.x / 256) * 50 +
-							(onlineUser.region == "horseheights" ? 0 : 50) +
+							(["horseheights", "clouddistrict"].includes(
+								onlineUser.region,
+							)
+								? 0
+								: 50) +
 							"%",
 						top: (onlineUser.y / 256) * -100 + 100 + "%",
 						backgroundImage: getAvatarImageOptimized(

@@ -11,6 +11,12 @@ ADD package.json pnpm-lock.yaml /app/
 RUN pnpm install --frozen-lockfile
 
 ADD . .
+
+# in compose build with
+# args: CLOUDSDALE: 1
+ARG CLOUDSDALE
+ENV NEXT_PUBLIC_CLOUDSDALE $CLOUDSDALE
+
 RUN pnpm build
 
 CMD pnpm serve

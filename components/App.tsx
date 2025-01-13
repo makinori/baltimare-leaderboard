@@ -421,7 +421,7 @@ export function App(props: { initial: IAppInitialData }) {
 							&gt; total time online since{" "}
 							<span css={{ color: lime }}>
 								{process.env.NEXT_PUBLIC_CLOUDSDALE
-									? "INSERT DATE"
+									? "january 13th 2025"
 									: "august 6th 2024"}
 							</span>
 							<br />
