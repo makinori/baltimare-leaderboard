@@ -23,9 +23,14 @@ export function UsersMap({
 				position: "relative",
 				width: "100%",
 				aspectRatio,
-				backgroundImage: `url(${mapImage.src})`,
+				backgroundColor: "rgba(255,255,255,0.1)",
 				backgroundSize: "100% 100%",
 				borderRadius: styleVars.userCorner,
+				...(process.env.NEXT_PUBLIC_CLOUDSDALE
+					? {}
+					: {
+							backgroundImage: `url(${mapImage.src})`,
+					  }),
 			}}
 		>
 			<div

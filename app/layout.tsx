@@ -4,7 +4,9 @@ import RootStyleRegistry from "./emotion";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "Baltimare Leaderboard",
+	title:
+		(process.env.NEXT_PUBLIC_CLOUDSDALE ? "Cloudsdale" : "Baltimare") +
+		" Leaderboard",
 	icons: [
 		{
 			rel: "icon",

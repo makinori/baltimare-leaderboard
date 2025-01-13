@@ -316,19 +316,52 @@ export function App(props: { initial: IAppInitialData }) {
 					maxWidth: 800,
 				}}
 			>
-				<a href="https://baltimare.pages.dev">
-					<img
+				{process.env.NEXT_PUBLIC_CLOUDSDALE ? (
+					<VStack
 						css={{
-							width: 600,
-							maxWidth: "100%",
-							marginTop: 32,
+							marginTop: 48,
+							marginBottom: 48,
 						}}
-						src="baltimare-opg.png"
-					></img>
-				</a>
+					>
+						<h1
+							css={{
+								fontSize: 96,
+								fontWeight: 300,
+								letterSpacing: -4,
+								margin: 0,
+							}}
+						>
+							cloudsdale
+						</h1>
+						<a href="https://baltimare.hotmilk.space">
+							<h1
+								css={{
+									fontSize: 32,
+									fontWeight: 400,
+									letterSpacing: -1,
+									margin: 0,
+									marginTop: -12,
+								}}
+							>
+								next to baltimare
+							</h1>
+						</a>
+					</VStack>
+				) : (
+					<a href="https://baltimare.org">
+						<img
+							css={{
+								width: 600,
+								maxWidth: "100%",
+								marginTop: 32,
+								marginBottom: 16,
+							}}
+							src="baltimare-opg.png"
+						></img>
+					</a>
+				)}
 				<HStack
 					css={{
-						marginTop: 16,
 						marginBottom: 4,
 						width: mapWidth,
 						maxWidth: "100%",
@@ -386,7 +419,11 @@ export function App(props: { initial: IAppInitialData }) {
 							}}
 						>
 							&gt; total time online since{" "}
-							<span css={{ color: lime }}>august 6th 2024</span>
+							<span css={{ color: lime }}>
+								{process.env.NEXT_PUBLIC_CLOUDSDALE
+									? "INSERT DATE"
+									: "august 6th 2024"}
+							</span>
 							<br />
 							&gt; also how long ago since last online
 						</div>
@@ -453,7 +490,11 @@ export function App(props: { initial: IAppInitialData }) {
 							opacity: 0.4,
 							// marginRight: 80,
 						}}
-						href="http://baltimare.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion"
+						href={`http://${
+							process.env.NEXT_PUBLIC_CLOUDSDALE
+								? "cloudsdale"
+								: "baltimare"
+						}.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion`}
 					>
 						<OnionIcon size={28} color="white" />
 					</a>
@@ -495,8 +536,11 @@ export function App(props: { initial: IAppInitialData }) {
 						opacity: 0.4,
 					}}
 				>
-					there might be some users outside of baltimare that
-					accidentally got logged
+					there might be some users outside of{" "}
+					{process.env.NEXT_PUBLIC_CLOUDSDALE
+						? "cloudsdale"
+						: "baltimare"}{" "}
+					that accidentally got logged
 				</div>
 				{/* <div
 					css={{
