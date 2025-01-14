@@ -30,7 +30,6 @@ const DEV = process.env.NODE_ENV !== "production";
 
 		// this is so gay
 		if (parsedUrl.path == "/favicon.png" && req.method == "GET") {
-			console.log(process.env);
 			res.writeHead(307, {
 				location: `/favicon-${
 					CLOUDSDALE ? "cloudsdale" : "baltimare"
