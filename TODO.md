@@ -1,2 +1,1 @@
--   send message on discord if updater goes down
--   do a rewrite for the server
+-   state all vars somewhere for the seperate sims

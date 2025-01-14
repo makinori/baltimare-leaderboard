@@ -15,7 +15,11 @@ import {
 } from "react-icons/fa6";
 import io, { Socket } from "socket.io-client";
 import { IAppInitialData } from "../app/page";
-import type { IApiOnlineUser, IApiUser } from "../server/managers/api-manager";
+import {
+	type IApiOnlineSims,
+	type IApiOnlineUser,
+	type IApiUser,
+} from "../server/managers/api-manager";
 import { addSeperators, formatMinutes, isTourist } from "../shared/utils";
 import { CLOUDSDALE } from "../util";
 import { FlexGrow } from "./FlexGrow";
@@ -140,6 +144,8 @@ export function App(props: { initial: IAppInitialData }) {
 	const [totalSeenWithFilter, setTotalSeenWithFilter] = useState(0);
 	const [totalMinutesWithFilter, setTotalMinutesWithFilter] = useState(0);
 
+	const [health, setHealth] = useState<IApiOnlineSims>(props.initial.health);
+
 	// const updateUsers = useCallback(async () => {
 	// 	try {
 	// 		const res = await fetch("/api/users");
@@ -187,14 +193,24 @@ export function App(props: { initial: IAppInitialData }) {
 			}
 		};
 
+		const onHealth = (data: any) => {
+			try {
+				setHealth(data);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
 		socket.current.on("users", onUsers);
 		socket.current.on("online", onOnlineUsers);
+		socket.current.on("health", onHealth);
 
 		return () => {
 			socket.current.off("users", onUsers);
 			socket.current.off("online", onOnlineUsers);
+			socket.current.off("health", onHealth);
 		};
-	}, [setUsers, setOnlineUsers]);
+	}, [setUsers, setOnlineUsers, setHealth]);
 
 	const onlineUuids = useMemo(() => {
 		return onlineUsers.map(u => u._id);
@@ -506,6 +522,7 @@ export function App(props: { initial: IAppInitialData }) {
 				<UsersMap
 					users={users}
 					onlineUsers={onlineUsers}
+					health={health}
 					css={{
 						marginBottom: 16,
 						maxWidth: mapWidth,

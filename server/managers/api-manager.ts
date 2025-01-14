@@ -18,6 +18,8 @@ export interface IApiOnlineUser {
 	y: number;
 }
 
+export type IApiOnlineSims = Record<Region, boolean>;
+
 export class ApiManager {
 	private secret = process.env.API_SECRET ?? "dcumwoidaksdjlkajsd";
 
@@ -124,7 +126,7 @@ export class ApiManager {
 		this.router.get("/api", (req, res) => {
 			res.contentType("txt").send(
 				[
-					"a socket.io endpoint with events: users, online (gzip encoded)",
+					"a socket.io endpoint with events: users (gzip), online (gzip), health",
 					"",
 					"GET /api/health - for monitoring",
 					"",
@@ -159,6 +161,7 @@ export class ApiManager {
 					"online",
 					Pako.gzip(JSON.stringify(await this.getApiOnlineUsers())),
 				);
+				this.io.emit("health", this.lslManager.getHealth().online);
 			} catch (error) {
 				console.log(error);
 			}

@@ -1,11 +1,15 @@
 /** @jsxImportSource @emotion/react */
 
-import type { IApiOnlineUser, IApiUser } from "../server/managers/api-manager";
+import type {
+	IApiOnlineSims,
+	IApiOnlineUser,
+	IApiUser,
+} from "../server/managers/api-manager";
 import { getAvatarImageOptimized } from "../shared/utils";
 import { styleVars } from "../shared/vars";
 import { CLOUDSDALE } from "../util";
-import baltimareMapImage from "./assets/mapcropped3.webp";
 import cloudsdaleMapImage from "./assets/cloudsdale-map.jpg";
+import baltimareMapImage from "./assets/mapcropped3.webp";
 
 const aspectRatio = CLOUDSDALE
 	? cloudsdaleMapImage.width / cloudsdaleMapImage.height
@@ -14,10 +18,12 @@ const aspectRatio = CLOUDSDALE
 export function UsersMap({
 	users,
 	onlineUsers,
+	health,
 	className,
 }: {
 	users: IApiUser[];
 	onlineUsers: IApiOnlineUser[];
+	health: IApiOnlineSims;
 	className?: string;
 }) {
 	return (
@@ -79,6 +85,27 @@ export function UsersMap({
 								?.imageId,
 							styleVars.userHeight,
 						),
+					}}
+				></div>
+			))}
+			{[
+				health["horseheights"] || health["clouddistrict"],
+				health["baltimare"] || health["cloudsdale"],
+			].map((online, i) => (
+				<div
+					key={i}
+					css={{
+						position: "absolute",
+						// margin: "auto",
+						top: 0,
+						...(i == 0 ? { left: 0 } : { right: 0 }),
+						width: 8,
+						height: 8,
+						margin: 6,
+						borderRadius: 999,
+					}}
+					style={{
+						backgroundColor: online ? "#8BC34A" : "#F44336",
 					}}
 				></div>
 			))}
