@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ReactNode } from "react";
 import { snPro } from "../fonts/fonts";
 import { CLOUDSDALE } from "../util";
 import RootStyleRegistry from "./emotion";
@@ -22,7 +23,7 @@ export const viewport: Viewport = {
 export default function RootLayout({
 	children,
 }: Readonly<{
-	children: JSX.Element;
+	children: ReactNode;
 }>) {
 	return (
 		<html lang="en">

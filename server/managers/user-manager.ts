@@ -1,5 +1,5 @@
 import Datastore from "@seald-io/nedb";
-import Cron from "croner";
+import { Cron } from "croner";
 import { JSDOM } from "jsdom";
 import mitt from "mitt";
 import * as path from "path";
@@ -174,7 +174,7 @@ export class UserManager {
 		await this.users.loadDatabaseAsync();
 
 		// only run once a minute!
-		Cron("0 * * * * *", this.cronInterval.bind(this));
+		new Cron("0 * * * * *", this.cronInterval.bind(this));
 
 		console.log("Started cron job for user minutes");
 

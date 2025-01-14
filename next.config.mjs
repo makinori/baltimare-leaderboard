@@ -12,9 +12,9 @@ const nextConfig = {
 			{ protocol: "https", hostname: "picture-service.secondlife.com" },
 		],
 	},
-	env: {
-		APP_ROOT: dirname(fileURLToPath(import.meta.url)),
-	},
+	// env: {
+	// 	APP_ROOT: dirname(fileURLToPath(import.meta.url)),
+	// },
 	i18n: {
 		locales: ["en"],
 		defaultLocale: "en",

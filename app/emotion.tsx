@@ -3,7 +3,7 @@
 import createCache from "@emotion/cache";
 import { CacheProvider } from "@emotion/react";
 import { useServerInsertedHTML } from "next/navigation";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
 // https://github.com/emotion-js/emotion/issues/2928
 // wtf use a better library
@@ -11,7 +11,7 @@ import { useState } from "react";
 export default function RootStyleRegistry({
 	children,
 }: {
-	children: JSX.Element;
+	children: ReactNode;
 }) {
 	const [{ cache, flush }] = useState(() => {
 		const cache = createCache({ key: "my" });

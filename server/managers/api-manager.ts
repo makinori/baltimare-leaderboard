@@ -1,5 +1,5 @@
 import bodyParser from "body-parser";
-import Cron from "croner";
+import { Cron } from "croner";
 import express from "express";
 import Pako from "pako";
 import socketIo from "socket.io";
@@ -152,7 +152,7 @@ export class ApiManager {
 
 		// if we use above, will send twice every 5 seconds
 
-		Cron(`*/${LslScriptIntervalSeconds} * * * * *`, async () => {
+		new Cron(`*/${LslScriptIntervalSeconds} * * * * *`, async () => {
 			try {
 				this.io.emit(
 					"online",

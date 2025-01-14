@@ -148,13 +148,13 @@ export function App(props: { initial: IAppInitialData }) {
 	// }, [setUsers]);
 
 	// never deinit cause this is the root component
-	const socket = useRef<Socket>();
+	const socket = useRef<Socket>(null);
 
 	useEffect(() => {
 		/*
 		// updateUsers(); // ssr has initial data
 		// every minute, 15 seconds in
-		const job = Cron("15 * * * * *", updateUsers);
+		const job = new Cron("15 * * * * *", updateUsers);
 		return () => {
 			job.stop();
 		};
