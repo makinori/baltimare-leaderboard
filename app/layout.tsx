@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 	icons: [
 		{
 			rel: "icon",
-			url: CLOUDSDALE ? "/favicon-cloudsdale.png" : "/favicon.png",
+			url: "/favicon.png",
 		},
 	],
 };

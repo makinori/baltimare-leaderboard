@@ -4,12 +4,13 @@ import * as http from "http";
 import next from "next";
 import socketIo from "socket.io";
 import * as url from "url";
+import { CLOUDSDALE } from "../util";
 import { ApiManager } from "./managers/api-manager";
 import { LslManager } from "./managers/lsl-manager";
 import { UserManager } from "./managers/user-manager";
 
-const port = process.env.PORT ?? 3000;
-const dev = process.env.NODE_ENV !== "production";
+const PORT = process.env.PORT ?? 3000;
+const DEV = process.env.NODE_ENV !== "production";
 
 (async () => {
 	// init express and nextjs
@@ -17,13 +18,24 @@ const dev = process.env.NODE_ENV !== "production";
 	const expressApp = express();
 	expressApp.use(shrinkRay());
 
-	const nextApp = next({ dev });
+	const nextApp = next({ dev: DEV });
 	await nextApp.prepare();
 
 	const nextHandler = nextApp.getRequestHandler();
 
 	function handler(req: http.IncomingMessage, res: http.ServerResponse) {
 		const parsedUrl = url.parse(req.url!, true);
+
+		// this is so gay
+		if (parsedUrl.path == "/favicon.png" && req.method == "GET") {
+			console.log(process.env);
+			res.writeHead(307, {
+				location: `/favicon-${
+					CLOUDSDALE ? "cloudsdale" : "baltimare"
+				}.png`,
+			});
+			res.end();
+		}
 
 		if (parsedUrl.path.startsWith("/api")) {
 			expressApp(req, res);
@@ -45,11 +57,11 @@ const dev = process.env.NODE_ENV !== "production";
 	const apiManager = new ApiManager(userManager, lslManager, io).init();
 	expressApp.use(apiManager.router);
 
-	server.listen(port);
+	server.listen(PORT);
 
 	console.log(
-		`Initializing in ${dev ? "development" : process.env.NODE_ENV} mode`,
+		`Initializing in ${DEV ? "development" : process.env.NODE_ENV} mode`,
 	);
 
-	console.log(`Server listening at http://localhost:${port}`);
+	console.log(`Server listening at http://localhost:${PORT}`);
 })();
