@@ -52,9 +52,11 @@ export function UsersMap({
 				}}
 			></div>
 			{onlineUsers.map(onlineUser => (
-				<div
+				<a
 					key={onlineUser.region + "-" + onlineUser._id}
+					href={"#" + onlineUser._id}
 					css={{
+						display: "block",
 						width: styleVars.userHeight * 0.75,
 						height: styleVars.userHeight * 0.75,
 						borderRadius: "999px",
@@ -86,7 +88,7 @@ export function UsersMap({
 							styleVars.userHeight,
 						),
 					}}
-				></div>
+				></a>
 			))}
 			{[
 				health["horseheights"] || health["clouddistrict"],

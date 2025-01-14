@@ -177,6 +177,7 @@ export function User({
 
 	return (
 		<HStack
+			id={user._id}
 			css={{
 				height: styleVars.userHeight,
 				color: "#fff",
