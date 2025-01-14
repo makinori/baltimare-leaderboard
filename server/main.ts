@@ -1,5 +1,3 @@
-process.env.NEXT_PUBLIC_CLOUDSDALE = process.env.CLOUDSDALE;
-
 import shrinkRay from "@nitedani/shrink-ray-current";
 import express from "express";
 import * as http from "http";

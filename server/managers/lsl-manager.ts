@@ -4,6 +4,7 @@ import { CLOUDSDALE } from "../../util";
 export const Region = CLOUDSDALE
 	? ["cloudsdale", "clouddistrict"]
 	: ["baltimare", "horseheights"];
+
 export type Region = (typeof Region)[number];
 
 // lsl script should update every 5 seconds
