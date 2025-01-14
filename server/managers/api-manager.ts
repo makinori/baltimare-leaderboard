@@ -78,7 +78,7 @@ export class ApiManager {
 
 		this.router.use(bodyParser.text());
 
-		this.router.put("/api/lsl/:region", (req, res, _, __) => {
+		this.router.put("/api/lsl/:region", (req, res) => {
 			const region = req.params.region as Region;
 
 			if (
@@ -86,7 +86,8 @@ export class ApiManager {
 				req.header("Authorization") != "Bearer " + this.secret ||
 				!Region.includes(region)
 			) {
-				return res.status(400).json({ error: "Bad request" });
+				res.status(400).json({ error: "Bad request" });
+				return;
 			}
 
 			try {
@@ -95,7 +96,7 @@ export class ApiManager {
 				console.error(error);
 			}
 
-			return res.status(200).json({ success: true });
+			res.status(200).json({ success: true });
 		});
 
 		this.router.get("/api/health", async (req, res) => {
