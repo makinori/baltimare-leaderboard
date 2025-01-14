@@ -78,7 +78,7 @@ export class ApiManager {
 
 		this.router.use(bodyParser.text());
 
-		this.router.put("/api/lsl/:region", (req, res) => {
+		this.router.put("/api/lsl/:region", (req, res, _, __) => {
 			const region = req.params.region as Region;
 
 			if (
