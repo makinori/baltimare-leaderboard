@@ -29,6 +29,11 @@ updateOnline() {
         }
     }
 
+    if (avatarsLength == 0) {
+        // seems like it might not send the request with an empty string
+        avatarsResult = "empty";
+    }
+
     key result = llHTTPRequest(updateUrl, [
         HTTP_METHOD, "PUT",
         HTTP_MIMETYPE, "text/plain",

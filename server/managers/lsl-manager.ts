@@ -50,16 +50,20 @@ export class LslManager {
 	// handle as a put request
 
 	putData(region: Region, data: string) {
-		const onlineUsers = data
-			.split(";")
-			.map((line: string) =>
-				line.match(/([0-9a-f]{32})(-?[0-9]+),(-?[0-9]+)/i),
-			)
-			.map((line: RegExpMatchArray) => ({
-				uuid: hexStrToUuid(line[1]),
-				x: parseInt(line[2]),
-				y: parseInt(line[3]),
-			}));
+		let onlineUsers: IOnlineUser[] = [];
+
+		if (data != "empty") {
+			onlineUsers = data
+				.split(";")
+				.map((line: string) =>
+					line.match(/([0-9a-f]{32})(-?[0-9]+),(-?[0-9]+)/i),
+				)
+				.map((line: RegExpMatchArray) => ({
+					uuid: hexStrToUuid(line[1]),
+					x: parseInt(line[2]),
+					y: parseInt(line[3]),
+				}));
+		}
 
 		this.online.set(region, {
 			onlineUsers,
