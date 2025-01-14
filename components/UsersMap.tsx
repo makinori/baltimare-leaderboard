@@ -9,7 +9,7 @@ import { getAvatarImageOptimized } from "../shared/utils";
 import { styleVars } from "../shared/vars";
 import { CLOUDSDALE } from "../shared/utils";
 import cloudsdaleMapImage from "./assets/cloudsdale-map.jpg";
-import baltimareMapImage from "./assets/mapcropped3.webp";
+import baltimareMapImage from "./assets/baltimare-map.webp";
 
 const aspectRatio = CLOUDSDALE
 	? cloudsdaleMapImage.width / cloudsdaleMapImage.height
