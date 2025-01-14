@@ -4,7 +4,7 @@ import * as http from "http";
 import next from "next";
 import socketIo from "socket.io";
 import * as url from "url";
-import { CLOUDSDALE } from "../util";
+import { CLOUDSDALE } from "../shared/utils";
 import { ApiManager } from "./managers/api-manager";
 import { LslManager } from "./managers/lsl-manager";
 import { UserManager } from "./managers/user-manager";

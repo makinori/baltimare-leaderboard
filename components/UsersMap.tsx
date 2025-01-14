@@ -7,7 +7,7 @@ import type {
 } from "../server/managers/api-manager";
 import { getAvatarImageOptimized } from "../shared/utils";
 import { styleVars } from "../shared/vars";
-import { CLOUDSDALE } from "../util";
+import { CLOUDSDALE } from "../shared/utils";
 import cloudsdaleMapImage from "./assets/cloudsdale-map.jpg";
 import baltimareMapImage from "./assets/mapcropped3.webp";
 

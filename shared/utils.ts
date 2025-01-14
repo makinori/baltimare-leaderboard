@@ -1,5 +1,10 @@
 import { getImageProps, ImageProps } from "next/image";
 
+export const CLOUDSDALE =
+	typeof window !== "undefined"
+		? !!process.env.NEXT_PUBLIC_CLOUDSDALE
+		: !!process.env.CLOUDSDALE;
+
 export function addSeperators(n: number) {
 	let out: string[] = [];
 	const chars = Math.floor(n).toString().split("").reverse();

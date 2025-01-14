@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { ReactNode } from "react";
 import { snPro } from "../fonts/fonts";
-import { CLOUDSDALE } from "../util";
+import { CLOUDSDALE } from "../shared/utils";
 import RootStyleRegistry from "./emotion";
 import "./globals.css";
 

@@ -1,5 +1,5 @@
 import mitt from "mitt";
-import { CLOUDSDALE } from "../../util";
+import { CLOUDSDALE } from "../../shared/utils";
 
 export const Region = CLOUDSDALE
 	? ["cloudsdale", "clouddistrict"]

@@ -21,7 +21,7 @@ import {
 	type IApiUser,
 } from "../server/managers/api-manager";
 import { addSeperators, formatMinutes, isTourist } from "../shared/utils";
-import { CLOUDSDALE } from "../util";
+import { CLOUDSDALE } from "../shared/utils";
 import { FlexGrow } from "./FlexGrow";
 import { HStack, VStack } from "./Stack";
 import { User } from "./User";
