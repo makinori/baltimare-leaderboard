@@ -10,7 +10,7 @@ See API endpoints at https://baltimare.hotmilk.space/api/
 
 #
 
--   Environment variables `PORT`, `API_SECRET` and `NEXT_PUBLIC_CLOUDSDALE` are used
+-   Environment variables `PORT`, `API_SECRET` and `CLOUDSDALE` are used
 
 -   Develop with `pnpm install` and `pnpm start`
 

@@ -1,5 +1,5 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+// import { dirname } from "path";
+// import { fileURLToPath } from "url";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -12,9 +12,10 @@ const nextConfig = {
 			{ protocol: "https", hostname: "picture-service.secondlife.com" },
 		],
 	},
-	// env: {
-	// 	APP_ROOT: dirname(fileURLToPath(import.meta.url)),
-	// },
+	env: {
+		// APP_ROOT: dirname(fileURLToPath(import.meta.url)),
+		NEXT_PUBLIC_CLOUDSDALE: process.env.CLOUDSDALE,
+	},
 	i18n: {
 		locales: ["en"],
 		defaultLocale: "en",
