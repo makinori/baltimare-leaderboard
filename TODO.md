@@ -1,1 +1,2 @@
 -   state all vars somewhere for the seperate sims
+-   make bundled player icons visible
