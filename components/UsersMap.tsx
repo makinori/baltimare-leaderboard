@@ -4,9 +4,12 @@ import type { IApiOnlineUser, IApiUser } from "../server/managers/api-manager";
 import { getAvatarImageOptimized } from "../shared/utils";
 import { styleVars } from "../shared/vars";
 import { CLOUDSDALE } from "../util";
-import mapImage from "./assets/mapcropped3.webp";
+import baltimareMapImage from "./assets/mapcropped3.webp";
+import cloudsdaleMapImage from "./assets/cloudsdale-map.jpg";
 
-const aspectRatio = mapImage.width / mapImage.height;
+const aspectRatio = CLOUDSDALE
+	? cloudsdaleMapImage.width / cloudsdaleMapImage.height
+	: baltimareMapImage.width / baltimareMapImage.height;
 
 export function UsersMap({
 	users,
@@ -25,13 +28,11 @@ export function UsersMap({
 				width: "100%",
 				aspectRatio,
 				backgroundColor: "rgba(255,255,255,0.1)",
+				backgroundImage: `url(${
+					CLOUDSDALE ? cloudsdaleMapImage.src : baltimareMapImage.src
+				})`,
 				backgroundSize: "100% 100%",
 				borderRadius: styleVars.userCorner,
-				...(CLOUDSDALE
-					? {}
-					: {
-							backgroundImage: `url(${mapImage.src})`,
-					  }),
 			}}
 		>
 			<div
