@@ -524,7 +524,8 @@ export function App(props: { initial: IAppInitialData }) {
 					onlineUsers={onlineUsers}
 					health={health}
 					// straight up doesnt work
-					suppressHydrationWarning
+					// https://github.com/vercel/next.js/issues/58493
+					// suppressHydrationWarning
 					css={{
 						marginBottom: 16,
 						maxWidth: mapWidth,
