@@ -1,5 +1,8 @@
 import mitt from "mitt";
 import { CLOUDSDALE } from "../../shared/utils";
+import { TEST_DATA } from "./test-data";
+
+const USE_TEST_DATA = false;
 
 export const Region = CLOUDSDALE
 	? ["cloudsdale", "clouddistrict"]
@@ -46,7 +49,18 @@ export class LslManager {
 
 	events = mitt<{ update: null }>();
 
-	constructor() {}
+	constructor() {
+		if (USE_TEST_DATA) {
+			this.online.set("baltimare", {
+				onlineUsers: TEST_DATA,
+				expireDate: Date.now() + 10000000,
+			});
+			this.online.set("horseheights", {
+				onlineUsers: TEST_DATA,
+				expireDate: Date.now() + 10000000,
+			});
+		}
+	}
 
 	// handle as a put request
 

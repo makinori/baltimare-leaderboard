@@ -1,15 +1,15 @@
 /** @jsxImportSource @emotion/react */
 
+import { useMemo } from "react";
 import type {
 	IApiOnlineSims,
 	IApiOnlineUser,
 	IApiUser,
 } from "../server/managers/api-manager";
-import { getAvatarImageOptimized } from "../shared/utils";
+import { CLOUDSDALE, getAvatarImageOptimized, pythag } from "../shared/utils";
 import { styleVars } from "../shared/vars";
-import { CLOUDSDALE } from "../shared/utils";
-import cloudsdaleMapImage from "./assets/cloudsdale-map.jpg";
 import baltimareMapImage from "./assets/baltimare-map.webp";
+import cloudsdaleMapImage from "./assets/cloudsdale-map.jpg";
 
 const aspectRatio = CLOUDSDALE
 	? cloudsdaleMapImage.width / cloudsdaleMapImage.height
@@ -26,6 +26,128 @@ export function UsersMap({
 	health: IApiOnlineSims;
 	className?: string;
 }) {
+	// const [circlePackedOnlineUsers, setCirclePackedOnlineUsers] = useState<
+	// 	IApiOnlineUser[]
+	// >([]);
+
+	// useEffect(() => {
+	const circlePackedOnlineUsers = useMemo(() => {
+		const circleWidth = 16;
+		const itterateMoveAmount = 1;
+
+		interface Circle {
+			_id: string;
+			x: number;
+			y: number;
+		}
+
+		let circles: IApiOnlineUser[] = onlineUsers.map(user => ({
+			_id: user._id,
+			region: user.region,
+			y: 256 - user.y,
+			x:
+				user.x +
+				(["baltimare", "cloudsdale"].includes(user.region) ? 256 : 0),
+		}));
+
+		const findOverlaps = (needle: Circle) => {
+			const overlaps = [];
+
+			for (const circle of circles) {
+				if (circle == needle) continue;
+
+				const distance = pythag(
+					circle.x - needle.x,
+					circle.y - needle.y,
+				);
+
+				if (distance <= circleWidth) {
+					overlaps.push(circle);
+				}
+			}
+
+			return overlaps;
+		};
+
+		const iterate = () => {
+			let anyOverlaps = false;
+
+			const circlesWithOverlaps = circles.map((circle, i) => ({
+				circle,
+				overlaps: findOverlaps(circle),
+			}));
+
+			circlesWithOverlaps.sort(
+				(a, b) => a.overlaps.length - b.overlaps.length,
+			);
+
+			for (let i = 0; i < circlesWithOverlaps.length; i++) {
+				const { circle, overlaps } = circlesWithOverlaps[i];
+
+				if (overlaps.length == 0) {
+					continue;
+				}
+
+				anyOverlaps = true;
+
+				// TODO: normal vector
+
+				let relDirX = 0;
+				let relDirY = 0;
+
+				for (const overlap of overlaps) {
+					relDirX += circle.x - overlap.x;
+					relDirY += circle.y - overlap.y;
+				}
+
+				let distance = pythag(relDirX, relDirY);
+
+				if (distance == 0) {
+					relDirX = Math.random() * 2 - 1;
+					relDirY = Math.random() * 2 - 1;
+					distance = pythag(relDirX, relDirY);
+				}
+
+				const normalX = relDirX / distance;
+				const normalY = relDirY / distance;
+
+				circle.x = circle.x + normalX * itterateMoveAmount;
+				circle.y = circle.y + normalY * itterateMoveAmount;
+			}
+
+			return anyOverlaps;
+		};
+
+		const maxIterationCount = (circleWidth / itterateMoveAmount) * 8;
+
+		// let i = 0;
+		// const interval = setInterval(() => {
+		// 	if (i >= maxIterationCount) {
+		// 		console.log(i);
+		// 		clearInterval(interval);
+		// 		return;
+		// 	}
+		// 	console.log("itterate");
+		// 	if (iterate() == false) {
+		// 		console.log(i);
+		// 		clearInterval(interval);
+		// 		return;
+		// 	}
+		// 	setCirclePackedOnlineUsers(JSON.parse(JSON.stringify(circles)));
+		// 	i++;
+		// }, 5);
+
+		for (let i = 0; i < maxIterationCount; i++) {
+			if (!iterate()) {
+				break;
+			}
+		}
+
+		// console.log("done");
+
+		return circles;
+	}, [onlineUsers]);
+
 	return (
 		<div
 			className={className}
@@ -51,7 +173,7 @@ export function UsersMap({
 					opacity: 0.5,
 				}}
 			></div>
-			{onlineUsers.map(onlineUser => (
+			{circlePackedOnlineUsers.map(onlineUser => (
 				<a
 					key={onlineUser.region + "-" + onlineUser._id}
 					href={"#" + onlineUser._id}
@@ -73,15 +195,8 @@ export function UsersMap({
 						},
 					}}
 					style={{
-						left:
-							(onlineUser.x / 256) * 50 +
-							(["horseheights", "clouddistrict"].includes(
-								onlineUser.region,
-							)
-								? 0
-								: 50) +
-							"%",
-						top: (onlineUser.y / 256) * -100 + 100 + "%",
+						left: (onlineUser.x / 512) * 100 + "%",
+						top: (onlineUser.y / 256) * 100 + "%",
 						backgroundImage: getAvatarImageOptimized(
 							users.find(p => p._id == onlineUser._id)?.info
 								?.imageId,

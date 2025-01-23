@@ -523,6 +523,8 @@ export function App(props: { initial: IAppInitialData }) {
 					users={users}
 					onlineUsers={onlineUsers}
 					health={health}
+					// straight up doesnt work
+					suppressHydrationWarning
 					css={{
 						marginBottom: 16,
 						maxWidth: mapWidth,

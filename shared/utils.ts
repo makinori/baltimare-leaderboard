@@ -69,3 +69,11 @@ export function getAvatarImageOptimized(imageId: string, size: number) {
 export function isTourist(minutes: number) {
 	return minutes < 60 * 2; // hours
 }
+
+export function pythag(x: number, y: number) {
+	return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+}
+
+export function clamp(value: number, min: number, max: number) {
+	return Math.min(Math.max(value, min), max);
+}
