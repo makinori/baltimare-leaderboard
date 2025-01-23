@@ -70,10 +70,25 @@ export function isTourist(minutes: number) {
 	return minutes < 60 * 2; // hours
 }
 
-export function pythag(x: number, y: number) {
+export function distance(x: number, y: number) {
 	return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 }
 
 export function clamp(value: number, min: number, max: number) {
 	return Math.min(Math.max(value, min), max);
+}
+
+export function normalize(x: number, y: number) {
+	let d = distance(x, y);
+
+	if (d == 0) {
+		// x = Math.random() * 2 - 1;
+		// y = Math.random() * 2 - 1;
+		// guess we doin an upwards bias for determinism
+		x = 0;
+		y = 1;
+		d = distance(x, y);
+	}
+
+	return [x / d, y / d];
 }

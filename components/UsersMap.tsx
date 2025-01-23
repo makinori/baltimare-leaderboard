@@ -6,7 +6,12 @@ import type {
 	IApiOnlineUser,
 	IApiUser,
 } from "../server/managers/api-manager";
-import { CLOUDSDALE, getAvatarImageOptimized, pythag } from "../shared/utils";
+import {
+	CLOUDSDALE,
+	distance,
+	getAvatarImageOptimized,
+	normalize,
+} from "../shared/utils";
 import { styleVars } from "../shared/vars";
 import baltimareMapImage from "./assets/baltimare-map.webp";
 import cloudsdaleMapImage from "./assets/cloudsdale-map.jpg";
@@ -32,8 +37,8 @@ export function UsersMap({
 
 	// useEffect(() => {
 	const circlePackedOnlineUsers = useMemo(() => {
-		const circleWidth = 16;
-		const movePerIteration = 1;
+		const circleDiameter = 16;
+		const movePerIteration = 2;
 
 		interface Circle {
 			_id: string;
@@ -56,12 +61,9 @@ export function UsersMap({
 			for (const circle of circles) {
 				if (circle == needle) continue;
 
-				const distance = pythag(
-					circle.x - needle.x,
-					circle.y - needle.y,
-				);
+				const d = distance(circle.x - needle.x, circle.y - needle.y);
 
-				if (distance <= circleWidth) {
+				if (d <= circleDiameter) {
 					overlaps.push(circle);
 				}
 			}
@@ -82,7 +84,10 @@ export function UsersMap({
 			);
 
 			for (let i = 0; i < circlesWithOverlaps.length; i++) {
-				const { circle, overlaps } = circlesWithOverlaps[i];
+				const { circle } = circlesWithOverlaps[i];
+
+				// need to get new ones since we're moving stuff around
+				const overlaps = findOverlaps(circle);
 
 				if (overlaps.length == 0) {
 					continue;
@@ -90,35 +95,45 @@ export function UsersMap({
 
 				anyOverlaps = true;
 
-				// TODO: normal vector
+				// fix
 
 				let relDirX = 0;
 				let relDirY = 0;
 
 				for (const overlap of overlaps) {
-					relDirX += circle.x - overlap.x;
-					relDirY += circle.y - overlap.y;
+					let currentDirX = circle.x - overlap.x;
+					let currentDirY = circle.y - overlap.y;
+
+					// const d = Math.min(distance(currentDirX, currentDirY));
+					// if (d == 0) continue;
+
+					// currentDirX =
+					// 	(currentDirX / d) * Math.min(circleDiameter - d, 0);
+					// currentDirY =
+					// 	(currentDirY / d) * Math.min(circleDiameter - d, 0);
+
+					[currentDirX, currentDirY] = normalize(
+						currentDirX,
+						currentDirY,
+					);
+
+					relDirX += currentDirX;
+					relDirY += currentDirY;
 				}
 
-				let distance = pythag(relDirX, relDirY);
+				const [normalX, normalY] = normalize(relDirX, relDirY);
 
-				if (distance == 0) {
-					relDirX = Math.random() * 2 - 1;
-					relDirY = Math.random() * 2 - 1;
-					distance = pythag(relDirX, relDirY);
-				}
-
-				const normalX = relDirX / distance;
-				const normalY = relDirY / distance;
-
-				circle.x = circle.x + normalX * movePerIteration;
-				circle.y = circle.y + normalY * movePerIteration;
+				circle.x += normalX * movePerIteration;
+				circle.y += normalY * movePerIteration;
 			}
 
 			return anyOverlaps;
 		};
 
-		const maxIterationCount = (circleWidth / movePerIteration) * 8;
+		const maxIterationCount = (circleDiameter / movePerIteration) * 8;
+		// const maxIterationCount = 1000;
+
+		// console.log(maxIterationCount);
 
 		// let i = 0;
 		// const interval = setInterval(() => {
@@ -127,7 +142,7 @@ export function UsersMap({
 		// 		clearInterval(interval);
 		// 		return;
 		// 	}
-		// 	console.log("itterate");
+		// 	console.log("iterate");
 		// 	if (iterate() == false) {
 		// 		console.log(i);
 		// 		clearInterval(interval);
