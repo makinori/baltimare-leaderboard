@@ -33,7 +33,7 @@ export function UsersMap({
 	// useEffect(() => {
 	const circlePackedOnlineUsers = useMemo(() => {
 		const circleWidth = 16;
-		const itterateMoveAmount = 1;
+		const movePerIteration = 1;
 
 		interface Circle {
 			_id: string;
@@ -111,14 +111,14 @@ export function UsersMap({
 				const normalX = relDirX / distance;
 				const normalY = relDirY / distance;
 
-				circle.x = circle.x + normalX * itterateMoveAmount;
-				circle.y = circle.y + normalY * itterateMoveAmount;
+				circle.x = circle.x + normalX * movePerIteration;
+				circle.y = circle.y + normalY * movePerIteration;
 			}
 
 			return anyOverlaps;
 		};
 
-		const maxIterationCount = (circleWidth / itterateMoveAmount) * 8;
+		const maxIterationCount = (circleWidth / movePerIteration) * 8;
 
 		// let i = 0;
 		// const interval = setInterval(() => {
