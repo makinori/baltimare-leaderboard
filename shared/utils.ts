@@ -78,17 +78,35 @@ export function clamp(value: number, min: number, max: number) {
 	return Math.min(Math.max(value, min), max);
 }
 
-export function normalize(x: number, y: number) {
+type Seed = [number, number, number, number];
+
+function randWithSeed(seed: number) {
+	// Robert Jenkins' 32 bit integer hash function.
+	seed = seed & 0xffffffff;
+	seed = (seed + 0x7ed55d16 + (seed << 12)) & 0xffffffff;
+	seed = (seed ^ 0xc761c23c ^ (seed >>> 19)) & 0xffffffff;
+	seed = (seed + 0x165667b1 + (seed << 5)) & 0xffffffff;
+	seed = ((seed + 0xd3a2646c) ^ (seed << 9)) & 0xffffffff;
+	seed = (seed + 0xfd7046c5 + (seed << 3)) & 0xffffffff;
+	seed = (seed ^ 0xb55a4f09 ^ (seed >>> 16)) & 0xffffffff;
+	return (seed & 0xfffffff) / 0x10000000;
+}
+
+export function normalizeWithSeed(x: number, y: number, seed: Seed) {
 	let d = distance(x, y);
 
 	if (d == 0) {
-		// x = Math.random() * 2 - 1;
-		// y = Math.random() * 2 - 1;
-		// guess we doin an upwards bias for determinism
-		x = 0;
-		y = 1;
+		x = randWithSeed(seed[0]) * 2 - 1;
+		y = randWithSeed(seed[1]) * 2 - 1;
+		console.log(seed, x, y);
 		d = distance(x, y);
 	}
 
 	return [x / d, y / d];
+}
+
+export function uuidAsRandSeed(uuid: string): Seed {
+	const truncated = uuid.replaceAll(/[^0-9a-f]/gi, "");
+	if (truncated.length != 32) return [0, 0, 0, 0];
+	return truncated.match(/.{1,8}/g).map(n => parseInt(n, 16)) as Seed;
 }

@@ -10,7 +10,8 @@ import {
 	CLOUDSDALE,
 	distance,
 	getAvatarImageOptimized,
-	normalize,
+	normalizeWithSeed,
+	uuidAsRandSeed,
 } from "../shared/utils";
 import { styleVars } from "../shared/vars";
 import baltimareMapImage from "./assets/baltimare-map.webp";
@@ -40,12 +41,6 @@ export function UsersMap({
 		const circleDiameter = 16;
 		const movePerIteration = 2;
 
-		interface Circle {
-			_id: string;
-			x: number;
-			y: number;
-		}
-
 		let circles: IApiOnlineUser[] = onlineUsers.map(user => ({
 			_id: user._id,
 			region: user.region,
@@ -55,7 +50,7 @@ export function UsersMap({
 				(["baltimare", "cloudsdale"].includes(user.region) ? 256 : 0),
 		}));
 
-		const findOverlaps = (needle: Circle) => {
+		const findOverlaps = (needle: IApiOnlineUser) => {
 			const overlaps = [];
 
 			for (const circle of circles) {
@@ -86,6 +81,8 @@ export function UsersMap({
 			for (let i = 0; i < circlesWithOverlaps.length; i++) {
 				const { circle } = circlesWithOverlaps[i];
 
+				const seed = uuidAsRandSeed(circle._id);
+
 				// need to get new ones since we're moving stuff around
 				const overlaps = findOverlaps(circle);
 
@@ -112,16 +109,21 @@ export function UsersMap({
 					// currentDirY =
 					// 	(currentDirY / d) * Math.min(circleDiameter - d, 0);
 
-					[currentDirX, currentDirY] = normalize(
+					[currentDirX, currentDirY] = normalizeWithSeed(
 						currentDirX,
 						currentDirY,
+						seed,
 					);
 
 					relDirX += currentDirX;
 					relDirY += currentDirY;
 				}
 
-				const [normalX, normalY] = normalize(relDirX, relDirY);
+				const [normalX, normalY] = normalizeWithSeed(
+					relDirX,
+					relDirY,
+					seed,
+				);
 
 				circle.x += normalX * movePerIteration;
 				circle.y += normalY * movePerIteration;
