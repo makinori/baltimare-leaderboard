@@ -253,6 +253,7 @@ export function UsersMap({
 							paddingLeft: 6,
 							paddingRight: 6,
 							fontWeight: 800,
+							width: "max-content",
 							// when unhover, moves back in zindex
 							// can't force global zindex on child elements
 							// prettier to just have no transitions
