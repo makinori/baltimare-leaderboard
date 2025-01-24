@@ -201,6 +201,7 @@ export function UsersMap({
 						position: "absolute",
 						transformOrigin: "50% 50%",
 						transform: `translate(-50%, -50%)`,
+						transition: styleVars.transition,
 						":hover": {
 							zIndex: 1000,
 						},
