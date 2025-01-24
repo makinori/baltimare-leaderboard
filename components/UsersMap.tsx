@@ -196,31 +196,84 @@ export function UsersMap({
 					href={"#" + onlineUser._id}
 					css={{
 						display: "block",
-						width: styleVars.userHeight * 0.75,
-						height: styleVars.userHeight * 0.75,
-						borderRadius: "999px",
+						width: styleVars.userHeight,
+						height: styleVars.userHeight,
 						position: "absolute",
-						backgroundColor: "#333",
-						backgroundSize: "100% 100%",
 						transformOrigin: "50% 50%",
 						transform: `translate(-50%, -50%)`,
-						transition: styleVars.transition,
 						":hover": {
+							zIndex: 1000,
+						},
+						":hover .icon": {
 							width: styleVars.userHeight,
 							height: styleVars.userHeight,
-							zIndex: "999",
+						},
+						":hover .name": {
+							opacity: 1,
 						},
 					}}
 					style={{
 						left: (onlineUser.x / 512) * 100 + "%",
 						top: (onlineUser.y / 256) * 100 + "%",
-						backgroundImage: getAvatarImageOptimized(
-							users.find(p => p._id == onlineUser._id)?.info
-								?.imageId,
-							styleVars.userHeight,
-						),
 					}}
-				></a>
+				>
+					<div
+						className="icon"
+						css={{
+							position: "absolute",
+							margin: "auto",
+							top: 0,
+							right: 0,
+							bottom: 0,
+							left: 0,
+							width: styleVars.userHeight * 0.75,
+							height: styleVars.userHeight * 0.75,
+							backgroundColor: "#333",
+							backgroundSize: "100% 100%",
+							borderRadius: 999,
+							transition: styleVars.transition,
+						}}
+						style={{
+							backgroundImage: getAvatarImageOptimized(
+								users.find(p => p._id == onlineUser._id)?.info
+									?.imageId,
+								styleVars.userHeight,
+							),
+						}}
+					></div>
+					<div
+						className="name"
+						css={{
+							position: "absolute",
+							margin: "auto",
+							left: "calc(100% + 3px)",
+							top: 0,
+							paddingTop: 3,
+							paddingBottom: 3,
+							paddingLeft: 6,
+							paddingRight: 6,
+							fontWeight: 800,
+							// when unhover, moves back in zindex
+							// can't force global zindex on child elements
+							// prettier to just have no transitions
+							// transition: styleVars.transitionFast,
+							opacity: 0,
+							overflow: "hidden",
+							pointerEvents: "none",
+							textAlign: "left",
+							backgroundColor: "#111",
+							// border: "solid 1px #333",
+							borderRadius: 8,
+						}}
+					>
+						{(() => {
+							const info = users.find(
+								p => p._id == onlineUser._id,
+							)?.info;
+							return info.displayName || info.username;
+						})()}
+					</div>
+				</a>
 			))}
 			{[
 				health["horseheights"] || health["clouddistrict"],
