@@ -98,7 +98,6 @@ export function normalizeWithSeed(x: number, y: number, seed: Seed) {
 	if (d == 0) {
 		x = randWithSeed(seed[0]) * 2 - 1;
 		y = randWithSeed(seed[1]) * 2 - 1;
-		console.log(seed, x, y);
 		d = distance(x, y);
 	}
 
