@@ -272,7 +272,7 @@ export function UsersMap({
 							const info = users.find(
 								p => p._id == onlineUser._id,
 							)?.info;
-							return info.displayName || info.username;
+							return info?.displayName || info?.username;
 						})()}
 					</div>
 				</a>
