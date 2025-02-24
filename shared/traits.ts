@@ -12,8 +12,8 @@ export const traitsMap = {
 		"0d03cff1-1e7e-4398-97fe-d8b2a1419e8d", // rarapony
 		"ebce47e6-b055-4b9b-bdc8-3d12fb09bcb4", // neri
 		"f3fb943d-20d8-48dd-9413-c1ab046ea8a8", // alpharush
-		// "musicora.skydancer",
-		// "blackvinegarcity",
+		// "musicora.skydancer", // flutterbutter?
+		// "blackvinegarcity", // kuro?
 		"309d61b5-6f2d-42e1-bc95-000d00318d61", // tea
 		"a2d78525-a55a-4601-9f5f-81db31695f0a", // marble
 		"60c54dc2-f46b-41f2-8678-071d93655834", // boggy
