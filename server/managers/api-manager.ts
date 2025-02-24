@@ -40,8 +40,8 @@ export class ApiManager {
 		let apiUsers: IApiUser[] = [];
 
 		for (const user of users) {
-			const username = user?.info?.username ?? "";
-			const traits = userTraitsMap[username.toLowerCase()] ?? [];
+			const uuid = user?._id ?? "";
+			const traits = userTraitsMap[uuid.toLowerCase()] ?? [];
 
 			let apiUser = user as IApiUser;
 			apiUser.traits = traits;
