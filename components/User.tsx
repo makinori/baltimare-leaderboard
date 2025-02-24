@@ -74,7 +74,7 @@ function ImageTrait({ imageTrait }: { imageTrait: ImageTraitType }) {
 
 function TextTrait({ text, janny }: { text: string; janny?: boolean }) {
 	const css: CSSObject = {
-		padding: "0 5px",
+		padding: "1px 5px",
 		borderRadius: 4,
 		fontSize: 12,
 		fontWeight: 700,
@@ -94,8 +94,9 @@ function TextTrait({ text, janny }: { text: string; janny?: boolean }) {
 		// const c = `rgba(34,34,34,${opacity})`; // #222 with alpha
 		// const c = `rgba(17,17,17,${opacity})`; // #111 with alpha
 		// css.backgroundImage = `linear-gradient(0deg, ${c}, ${c}), url(trans-flag.png)`;
-		css.backgroundImage = `url(trans-flag-dim.png)`;
-		css.color = "#888";
+		// ok the joke isnt funny anymore
+		// css.backgroundImage = `url(trans-flag-dim.png)`;
+		// css.color = "#888";
 	}
 
 	return <div css={css}>{text}</div>;
