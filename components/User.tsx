@@ -57,6 +57,7 @@ function ImageTrait({ imageTrait }: { imageTrait: ImageTraitType }) {
 		<a
 			href={imageTrait.url}
 			css={{
+				height: imageTrait.size,
 				transition: styleVars.transition,
 				":hover": {
 					transform: "scale(1.1)",
