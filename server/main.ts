@@ -34,6 +34,7 @@ const DEV = process.env.NODE_ENV !== "production";
 				}.png`,
 			});
 			res.end();
+			return;
 		}
 
 		if (parsedUrl.path.startsWith("/api")) {
