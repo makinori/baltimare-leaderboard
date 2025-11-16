@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM docker.io/node:lts-alpine
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
