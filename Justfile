@@ -14,8 +14,8 @@ alias u := update
 update:
 	git pull
 	systemctl --user daemon-reload
-	systemctl --user start maki.cafe-build
-	systemctl --user restart maki.cafe
+	systemctl --user start baltimare-leaderboard-build
+	systemctl --user restart baltimare-leaderboard-pod
 
 # 2025 dec 9
 [group("migration")]
