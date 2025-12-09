@@ -23,18 +23,19 @@ type User struct {
 	} `json:"info"`
 }
 
-type NewUser struct {
-	_        struct{}  `cbor:",toarray"`
-	Minutes  uint64    `cbor:"minutes"`
-	LastSeen time.Time `cbor:"lastSeen"`
-}
-
 type NewUserInfo struct {
 	_           struct{}  `cbor:",toarray"`
 	LastUpdated time.Time `cbor:"lastUpdated"`
 	Username    string    `cbor:"username"`
 	DisplayName string    `cbor:"displayName"`
 	ImageID     uuid.UUID `cbor:"imageID"`
+}
+
+type NewUser struct {
+	_        struct{}    `cbor:",toarray"`
+	Minutes  uint64      `cbor:"minutes"`
+	LastSeen time.Time   `cbor:"lastSeen"`
+	Info     NewUserInfo `cbor:"info"`
 }
 
 var (
@@ -44,11 +45,6 @@ var (
 
 func migrateUsersTx(tx *bolt.Tx) error {
 	usersBucket, err := tx.CreateBucketIfNotExists([]byte("users"))
-	if err != nil {
-		return err
-	}
-
-	usersInfoBucket, err := tx.CreateBucketIfNotExists([]byte("users:info"))
 	if err != nil {
 		return err
 	}
@@ -75,6 +71,12 @@ func migrateUsersTx(tx *bolt.Tx) error {
 		newUser := NewUser{
 			Minutes:  user.Minutes,
 			LastSeen: user.LastSeen,
+			Info: NewUserInfo{
+				LastUpdated: user.Info.LastUpdated,
+				Username:    user.Info.Username,
+				DisplayName: user.Info.DisplayName,
+				ImageID:     imageID,
+			},
 		}
 
 		newUserBytes, err := cbor.Marshal(newUser)
@@ -83,23 +85,6 @@ func migrateUsersTx(tx *bolt.Tx) error {
 		}
 
 		err = usersBucket.Put(userID[:], newUserBytes)
-		if err != nil {
-			return err
-		}
-
-		newUserInfo := NewUserInfo{
-			LastUpdated: user.Info.LastUpdated,
-			Username:    user.Info.Username,
-			DisplayName: user.Info.DisplayName,
-			ImageID:     imageID,
-		}
-
-		newUserInfoBytes, err := cbor.Marshal(newUserInfo)
-		if err != nil {
-			return err
-		}
-
-		err = usersInfoBucket.Put(userID[:], newUserInfoBytes)
 		if err != nil {
 			return err
 		}
