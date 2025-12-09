@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"slices"
 	"sort"
+	"time"
+
+	"github.com/makinori/foxlib/foxcss"
+	"github.com/makinori/foxlib/foxhttp"
 )
 
 // TODO: add auto backup system too
@@ -14,10 +18,17 @@ var (
 )
 
 func handlePage(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(renderPage()))
+	foxhttp.ServeOptimized(
+		w, r, ".html", time.Unix(0, 0), []byte(renderPage()), false,
+	)
 }
 
 func main() {
+	err := foxcss.InitSCSS(nil)
+	if err != nil {
+		panic(err)
+	}
+
 	InitDatabase()
 	defer db.Close()
 

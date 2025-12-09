@@ -5,12 +5,18 @@ go 1.25.5
 require (
 	github.com/fxamacker/cbor/v2 v2.9.0
 	github.com/google/uuid v1.6.0
+	github.com/makinori/foxlib v0.0.0-20251124091232-dbad65dd5c13
 	github.com/mergestat/timediff v0.0.4
 	go.etcd.io/bbolt v1.4.3
 	maragu.dev/gomponents v1.2.0
 )
 
 require (
+	github.com/andybalholm/brotli v1.2.0 // indirect
+	github.com/bep/godartsass/v2 v2.5.0 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/klauspost/compress v1.18.1 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	golang.org/x/sys v0.29.0 // indirect
+	google.golang.org/protobuf v1.35.2 // indirect
 )

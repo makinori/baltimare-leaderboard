@@ -15,13 +15,16 @@ strip baltimare-leaderboard
 
 # create final image
 
-FROM scratch
+FROM docker.io/alpine:edge
 
-WORKDIR /
+WORKDIR /app
+
+RUN apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+dart-sass
 
 # COPY --from=build /etc/ssl/certs/ca-certificates.crt \
 # /etc/ssl/certs/ca-certificates.crt
 
-COPY --from=build /app/baltimare-leaderboard /baltimare-leaderboard
+COPY --from=build /app/baltimare-leaderboard /app/baltimare-leaderboard
 
-ENTRYPOINT ["/baltimare-leaderboard"]
+ENTRYPOINT ["/app/baltimare-leaderboard"]

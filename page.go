@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
 	"slices"
 	"strconv"
 
+	"github.com/makinori/foxlib/foxcss"
 	"github.com/mergestat/timediff"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
@@ -70,8 +73,8 @@ func renderUsers() (Node, uint64, uint64) {
 }
 
 func renderPage() string {
-	// > 609 popens seen in total
-	// > 415,715 hours collectively
+	ctx := context.Background()
+	ctx = foxcss.InitContext(ctx)
 
 	users, total, totalHours := renderUsers()
 
@@ -114,9 +117,16 @@ func renderPage() string {
 		users,
 	)
 
+	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(ctx))
+	if err != nil {
+		slog.Error("failed to render scss", "err", err)
+		// dont return empty
+	}
+
 	return Group{HTML(
 		Head(
 			Title(ENV_NAME+" leaderboard"),
+			StyleEl(Raw(css)),
 		),
 		body,
 	)}.String()
