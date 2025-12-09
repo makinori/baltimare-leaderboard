@@ -76,7 +76,7 @@ func renderPage() string {
 	users, total, totalHours := renderUsers()
 
 	var body = Body(
-		H1(Text("baltimare leaderboard")),
+		H1(Text(ENV_NAME+" leaderboard")),
 		H2(Text("fuck javascript edition")),
 		P(
 			Text("lore: "),
@@ -116,7 +116,7 @@ func renderPage() string {
 
 	return Group{HTML(
 		Head(
-			Title("baltimare leaderboard"),
+			Title(ENV_NAME+" leaderboard"),
 		),
 		body,
 	)}.String()

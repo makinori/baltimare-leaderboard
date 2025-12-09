@@ -1,0 +1,43 @@
+[Unit]
+Description=Baltimare Leaderbaord
+Wants=network-online.target
+After=network-online.target
+After=local-fs.target
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target
+
+[Container]
+HostName=baltimare-leaderboard
+Image=baltimare-leaderboard.build
+# AutoUpdate=registry
+
+Volume=./data.d/baltimare.db:/data.db
+
+Environment=NAME=baltimare
+Environment=DATABASE_PATH=/data.db
+
+Label=traefik.enable=true
+
+Label=traefik.http.routers.baltimare-leaderboard.rule=Host(`baltimare.hotmilk.space`)
+Label=traefik.http.routers.baltimare-leaderboard.entrypoints=websecure
+Label=traefik.http.routers.baltimare-leaderboard.service=baltimare-leaderboard
+
+Label="traefik.http.routers.baltimare-leaderboard-tor.rule=\
+Host(`baltimare.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion`)"
+Label=traefik.http.routers.baltimare-leaderboard-tor.entrypoints=webtor
+Label=traefik.http.routers.baltimare-leaderboard-tor.service=baltimare-leaderboard
+
+Label=traefik.http.services.baltimare-leaderboard.loadbalancer.server.port=8080
+Label=traefik.docker.network=traefik
+
+Label=homepage.group=Fun
+Label="homepage.name=Baltimare Leaderboard"
+Label=homepage.icon=https://baltimare.hotmilk.space/favicon.png
+Label=homepage.href=https://baltimare.hotmilk.space
+
+Network=traefik

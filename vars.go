@@ -6,6 +6,8 @@ var (
 	ENV_DATABASE_PATH = getEnv("DATABASE_PATH", "")
 
 	ENV_PORT = getEnv("PORT", "8080")
+
+	ENV_NAME = getEnv("NAME", "baltimare")
 )
 
 func getEnv(key string, fallback string) string {
