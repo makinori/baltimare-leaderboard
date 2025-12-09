@@ -1,2 +1,7 @@
 .git
-/data*
+/systemd
+
+/data
+/data.d
+/backup
+/backup.d

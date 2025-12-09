@@ -12,11 +12,14 @@ TimeoutStartSec=900
 WantedBy=default.target
 
 [Container]
-HostName=cloudsdale-leaderboard
-Image=cloudsdale-leaderboard.build
+# HostName=cloudsdale-leaderboard
+NetworkAlias=cloudsdale-leaderboard
+Image=baltimare-leaderboard.build
 # AutoUpdate=registry
 
-Volume=./data.d/cloudsdale.db:/data.db
+Pod=baltimare-leaderboard.pod
+
+Volume=../data.d/cloudsdale.db:/data.db
 
 Environment=NAME=cloudsdale
 Environment=DATABASE_PATH=/data.db

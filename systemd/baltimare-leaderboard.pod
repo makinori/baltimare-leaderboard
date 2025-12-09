@@ -1,0 +1,14 @@
+[Unit]
+Description=Baltimare Leaderboard Pod
+Wants=network-online.target
+After=network-online.target
+After=local-fs.target
+
+[Pod]
+PodName=baltimare-leaderboard
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

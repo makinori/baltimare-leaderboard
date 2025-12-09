@@ -1,1 +1,4 @@
-/data*
+/data
+/data.d
+/backup
+/backup.d

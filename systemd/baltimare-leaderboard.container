@@ -12,11 +12,14 @@ TimeoutStartSec=900
 WantedBy=default.target
 
 [Container]
-HostName=baltimare-leaderboard
+# HostName=baltimare-leaderboard
+NetworkAlias=baltimare-leaderboard
 Image=baltimare-leaderboard.build
 # AutoUpdate=registry
 
-Volume=./data.d/baltimare.db:/data.db
+Pod=baltimare-leaderboard.pod
+
+Volume=../data.d/baltimare.db:/data.db
 
 Environment=NAME=baltimare
 Environment=DATABASE_PATH=/data.db
