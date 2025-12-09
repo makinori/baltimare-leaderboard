@@ -7,6 +7,8 @@ import (
 	"sort"
 )
 
+// TODO: add auto backup system too
+
 var (
 	tempStaticUsers []UserWithID
 )
