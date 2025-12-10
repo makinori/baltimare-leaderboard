@@ -50,27 +50,24 @@ func renderUser(ctx context.Context, user *database.UserWithID, online bool) Nod
 		user.User.Info.ImageID.String(),
 	)
 
-	lastSeen := timediff.TimeDiff(user.User.LastSeen)
-
-	var onlineRow Node
+	var lastSeenRow Node
 	if online {
-		onlineRow = Td(
+		lastSeenRow = Td(
 			Class(foxcss.Class(ctx, `
 				color: green;
 			`)),
 			Text("online"),
 		)
 	} else {
-		onlineRow = Td(
+		lastSeenRow = Td(
 			Class(foxcss.Class(ctx, `
 				color: red;
 			`)),
-			Text("offline"),
+			Text(timediff.TimeDiff(user.User.LastSeen)),
 		)
 	}
 
 	return Tr(
-		onlineRow,
 		Td(A(
 			Href(url),
 			Img(
@@ -81,7 +78,7 @@ func renderUser(ctx context.Context, user *database.UserWithID, online bool) Nod
 		Td(Text(formatName(&user.User.Info))),
 		// Td(Text(formatUint(user.User.Minutes)+" minutes")),
 		Td(Text(formatUint(user.User.Minutes/60)+" hours")),
-		Td(Text(lastSeen)),
+		lastSeenRow,
 	)
 }
 
