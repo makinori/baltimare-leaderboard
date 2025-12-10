@@ -12,7 +12,9 @@ var (
 	AREA    = getEnv("AREA", "baltimare")
 	REGIONS []string
 
-	SECRET = getEnv("SECRET", "dcumwoidaksdjlkajsd")
+	SECRET = getEnv("SECRET", "supersecretchangeme")
+
+	_, DEV = os.LookupEnv("DEV")
 )
 
 func init() {

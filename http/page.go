@@ -72,6 +72,7 @@ func renderUser(ctx context.Context, user *database.UserWithID, online bool) Nod
 		)),
 		Td(Text(user.User.Info.DisplayName)),
 		Td(Text(user.User.Info.Username)),
+		// Td(Text(formatUint(user.User.Minutes)+" minutes")),
 		Td(Text(formatUint(user.User.Minutes/60)+" hours")),
 		Td(Text(lastSeen)),
 	)
@@ -85,6 +86,7 @@ func renderUsers(ctx context.Context) (Node, uint64, uint64) {
 
 	users, err := database.GetUsers()
 	if err != nil {
+		slog.Error("failed to get users", "err", err)
 		return Div(), 0, 0
 	}
 

@@ -4,6 +4,7 @@ default:
 alias s := start
 [group("dev")]
 start:
+	DEV=1 \
 	GOEXPERIMENT=greenteagc \
 	DATABASE_PATH=data/data.db \
 	go run .
@@ -29,6 +30,7 @@ migrate-from-js old_path new_path:
 [group("dev")]
 favicon input output:
 	#!/bin/bash
+	set -euo pipefail
 	TMP=$(mktemp -u tmp.XXXXXX)
 	rm -rf $TMP
 	mkdir $TMP
@@ -39,3 +41,14 @@ favicon input output:
 	done
 	magick $TMP/*.bmp {{output}}
 	rm -rf $TMP
+
+[group("dev")]
+emulate-lsl:
+	#!/bin/bash
+	set -euo pipefail
+	while true; do
+	curl -X PUT -H "Authorization: Bearer supersecretchangeme" \
+	-d "b7c5f3667a3942898157d3a8ae6d57f40,0" \
+	http://127.0.0.1:8080/api/lsl/baltimare
+	sleep 5
+	done

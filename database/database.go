@@ -59,6 +59,50 @@ func Init() *bbolt.DB {
 	return db
 }
 
+func GetUser(id uuid.UUID) (User, error, bool) {
+	var user User
+	found := false
+
+	err := db.View(func(tx *bbolt.Tx) error {
+		usersBucket := tx.Bucket([]byte("users"))
+		if usersBucket == nil {
+			panic("users bucket not found")
+		}
+
+		data := usersBucket.Get(id[:])
+		if len(data) == 0 {
+			return nil
+		}
+
+		err := cbor.Unmarshal(data, &user)
+		if err != nil {
+			slog.Error("failed to unmarshal", "user", data)
+			return err
+		}
+
+		return nil
+	})
+
+	return user, err, found
+}
+
+func PutUser(id uuid.UUID, user User) error {
+	return db.Update(func(tx *bbolt.Tx) error {
+		usersBucket := tx.Bucket([]byte("users"))
+		if usersBucket == nil {
+			panic("users bucket not found")
+		}
+
+		data, err := cbor.Marshal(user)
+		if err != nil {
+			slog.Error("failed to marshal", "user", data)
+			return err
+		}
+
+		return usersBucket.Put(id[:], data)
+	})
+}
+
 func GetUsers() ([]UserWithID, error) {
 	var users []UserWithID
 

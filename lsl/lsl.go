@@ -3,6 +3,7 @@ package lsl
 import (
 	"encoding/hex"
 	"fmt"
+	"log/slog"
 	"regexp"
 	"slices"
 	"strconv"
@@ -54,6 +55,7 @@ func PutData(region string, data string) {
 		matches := lineRegexp.FindStringSubmatch(line)
 		if len(matches) == 0 {
 			// invalid
+			slog.Warn("invalid lsl", "line", line)
 			continue
 		}
 
@@ -143,10 +145,8 @@ func reap() {
 	// do event emmitter update
 }
 
-func Init() {
-	c := cron.New(cron.WithSeconds())
-
-	_, err := c.AddFunc(
+func Init(cron *cron.Cron) {
+	_, err := cron.AddFunc(
 		fmt.Sprintf("*/%d * * * * *", regionExpireSeconds), reap,
 	)
 
@@ -154,5 +154,5 @@ func Init() {
 		panic(err)
 	}
 
-	c.Start()
+	slog.Info("started region expire cron")
 }
