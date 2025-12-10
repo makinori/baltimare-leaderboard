@@ -308,7 +308,7 @@ func content(ctx context.Context) (Group, error) {
 			),
 			A(
 				Img(Height("24"), Src("/icons/tor.svg")),
-				Href("http://baltimare.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion"),
+				Href("http://"+env.AREA+".hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion"),
 			),
 		),
 		Br(),
