@@ -94,7 +94,7 @@ func renderUsers(ctx context.Context) (Node, uint64, uint64) {
 
 	for i := range users {
 		if users[i].User.Minutes >= 120 &&
-			!slices.Contains(traitMap["bot"], users[i].ID.String()) {
+			!slices.Contains(traitUUIDMap["bot"], users[i].ID) {
 			sortedUsers = append(sortedUsers, users[i])
 		}
 	}

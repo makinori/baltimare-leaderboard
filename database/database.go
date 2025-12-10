@@ -17,24 +17,27 @@ var (
 	ErrorUserNotFound = errors.New("user not found")
 )
 
+// json tag is interusable for when we want to serialize for http
+// however keys arent being used in database because of cbor toarray
+
 type UserInfo struct {
 	_           struct{}  `cbor:",toarray"`
-	LastUpdated time.Time `cbor:"lastUpdated"`
-	Username    string    `cbor:"username"`
-	DisplayName string    `cbor:"displayName"`
-	ImageID     uuid.UUID `cbor:"imageID"`
+	LastUpdated time.Time `json:"lastUpdated"`
+	Username    string    `json:"username"`
+	DisplayName string    `json:"displayName"`
+	ImageID     uuid.UUID `json:"imageID"`
 }
 
 type User struct {
 	_        struct{}  `cbor:",toarray"`
-	Minutes  uint64    `cbor:"minutes"`
-	LastSeen time.Time `cbor:"lastSeen"`
-	Info     UserInfo  `cbor:"info"`
+	Minutes  uint64    `json:"minutes"`
+	LastSeen time.Time `json:"lastSeen"`
+	Info     UserInfo  `json:"info"`
 }
 
 type UserWithID struct {
-	ID   uuid.UUID
-	User User
+	ID uuid.UUID `json:"id"`
+	User
 }
 
 func Init() *bbolt.DB {

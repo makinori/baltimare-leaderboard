@@ -49,6 +49,6 @@ emulate-lsl:
 	while true; do
 	curl -X PUT -H "Authorization: Bearer supersecretchangeme" \
 	-d "b7c5f3667a3942898157d3a8ae6d57f40,0" \
-	http://127.0.0.1:8080/api/lsl/baltimare
+	http://127.0.0.1:8080/api/lsl/baltimare || true
 	sleep 5
 	done
