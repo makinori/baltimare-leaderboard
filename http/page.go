@@ -134,6 +134,14 @@ func renderPage() string {
 
 	users, total, totalHours := renderUsers(ctx, onlineUUIDs)
 
+	sinceText := ""
+	switch env.AREA {
+	case "baltimare":
+		sinceText = "august 6th 2024"
+	case "cloudsdale":
+		sinceText = "january 13th 2025"
+	}
+
 	var body = Body(
 		H1(Text(env.AREA+" leaderboard")),
 		H2(Text("fuck javascript edition")),
@@ -172,7 +180,7 @@ func renderPage() string {
 			Text(fmt.Sprintf("%s hours collectively", formatUint(totalHours))),
 		),
 		P(
-			Text("total time online since august 6th 2024"),
+			Text("total time online since "+sinceText),
 		),
 		users,
 	)
