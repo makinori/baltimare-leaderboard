@@ -145,9 +145,7 @@ func renderPage() string {
 			),
 		),
 		P(
-			Text("currently not tracking. will be functional soon."),
-			Br(),
-			Text("i promise the page will look just as pretty again."),
+			Text("promise the page will look just as pretty again soon"),
 		),
 		P(
 			Text("see development here: "),
