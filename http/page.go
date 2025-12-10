@@ -9,6 +9,7 @@ import (
 	"slices"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/makinori/baltimare-leaderboard/env"
@@ -70,7 +71,7 @@ func getImageURL(imageID uuid.UUID) string {
 func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 	url := "https://world.secondlife.com/resident/" + user.ID.String()
 
-	lastSeenText := user.LastSeen.Format("Jan _2 2006, 15:04 MST")
+	lastSeenDate := user.LastSeen.Format("Jan _2 2006, 15:04 MST")
 
 	var lastSeenRow Node
 	if online {
@@ -80,16 +81,20 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 				font-weight: 600;
 			`)),
 			Text("online"),
-			Title(lastSeenText),
+			Title(lastSeenDate),
 		)
 	} else {
+		lastSeenText := timediff.TimeDiff(user.User.LastSeen)
+		lastSeenText = strings.ReplaceAll(lastSeenText, "ago", "")
+		lastSeenText = strings.ReplaceAll(lastSeenText, "minutes", "min")
+		lastSeenText = strings.TrimSpace(lastSeenText)
 		lastSeenRow = Td(
 			Class(foxcss.Class(ctx, `
 				color: `+ColorRed+`;
 				font-weight: 600;
 			`)),
-			Text(timediff.TimeDiff(user.User.LastSeen)),
-			Title(lastSeenText),
+			Text(lastSeenText),
+			Title(lastSeenDate),
 		)
 	}
 
