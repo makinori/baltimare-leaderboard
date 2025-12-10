@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"fmt"
 	"log/slog"
 	"slices"
@@ -58,14 +59,16 @@ func formatName(userInfo *user.UserInfo) string {
 	}
 }
 
+func getImageURL(imageID uuid.UUID) string {
+	// https://wiki.secondlife.com/wiki/Picture_Service
+	return fmt.Sprintf(
+		"https://picture-service.secondlife.com/%s/60x45.jpg",
+		imageID.String(),
+	)
+}
+
 func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 	url := "https://world.secondlife.com/resident/" + user.ID.String()
-
-	// https://wiki.secondlife.com/wiki/Picture_Service
-	imageUrl := fmt.Sprintf(
-		"https://picture-service.secondlife.com/%s/60x45.jpg",
-		user.User.Info.ImageID.String(),
-	)
 
 	lastSeenText := user.LastSeen.Format("Jan _2 2006, 15:04 MST")
 
@@ -106,7 +109,7 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 			Href(url),
 			Img(
 				Class("icon"),
-				Src(imageUrl),
+				Src(getImageURL(user.User.Info.ImageID)),
 				Loading("lazy"),
 			),
 		)),
@@ -121,31 +124,9 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 }
 
 func renderUsers(
-	ctx context.Context, onlineUUIDs []uuid.UUID,
+	ctx context.Context, sortedUsers []user.UserWithID, onlineUUIDs []uuid.UUID,
 ) (Node, uint64, uint64) {
 	var total, totalMinutes uint64
-
-	// get users and sort
-	// TODO: this could get expensive so we should cache this
-
-	users, err := user.GetUsers()
-	if err != nil {
-		slog.Error("failed to get users", "err", err)
-		return Div(), 0, 0
-	}
-
-	var sortedUsers []user.UserWithID
-
-	for i := range users {
-		if users[i].User.Minutes >= 120 &&
-			!slices.Contains(traitUUIDMap["bot"], users[i].ID) {
-			sortedUsers = append(sortedUsers, users[i])
-		}
-	}
-
-	sort.Slice(sortedUsers, func(i, j int) bool {
-		return sortedUsers[i].User.Minutes > sortedUsers[j].User.Minutes
-	})
 
 	tableRows := make(Group, len(sortedUsers))
 	for i := range sortedUsers {
@@ -165,10 +146,97 @@ func renderUsers(
 	), total, totalMinutes / 60
 }
 
-func content(ctx context.Context) Group {
-	onlineUUIDs := lsl.GetOnlineUUIDs()
+func renderMapUser(
+	ctx context.Context, region string, onlineUser *lsl.OnlineUser,
+	users []user.UserWithID,
+) Node {
+	x := onlineUser.X
+	if region == "baltimare" || region == "cloudsdale" {
+		x += 256
+	}
 
-	users, total, totalHours := renderUsers(ctx, onlineUUIDs)
+	var imageUrl string
+	for i := range users {
+		if users[i].ID == onlineUser.UUID {
+			imageUrl = getImageURL(users[i].Info.ImageID)
+			break
+		}
+	}
+
+	return Img(
+		Class(foxcss.Class(ctx, `
+			position: absolute;
+			width: 32px;
+			height: 32px;
+			border-radius: 999px;
+			transform: translate(-50%, -50%);
+		`)),
+		Style(fmt.Sprintf(
+			"left:%.2f%%;top:%.2f%%",
+			float32(clamp(x, 0, 512))/512*100,
+			float32(clamp(onlineUser.Y, 0, 256))/256*100,
+		)),
+		Src(imageUrl),
+	)
+}
+
+func renderMap(
+	ctx context.Context, onlineUsersMap map[string][]lsl.OnlineUser,
+	users []user.UserWithID,
+) Node {
+	var userEls Group
+
+	for region, onlineUsers := range onlineUsersMap {
+		for i := range onlineUsers {
+			userEls = append(userEls,
+				renderMapUser(ctx, region, &onlineUsers[i], users),
+			)
+		}
+	}
+
+	return Div(
+		Class(foxcss.Class(ctx, `
+			background-image: 
+				linear-gradient(0deg, rgba(#111, 0.5), rgba(#111, 0.5)), 
+				url("/maps/baltimare.webp");
+			aspect-ratio: 2/1;
+			width: calc(100% - 128px);
+			background-size: 100% 100%;
+			border-radius: 8px;
+			position: relative;
+		`)),
+		userEls,
+	)
+}
+
+func content(ctx context.Context) (Group, error) {
+	// get users and sort
+	// TODO: this could get expensive so maybe we should cache this
+	// TODO: these data structures being passed around like this is also ineffecient
+
+	unsortedUsers, err := user.GetUsers()
+	if err != nil {
+		slog.Error("failed to get online users", "err", err)
+		return Group{}, errors.New("failed to get online users")
+	}
+
+	var sortedUsers []user.UserWithID
+
+	for i := range unsortedUsers {
+		if unsortedUsers[i].User.Minutes >= 120 &&
+			!slices.Contains(traitUUIDMap["bot"], unsortedUsers[i].ID) {
+			sortedUsers = append(sortedUsers, unsortedUsers[i])
+		}
+	}
+
+	sort.Slice(sortedUsers, func(i, j int) bool {
+		return sortedUsers[i].User.Minutes > sortedUsers[j].User.Minutes
+	})
+
+	onlineUsers := lsl.GetData()
+	onlineUUIDs := lsl.GetOnlineUUIDs(onlineUsers)
+
+	users, total, totalHours := renderUsers(ctx, sortedUsers, onlineUUIDs)
 
 	sinceText := ""
 	switch env.AREA {
@@ -265,13 +333,20 @@ func content(ctx context.Context) Group {
 			Text("> also how long ago since last online"),
 		),
 		Br(),
+		renderMap(ctx, onlineUsers, sortedUsers),
+		Br(),
 		users,
-	}
+	}, nil
 }
 
 func renderPage() (string, bool) {
 	ctx := context.Background()
 	ctx = foxcss.InitContext(ctx)
+
+	contentGroup, err := content(ctx)
+	if err != nil {
+		return err.Error(), false
+	}
 
 	var contentDiv = Div(
 		Class(foxcss.Class(ctx, `
@@ -285,7 +360,7 @@ func renderPage() (string, bool) {
 				max-width: 800px;
 				margin-bottom: 128px;
 			`)),
-			content(ctx),
+			contentGroup,
 		),
 	)
 

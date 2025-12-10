@@ -65,7 +65,7 @@ emulate-lsl:
 	curl -s -X PUT \
 	-H "Content-Type: text/plain" \
 	-H "Authorization: Bearer supersecretchangeme" \
-	-d "b7c5f3667a3942898157d3a8ae6d57f40,0" \
+	-d "b7c5f3667a3942898157d3a8ae6d57f432,32" \
 	http://127.0.0.1:8080/api/lsl/baltimare > /dev/null || true
 	sleep 5
 	done

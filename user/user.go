@@ -91,7 +91,7 @@ func getInfo(userID uuid.UUID) (UserInfo, error) {
 
 func everyMinute() {
 	now := time.Now()
-	onlineUUIDs := lsl.GetOnlineUUIDs()
+	onlineUUIDs := lsl.GetOnlineUUIDs(lsl.GetData())
 
 	// only get fresh info for users currently online
 	// if it hasnt been updated for as long as the expire time

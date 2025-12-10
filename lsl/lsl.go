@@ -89,8 +89,7 @@ func GetData() map[string][]OnlineUser {
 	return data
 }
 
-func GetOnlineUUIDs() []uuid.UUID {
-	data := GetData()
+func GetOnlineUUIDs(data map[string][]OnlineUser) []uuid.UUID {
 	var uuids []uuid.UUID
 
 	for _, users := range data {
