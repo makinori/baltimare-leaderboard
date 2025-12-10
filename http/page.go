@@ -71,7 +71,7 @@ func getImageURL(imageID uuid.UUID) string {
 func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 	url := "https://world.secondlife.com/resident/" + user.ID.String()
 
-	lastSeenDate := user.LastSeen.Format("Jan _2 2006, 15:04 MST")
+	lastSeenDate := user.LastSeen.Format("Jan 2 2006, 15:04 MST")
 
 	var lastSeenRow Node
 	if online {
@@ -85,8 +85,9 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 		)
 	} else {
 		lastSeenText := timediff.TimeDiff(user.User.LastSeen)
+		lastSeenText = strings.ReplaceAll(lastSeenText, "a few", "few")
+		lastSeenText = strings.ReplaceAll(lastSeenText, "minute", "min")
 		lastSeenText = strings.ReplaceAll(lastSeenText, "ago", "")
-		lastSeenText = strings.ReplaceAll(lastSeenText, "minutes", "min")
 		lastSeenText = strings.TrimSpace(lastSeenText)
 		lastSeenRow = Td(
 			Class(foxcss.Class(ctx, `
