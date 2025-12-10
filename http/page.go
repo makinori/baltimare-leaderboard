@@ -9,9 +9,9 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	"github.com/makinori/baltimare-leaderboard/database"
 	"github.com/makinori/baltimare-leaderboard/env"
 	"github.com/makinori/baltimare-leaderboard/lsl"
+	"github.com/makinori/baltimare-leaderboard/user"
 	"github.com/makinori/foxlib/foxcss"
 	"github.com/mergestat/timediff"
 	. "maragu.dev/gomponents"
@@ -34,7 +34,7 @@ func formatUint(n uint64) string {
 	return string(out)
 }
 
-func formatName(userInfo *database.UserInfo) string {
+func formatName(userInfo *user.UserInfo) string {
 	if userInfo.DisplayName == "" {
 		return userInfo.Username
 	} else {
@@ -42,7 +42,7 @@ func formatName(userInfo *database.UserInfo) string {
 	}
 }
 
-func renderUser(ctx context.Context, user *database.UserWithID, online bool) Node {
+func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 	url := "https://world.secondlife.com/resident/" + user.ID.String()
 
 	// https://wiki.secondlife.com/wiki/Picture_Service
@@ -91,13 +91,13 @@ func renderUsers(
 	// get users and sort
 	// TODO: this could get expensive so we should cache this
 
-	users, err := database.GetUsers()
+	users, err := user.GetUsers()
 	if err != nil {
 		slog.Error("failed to get users", "err", err)
 		return Div(), 0, 0
 	}
 
-	var sortedUsers []database.UserWithID
+	var sortedUsers []user.UserWithID
 
 	for i := range users {
 		if users[i].User.Minutes >= 120 &&

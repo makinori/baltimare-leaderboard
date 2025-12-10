@@ -1,6 +1,7 @@
 package env
 
 import (
+	"log/slog"
 	"os"
 )
 
@@ -18,6 +19,10 @@ var (
 )
 
 func init() {
+	if DEV {
+		slog.Warn("RUNNING IN DEVELOPER MODE")
+	}
+
 	if DATABASE_PATH == "" {
 		panic("DATABASE_PATH not set")
 	}

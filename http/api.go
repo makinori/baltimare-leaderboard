@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/makinori/baltimare-leaderboard/database"
 	"github.com/makinori/baltimare-leaderboard/env"
 	"github.com/makinori/baltimare-leaderboard/lsl"
+	"github.com/makinori/baltimare-leaderboard/user"
 	"github.com/makinori/foxlib/foxhttp"
 )
 
@@ -50,12 +50,12 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 type APIUser struct {
-	database.UserWithID
+	user.UserWithID
 	Traits []string `json:"traits"`
 }
 
 func handleUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := database.GetUsers()
+	users, err := user.GetUsers()
 	if err != nil {
 		slog.Error("failed to get users", "err", err)
 		w.WriteHeader(http.StatusInternalServerError)

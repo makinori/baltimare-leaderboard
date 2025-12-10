@@ -1,4 +1,4 @@
-package database
+package user
 
 import (
 	"errors"
@@ -40,7 +40,7 @@ type UserWithID struct {
 	User
 }
 
-func Init() *bbolt.DB {
+func InitDatabase() *bbolt.DB {
 	var err error
 	db, err = bbolt.Open(env.DATABASE_PATH, 0600, nil)
 	if err != nil {
@@ -62,7 +62,7 @@ func Init() *bbolt.DB {
 	return db
 }
 
-func GetUser(id uuid.UUID) (User, error, bool) {
+func getUser(id uuid.UUID) (User, error, bool) {
 	var user User
 	found := false
 
@@ -89,7 +89,7 @@ func GetUser(id uuid.UUID) (User, error, bool) {
 	return user, err, found
 }
 
-func PutUser(id uuid.UUID, user User) error {
+func putUser(id uuid.UUID, user User) error {
 	return db.Update(func(tx *bbolt.Tx) error {
 		usersBucket := tx.Bucket([]byte("users"))
 		if usersBucket == nil {
