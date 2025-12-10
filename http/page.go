@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/makinori/baltimare-leaderboard/database"
 	"github.com/makinori/baltimare-leaderboard/env"
 	"github.com/makinori/baltimare-leaderboard/lsl"
@@ -82,7 +83,9 @@ func renderUser(ctx context.Context, user *database.UserWithID, online bool) Nod
 	)
 }
 
-func renderUsers(ctx context.Context) (Node, uint64, uint64) {
+func renderUsers(
+	ctx context.Context, onlineUUIDs []uuid.UUID,
+) (Node, uint64, uint64) {
 	var total, totalMinutes uint64
 
 	// get users and sort
@@ -107,8 +110,6 @@ func renderUsers(ctx context.Context) (Node, uint64, uint64) {
 		return sortedUsers[i].User.Minutes > sortedUsers[j].User.Minutes
 	})
 
-	onlineUUIDs := lsl.GetOnlineUUIDs()
-
 	tableRows := make(Group, len(sortedUsers))
 	for i := range sortedUsers {
 		online := slices.Contains(onlineUUIDs, sortedUsers[i].ID)
@@ -129,7 +130,9 @@ func renderPage() string {
 	ctx := context.Background()
 	ctx = foxcss.InitContext(ctx)
 
-	users, total, totalHours := renderUsers(ctx)
+	onlineUUIDs := lsl.GetOnlineUUIDs()
+
+	users, total, totalHours := renderUsers(ctx, onlineUUIDs)
 
 	var body = Body(
 		H1(Text(env.AREA+" leaderboard")),
@@ -159,12 +162,18 @@ func renderPage() string {
 			),
 		),
 		Hr(),
-		P(Text(
-			fmt.Sprintf("%s popens seen in total", formatUint(total)),
-		)),
-		P(Text(
-			fmt.Sprintf("%s hours collectively", formatUint(totalHours)),
-		)),
+		P(
+			Text(fmt.Sprintf(
+				"%s online right now", formatUint(uint64(len(onlineUUIDs))),
+			)),
+			Br(),
+			Text(fmt.Sprintf("%s popens seen in total", formatUint(total))),
+			Br(),
+			Text(fmt.Sprintf("%s hours collectively", formatUint(totalHours))),
+		),
+		P(
+			Text("total time online since august 6th 2024"),
+		),
 		users,
 	)
 
