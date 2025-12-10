@@ -4,10 +4,25 @@ default:
 alias s := start
 [group("dev")]
 start:
-	DEV=1 \
-	GOEXPERIMENT=greenteagc \
+	#!/bin/bash
+	set -euo pipefail
+
+	which air &> /dev/null || {
+		echo "please go install github.com/air-verse/air@latest" >&2
+		exit 1
+	}
+
+	DEV=1 PORT=1234 \
 	DATABASE_PATH=data/data.db \
-	go run .
+	GOEXPERIMENT=greenteagc \
+	CI=true CLICOLOR_FORCE=1 \
+	air \
+	-proxy.enabled=true \
+	-proxy.app_port=1234 \
+	-proxy.proxy_port=8080 \
+	-build.delay=10 \
+	-build.include_ext go,html,css,scss,png,jpg,gif,svg,md \
+	-build.exclude_dir cache,cmd,tmp
 
 alias u := update
 # git pull, build and restart quadlet
@@ -47,7 +62,9 @@ emulate-lsl:
 	#!/bin/bash
 	set -euo pipefail
 	while true; do
-	curl -X PUT -H "Authorization: Bearer supersecretchangeme" \
+	curl -X PUT \
+	-H "Content-Type: text/plain" \
+	-H "Authorization: Bearer supersecretchangeme" \
 	-d "b7c5f3667a3942898157d3a8ae6d57f40,0" \
 	http://127.0.0.1:8080/api/lsl/baltimare || true
 	sleep 5

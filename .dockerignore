@@ -6,3 +6,4 @@
 /backup
 /backup.d
 /systemd/*.env
+/tmp

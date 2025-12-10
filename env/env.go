@@ -3,6 +3,8 @@ package env
 import (
 	"log/slog"
 	"os"
+
+	"github.com/makinori/foxlib/foxhttp"
 )
 
 var (
@@ -21,6 +23,9 @@ var (
 func init() {
 	if DEV {
 		slog.Warn("RUNNING IN DEVELOPER MODE")
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+		foxhttp.DisableContentEncodingForHTML = true
+		foxhttp.ReportWarnings = true
 	}
 
 	if DATABASE_PATH == "" {
