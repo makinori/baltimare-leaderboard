@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -95,7 +96,7 @@ func everyMinute() {
 	// only get fresh info for users currently online
 	// if it hasnt been updated for as long as the expire time
 
-	var gotFreshFor []string
+	var totalFresh int
 
 	for i := range onlineUUIDs {
 		user, err, _ := getUser(onlineUUIDs[i])
@@ -123,7 +124,7 @@ func everyMinute() {
 				)
 			} else {
 				user.Info = newInfo
-				gotFreshFor = append(gotFreshFor, user.Info.Username)
+				totalFresh++
 			}
 		}
 
@@ -134,8 +135,8 @@ func everyMinute() {
 		}
 	}
 
-	if len(gotFreshFor) > 0 {
-		slog.Info("got fresh for", "users", gotFreshFor)
+	if totalFresh > 0 {
+		slog.Info("got fresh for " + strconv.Itoa(totalFresh) + " users")
 	}
 }
 
