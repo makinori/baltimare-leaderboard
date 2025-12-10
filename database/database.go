@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"errors"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/fxamacker/cbor/v2"
 	"github.com/google/uuid"
+	"github.com/makinori/baltimare-leaderboard/env"
 	"go.etcd.io/bbolt"
 )
 
@@ -36,13 +37,9 @@ type UserWithID struct {
 	User User
 }
 
-func InitDatabase() {
-	if ENV_DATABASE_PATH == "" {
-		panic("DATABASE_PATH not set")
-	}
-
+func Init() *bbolt.DB {
 	var err error
-	db, err = bbolt.Open(ENV_DATABASE_PATH, 0600, nil)
+	db, err = bbolt.Open(env.DATABASE_PATH, 0600, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -58,37 +55,11 @@ func InitDatabase() {
 	if err != nil {
 		panic(err)
 	}
-}
 
-func getUser(
-	key uuid.UUID, usersBucket *bbolt.Bucket, usersInfoBucket *bbolt.Bucket,
-) (User, UserInfo, error) {
-	var user User
-	var userInfo UserInfo
-
-	userBytes := usersBucket.Get(key[:])
-	if len(userBytes) == 0 {
-		return user, userInfo, ErrorUserNotFound
-	}
-
-	err := cbor.Unmarshal(userBytes, &user)
-	if err != nil {
-		return user, userInfo, err
-	}
-
-	// its ok if user info fails cause we periodically fetch this anyway
-
-	userInfoBytes := usersInfoBucket.Get(key[:])
-	if len(userInfoBytes) > 0 {
-		cbor.Unmarshal(userInfoBytes, &userInfo)
-	}
-
-	return user, userInfo, nil
+	return db
 }
 
 func GetUsers() ([]UserWithID, error) {
-	// TODO: keep cached in memory for faster rendering. or keep html cached??
-
 	var users []UserWithID
 
 	err := db.View(func(tx *bbolt.Tx) error {

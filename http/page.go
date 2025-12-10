@@ -1,12 +1,15 @@
-package main
+package http
 
 import (
 	"context"
 	"fmt"
 	"log/slog"
 	"slices"
+	"sort"
 	"strconv"
 
+	"github.com/makinori/baltimare-leaderboard/database"
+	"github.com/makinori/baltimare-leaderboard/env"
 	"github.com/makinori/foxlib/foxcss"
 	"github.com/mergestat/timediff"
 	. "maragu.dev/gomponents"
@@ -29,7 +32,7 @@ func formatUint(n uint64) string {
 	return string(out)
 }
 
-func renderUser(user *UserWithID) Node {
+func renderUser(user *database.UserWithID) Node {
 	url := "https://world.secondlife.com/resident/" + user.ID.String()
 
 	// https://wiki.secondlife.com/wiki/Picture_Service
@@ -58,12 +61,33 @@ func renderUser(user *UserWithID) Node {
 func renderUsers() (Node, uint64, uint64) {
 	var total, totalMinutes uint64
 
-	tableRows := make(Group, len(tempStaticUsers))
-	for i := range tempStaticUsers {
-		tableRows[i] = renderUser(&tempStaticUsers[i])
+	// get users and sort
+	// TODO: this could get expensive so we should cache this
+
+	users, err := database.GetUsers()
+	if err != nil {
+		return Div(), 0, 0
+	}
+
+	var sortedUsers []database.UserWithID
+
+	for i := range users {
+		if users[i].User.Minutes >= 120 &&
+			!slices.Contains(traitMap["bot"], users[i].ID.String()) {
+			sortedUsers = append(sortedUsers, users[i])
+		}
+	}
+
+	sort.Slice(sortedUsers, func(i, j int) bool {
+		return sortedUsers[i].User.Minutes > sortedUsers[j].User.Minutes
+	})
+
+	tableRows := make(Group, len(sortedUsers))
+	for i := range sortedUsers {
+		tableRows[i] = renderUser(&sortedUsers[i])
 
 		total++
-		totalMinutes += tempStaticUsers[i].User.Minutes
+		totalMinutes += sortedUsers[i].User.Minutes
 	}
 
 	return Table(
@@ -79,7 +103,7 @@ func renderPage() string {
 	users, total, totalHours := renderUsers()
 
 	var body = Body(
-		H1(Text(ENV_NAME+" leaderboard")),
+		H1(Text(env.AREA+" leaderboard")),
 		H2(Text("fuck javascript edition")),
 		P(
 			Text("lore: "),
@@ -125,7 +149,7 @@ func renderPage() string {
 
 	return Group{HTML(
 		Head(
-			Title(ENV_NAME+" leaderboard"),
+			Title(env.AREA+" leaderboard"),
 			StyleEl(Raw(css)),
 		),
 		body,

@@ -7,6 +7,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/makinori/foxlib v0.0.0-20251124091232-dbad65dd5c13
 	github.com/mergestat/timediff v0.0.4
+	github.com/robfig/cron/v3 v3.0.1
 	go.etcd.io/bbolt v1.4.3
 	maragu.dev/gomponents v1.2.0
 )

@@ -25,3 +25,17 @@ migrate-from-js old_path new_path:
 	go run -C cmd/migrate-from-js . \
 	"$(realpath '{{old_path}}.json')" \
 	"$(realpath '{{new_path}}')"
+
+[group("dev")]
+favicon input output:
+	#!/bin/bash
+	TMP=$(mktemp -u tmp.XXXXXX)
+	rm -rf $TMP
+	mkdir $TMP
+	for size in 16 32 48 64; do
+		magick "{{input}}" -filter Lanczos2 -resize ${size}x${size}\> \
+		-background none -gravity center -extent ${size}x${size} \
+		$TMP/${size}.bmp
+	done
+	magick $TMP/*.bmp {{output}}
+	rm -rf $TMP

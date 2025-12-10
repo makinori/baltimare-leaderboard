@@ -1,4 +1,4 @@
-package main
+package http
 
 var traitMap = map[string][]string{
 	"bot": {

@@ -1,0 +1,126 @@
+package http
+
+import (
+	"encoding/json"
+	"io"
+	"log/slog"
+	"net/http"
+	"slices"
+	"strings"
+	"time"
+
+	"github.com/makinori/baltimare-leaderboard/env"
+	"github.com/makinori/baltimare-leaderboard/lsl"
+	"github.com/makinori/foxlib/foxhttp"
+)
+
+func handleAPI(w http.ResponseWriter, r *http.Request) {
+	// a socket.io endpoint with events: users (gzip), online (gzip), health
+	// ^ uh yeah we'll see about that one
+
+	// TODO: GET /api/users - data for leaderboard, refreshes once a minute
+
+	out := []byte(strings.TrimSpace(`
+GET /api/health - for monitoring
+	
+GET /api/users/online - output from in-world lsl cube, updates every ` + lsl.ScriptInterval.String() + `
+
+PUT /api/lsl/:where - for the in-world lsl cube to send data to
+	`))
+
+	foxhttp.ServeOptimized(w, r, ".txt", time.Unix(0, 0), out, false)
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	healthy, online := lsl.GetHealth()
+	out, err := json.Marshal(map[string]any{
+		"healthy": healthy,
+		"online":  online,
+	})
+
+	if err != nil {
+		slog.Error("failed to marshal json", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("failed to marshal json"))
+		return
+	}
+
+	foxhttp.ServeOptimized(w, r, ".json", time.Unix(0, 0), out, false)
+}
+
+// func handleUsers(w http.ResponseWriter, r *http.Request) {
+// }
+
+type APIOnlineUser struct {
+	ID     string `json:"id"`
+	Region string `json:"region"`
+	X      int    `json:"x"`
+	Y      int    `json:"y"`
+}
+
+func handleUsersOnline(w http.ResponseWriter, r *http.Request) {
+	// duplicates possible between regions
+	online := lsl.GetData()
+
+	apiOnlineUsers := []APIOnlineUser{}
+
+	for region, onlineUsers := range online {
+		for i := range onlineUsers {
+			apiOnlineUsers = append(apiOnlineUsers, APIOnlineUser{
+				ID:     onlineUsers[i].UUID.String(),
+				Region: region,
+				X:      onlineUsers[i].X,
+				Y:      onlineUsers[i].Y,
+			})
+		}
+	}
+
+	out, err := json.Marshal(apiOnlineUsers)
+	if err != nil {
+		slog.Error("failed to marshal data", "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("failed to marshal json"))
+		return
+	}
+
+	foxhttp.ServeOptimized(w, r, ".json", time.Unix(0, 0), out, false)
+}
+
+func handleLSLRegion(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
+	if auth != "Bearer "+env.SECRET {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("wrong secret"))
+		return
+	}
+
+	region := r.PathValue("region")
+	if !slices.Contains(env.REGIONS, region) {
+		slog.Warn("got unknown", "region", region)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("unknown region"))
+		return
+	}
+
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		slog.Error("failed to read body", "err", err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("failed to read body"))
+		return
+	}
+
+	lsl.PutData(region, string(data))
+
+	foxhttp.ServeOptimized(
+		w, r, ".json", time.Unix(0, 0), []byte(`{"success":true}`), false,
+	)
+}
+
+func initAPI() {
+	http.HandleFunc("GET /api", handleAPI)
+	http.HandleFunc("GET /api/health", handleHealth)
+	// http.HandleFunc("GET /api/users", handleUsers)
+	http.HandleFunc("GET /api/users/online", handleUsersOnline)
+	http.HandleFunc("PUT /api/lsl/{region}", handleLSLRegion)
+}
