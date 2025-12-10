@@ -18,8 +18,15 @@ var (
 )
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
+	html, ok := renderPage()
+	if !ok {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(html))
+		return
+	}
+
 	foxhttp.ServeOptimized(
-		w, r, ".html", time.Unix(0, 0), []byte(renderPage()), false,
+		w, r, ".html", time.Unix(0, 0), []byte(html), false,
 	)
 }
 

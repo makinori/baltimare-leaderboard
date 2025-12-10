@@ -23,6 +23,8 @@ import (
 var (
 	//go:embed page.scss
 	pageSCSS string
+	//go:embed page.js
+	pageJS string
 )
 
 const (
@@ -65,6 +67,8 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 		user.User.Info.ImageID.String(),
 	)
 
+	lastSeenText := user.LastSeen.Format("Jan _2 2006, 15:04 MST")
+
 	var lastSeenRow Node
 	if online {
 		lastSeenRow = Td(
@@ -73,6 +77,7 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 				font-weight: 600;
 			`)),
 			Text("online"),
+			Title(lastSeenText),
 		)
 	} else {
 		lastSeenRow = Td(
@@ -81,6 +86,7 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 				font-weight: 600;
 			`)),
 			Text(timediff.TimeDiff(user.User.LastSeen)),
+			Title(lastSeenText),
 		)
 	}
 
@@ -172,22 +178,39 @@ func content(ctx context.Context) Group {
 		sinceText = "january 13th 2025"
 	}
 
+	var logoEl Node
+
+	switch env.AREA {
+	case "baltimare":
+		logoEl = Img(
+			Class(foxcss.Class(ctx, `
+					width: 600px;
+					max-width: 100%;
+					align-self: center;
+					margin-top: 48px;
+					margin-bottom: 48px;
+				`)),
+			Src("/logos/baltimare-opg.png"),
+		)
+	case "cloudsdale":
+		logoEl = H1(
+			Class(foxcss.Class(ctx, `
+				text-align: center;
+				margin-top: 64px;
+				margin-bottom: 64px;
+				font-size: 64px
+			`)),
+			Text("cloudsdale"),
+		)
+	}
+
 	return Group{
 		foxhtml.HStack(ctx,
 			foxhtml.StackSCSS(`
 				align-items: center;
 				justify-content: center;
 			`),
-			Img(
-				Class(foxcss.Class(ctx, `
-				width: 600px;
-				max-width: 100%;
-				align-self: center;
-				margin-top: 48px;
-				margin-bottom: 48px;
-			`)),
-				Src("/logos/baltimare-opg.png"),
-			),
+			logoEl,
 		),
 		foxhtml.HStack(ctx,
 			foxhtml.StackSCSS(`
@@ -246,7 +269,7 @@ func content(ctx context.Context) Group {
 	}
 }
 
-func renderPage() string {
+func renderPage() (string, bool) {
 	ctx := context.Background()
 	ctx = foxcss.InitContext(ctx)
 
@@ -260,6 +283,7 @@ func renderPage() string {
 			Class(foxcss.Class(ctx, `
 				width: 800px;
 				max-width: 800px;
+				margin-bottom: 128px;
 			`)),
 			content(ctx),
 		),
@@ -268,14 +292,17 @@ func renderPage() string {
 	css, err := foxcss.RenderSCSS(pageSCSS + "\n" + foxcss.GetPageSCSS(ctx))
 	if err != nil {
 		slog.Error("failed to render scss", "err", err)
-		// dont return empty
+		return "failed to render scss", false
 	}
 
 	return Group{HTML(
 		Head(
-			Title(env.AREA+" leaderboard"),
+			TitleEl(Text(env.AREA+" leaderboard")),
 			StyleEl(Raw(css)),
 		),
-		Body(contentDiv),
-	)}.String()
+		Body(
+			contentDiv,
+			Script(Raw(pageJS)),
+		),
+	)}.String(), true
 }
