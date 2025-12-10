@@ -174,7 +174,7 @@ func renderMapUser(
 		Style(fmt.Sprintf(
 			"left:%.2f%%;top:%.2f%%",
 			float32(clamp(x, 0, 512))/512*100,
-			float32(clamp(onlineUser.Y, 0, 256))/256*100,
+			float32(256-clamp(onlineUser.Y, 0, 256))/256*100,
 		)),
 		Src(imageUrl),
 	)
@@ -194,11 +194,19 @@ func renderMap(
 		}
 	}
 
+	var mapImageURL string
+	switch env.AREA {
+	case "baltimare":
+		mapImageURL = "/maps/baltimare.webp"
+	case "cloudsdale":
+		mapImageURL = "/maps/cloudsdale.jpg"
+	}
+
 	return Div(
 		Class(foxcss.Class(ctx, `
 			background-image: 
 				linear-gradient(0deg, rgba(#111, 0.5), rgba(#111, 0.5)), 
-				url("/maps/baltimare.webp");
+				url("`+mapImageURL+`");
 			aspect-ratio: 2/1;
 			width: calc(100% - 128px);
 			background-size: 100% 100%;
