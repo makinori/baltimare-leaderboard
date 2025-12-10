@@ -10,6 +10,7 @@ import (
 
 	"github.com/makinori/baltimare-leaderboard/database"
 	"github.com/makinori/baltimare-leaderboard/env"
+	"github.com/makinori/baltimare-leaderboard/lsl"
 	"github.com/makinori/foxlib/foxcss"
 	"github.com/mergestat/timediff"
 	. "maragu.dev/gomponents"
@@ -32,7 +33,7 @@ func formatUint(n uint64) string {
 	return string(out)
 }
 
-func renderUser(user *database.UserWithID) Node {
+func renderUser(ctx context.Context, user *database.UserWithID, online bool) Node {
 	url := "https://world.secondlife.com/resident/" + user.ID.String()
 
 	// https://wiki.secondlife.com/wiki/Picture_Service
@@ -43,7 +44,25 @@ func renderUser(user *database.UserWithID) Node {
 
 	lastSeen := timediff.TimeDiff(user.User.LastSeen)
 
+	var onlineRow Node
+	if online {
+		onlineRow = Td(
+			Class(foxcss.Class(ctx, `
+				color: green;
+			`)),
+			Text("online"),
+		)
+	} else {
+		onlineRow = Td(
+			Class(foxcss.Class(ctx, `
+				color: red;
+			`)),
+			Text("offline"),
+		)
+	}
+
 	return Tr(
+		onlineRow,
 		Td(A(
 			Href(url),
 			Img(
@@ -58,7 +77,7 @@ func renderUser(user *database.UserWithID) Node {
 	)
 }
 
-func renderUsers() (Node, uint64, uint64) {
+func renderUsers(ctx context.Context) (Node, uint64, uint64) {
 	var total, totalMinutes uint64
 
 	// get users and sort
@@ -82,9 +101,13 @@ func renderUsers() (Node, uint64, uint64) {
 		return sortedUsers[i].User.Minutes > sortedUsers[j].User.Minutes
 	})
 
+	onlineUUIDs := lsl.GetOnlineUUIDs()
+
 	tableRows := make(Group, len(sortedUsers))
 	for i := range sortedUsers {
-		tableRows[i] = renderUser(&sortedUsers[i])
+		online := slices.Contains(onlineUUIDs, sortedUsers[i].ID)
+
+		tableRows[i] = renderUser(ctx, &sortedUsers[i], online)
 
 		total++
 		totalMinutes += sortedUsers[i].User.Minutes
@@ -100,7 +123,7 @@ func renderPage() string {
 	ctx := context.Background()
 	ctx = foxcss.InitContext(ctx)
 
-	users, total, totalHours := renderUsers()
+	users, total, totalHours := renderUsers(ctx)
 
 	var body = Body(
 		H1(Text(env.AREA+" leaderboard")),
