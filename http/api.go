@@ -64,7 +64,7 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sort.Slice(users, func(i, j int) bool {
-		return users[i].Minutes < users[j].Minutes
+		return users[i].Minutes > users[j].Minutes
 	})
 
 	var apiUsers []APIUser
