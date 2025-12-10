@@ -21,7 +21,8 @@ Pod=baltimare-leaderboard.pod
 
 Volume=../data.d/baltimare.db:/data.db
 
-Environment=NAME=baltimare
+EnvironmentFile=baltimare.env
+Environment=AREA=baltimare
 Environment=DATABASE_PATH=/data.db
 
 Label=traefik.enable=true

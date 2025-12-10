@@ -2,3 +2,4 @@
 /data.d
 /backup
 /backup.d
+/systemd/*.env

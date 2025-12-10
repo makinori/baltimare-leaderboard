@@ -21,7 +21,8 @@ Pod=baltimare-leaderboard.pod
 
 Volume=../data.d/cloudsdale.db:/data.db
 
-Environment=NAME=cloudsdale
+EnvironmentFile=cloudsdale.env
+Environment=AREA=cloudsdale
 Environment=DATABASE_PATH=/data.db
 
 Label=traefik.enable=true
