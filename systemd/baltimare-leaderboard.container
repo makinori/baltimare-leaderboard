@@ -41,7 +41,7 @@ Label=traefik.docker.network=traefik
 
 Label=homepage.group=Fun
 Label="homepage.name=Baltimare Leaderboard"
-Label=homepage.icon=https://baltimare.hotmilk.space/favicon.png
+Label=homepage.icon=https://baltimare.hotmilk.space/favicon.ico
 Label=homepage.href=https://baltimare.hotmilk.space
 
 Network=traefik
