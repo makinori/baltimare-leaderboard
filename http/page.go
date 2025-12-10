@@ -33,6 +33,14 @@ func formatUint(n uint64) string {
 	return string(out)
 }
 
+func formatName(userInfo *database.UserInfo) string {
+	if userInfo.DisplayName == "" {
+		return userInfo.Username
+	} else {
+		return fmt.Sprintf("%s (%s)", userInfo.DisplayName, userInfo.Username)
+	}
+}
+
 func renderUser(ctx context.Context, user *database.UserWithID, online bool) Node {
 	url := "https://world.secondlife.com/resident/" + user.ID.String()
 
@@ -70,8 +78,7 @@ func renderUser(ctx context.Context, user *database.UserWithID, online bool) Nod
 				Loading("lazy"),
 			),
 		)),
-		Td(Text(user.User.Info.DisplayName)),
-		Td(Text(user.User.Info.Username)),
+		Td(Text(formatName(&user.User.Info))),
 		// Td(Text(formatUint(user.User.Minutes)+" minutes")),
 		Td(Text(formatUint(user.User.Minutes/60)+" hours")),
 		Td(Text(lastSeen)),
