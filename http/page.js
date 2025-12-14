@@ -38,7 +38,14 @@ let soundsSqueakOut = [
 	sound("/sounds/squeak-out/5.wav"),
 ];
 
+let avatarsCurrentlyHeld = [];
+
 function onAvatarDown(e) {
+	const el = e.target;
+	if (el.className != "avatar-icon") {
+		return;
+	}
+
 	let inClass = "";
 	if (Math.random() < 0.5) {
 		inClass = "in-left";
@@ -46,7 +53,7 @@ function onAvatarDown(e) {
 		inClass = "in-right";
 	}
 
-	e.target.className = "avatar-icon " + inClass;
+	el.className = "avatar-icon " + inClass;
 
 	let squeakIndex = Math.floor(Math.random() * soundsSqueakIn.length);
 	soundsSqueakIn[squeakIndex](0.3);
@@ -58,16 +65,20 @@ function onAvatarDown(e) {
 			soundBoop(0.15);
 		}
 	}
+
+	avatarsCurrentlyHeld.push(e.target);
 }
 
-function onAvatarUp(e) {
-	e.target.className = "avatar-icon";
-
-	let squeakIndex = Math.floor(Math.random() * soundsSqueakIn.length);
-	soundsSqueakOut[squeakIndex](0.3);
+function onAvatarUp(el) {
+	for (const el of avatarsCurrentlyHeld) {
+		el.className = "avatar-icon";
+		let squeakIndex = Math.floor(Math.random() * soundsSqueakIn.length);
+		soundsSqueakOut[squeakIndex](0.3);
+	}
+	avatarsCurrentlyHeld = [];
 }
 
-document.querySelectorAll(".avatar-icon").forEach(avatarIcon => {
-	avatarIcon.addEventListener("mousedown", onAvatarDown);
-	avatarIcon.addEventListener("mouseup", onAvatarUp);
-});
+document.body.addEventListener("mousedown", onAvatarDown);
+document.body.addEventListener("touchdown", onAvatarDown);
+document.body.addEventListener("mouseup", onAvatarUp);
+document.body.addEventListener("touchup", onAvatarUp);

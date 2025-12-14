@@ -112,17 +112,15 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 				border-radius: 8px;
 				cursor: pointer;
 				transition: all 100ms ease;
+				user-select: none;
 				&:hover {
 					transform: scale(1.1);
 				}
-				&:active {
-					transform: scale(0.9);
-					&.in-left {
-						transform: rotate(-5deg);
-					}
-					&.in-right {
-						transform: rotate(5deg);
-					}
+				&.in-left {
+					transform: scale(0.9) rotate(-5deg);
+				}
+				&.in-right {
+					transform: scale(0.9) rotate(5deg);
 				}
 			}
 
@@ -173,6 +171,7 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 			Class("avatar-icon"),
 			Src(getImageURL(user.User.Info.ImageID)),
 			Loading("lazy"),
+			Draggable("false"),
 		)),
 		Td(
 			Class("name"),
