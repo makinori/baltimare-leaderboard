@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/makinori/baltimare-leaderboard/env"
@@ -105,8 +106,9 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 		Class(foxcss.Class(ctx, `
 			font-size: 20px;
 			letter-spacing: -1px;
-
-			.avatar-icon {
+		`)),
+		Td(Img(
+			Class(foxcss.Class(ctx, `
 				width: 32px;
 				height: 32px;
 				border-radius: 8px;
@@ -122,28 +124,36 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 				&.in-right {
 					transform: scale(0.9) rotate(5deg);
 				}
-			}
-
-			.name {
+			`)),
+			Src(getImageURL(user.User.Info.ImageID)),
+			Loading("lazy"),
+			Draggable("false"),
+		)),
+		Td(
+			Class(foxcss.Class(ctx, `
 				font-weight: 800;
 				opacity: 0.9;
-
 				> span {
 					font-weight: 700;
 					font-size: 16px;
 					opacity: 0.4;
 					margin-left: 8px;
 				}
-			}
-
-			.time {
+			`)),
+			nameEl,
+		),
+		Td(
+			Class(foxcss.Class(ctx, `
 				font-weight: 700;
 				opacity: 0.6;
 				text-align: right;
 				padding-right: 16px;
-			}
-
-			.status {
+			`)),
+			// Text(formatUint(user.User.Minutes)+" minutes"),
+			Text(formatUint(user.User.Minutes/60)+" hours"),
+		),
+		Td(
+			Class(foxcss.Class(ctx, `
 				> div {
 					align-items: center;
 					gap: 6px;
@@ -165,25 +175,7 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 					font-weight: 700;
 					white-space: nowrap;
 				}
-			}
-		`)),
-		Td(Img(
-			Class("avatar-icon"),
-			Src(getImageURL(user.User.Info.ImageID)),
-			Loading("lazy"),
-			Draggable("false"),
-		)),
-		Td(
-			Class("name"),
-			nameEl,
-		),
-		Td(
-			Class("time"),
-			// Text(formatUint(user.User.Minutes)+" minutes"),
-			Text(formatUint(user.User.Minutes/60)+" hours"),
-		),
-		Td(
-			Class("status "+statusClass),
+			`)+" "+statusClass),
 			foxhtml.HStack(ctx,
 				Div(Class("strip")),
 				A(
@@ -473,10 +465,20 @@ func content(ctx context.Context) (Group, error) {
 		renderMap(ctx, onlineUsers, sortedUsers),
 		Br(),
 		users,
+		P(
+			Class(foxcss.Class(ctx, `
+				margin-top: 64px;
+				text-align: center;
+				opacity: 0.3;
+			`)),
+			Text("{{.RenderTime}} to render"),
+		),
 	}, nil
 }
 
 func renderPage() (string, bool) {
+	startTime := time.Now()
+
 	ctx := context.Background()
 	ctx = foxcss.InitContext(ctx)
 
@@ -510,7 +512,7 @@ func renderPage() (string, bool) {
 		return "failed to render scss", false
 	}
 
-	return Group{HTML(
+	html := Group{HTML(
 		Head(
 			TitleEl(Text(env.AREA+" leaderboard")),
 			StyleEl(Raw(css)),
@@ -519,5 +521,12 @@ func renderPage() (string, bool) {
 			contentDiv,
 			Script(Raw(pageJS)),
 		),
-	)}.String(), true
+	)}.String()
+
+	renderTime := time.Since(startTime)
+	html = strings.ReplaceAll(html,
+		"{{.RenderTime}}", formatShortDuration(renderTime),
+	)
+
+	return html, true
 }
