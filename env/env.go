@@ -12,7 +12,8 @@ var (
 
 	PORT = getEnv("PORT", "8080")
 
-	AREA    = getEnv("AREA", "baltimare")
+	AREA = getEnv("AREA", "baltimare")
+	// in order from left to right
 	REGIONS []string
 
 	SECRET = getEnv("SECRET", "supersecretchangeme")
@@ -34,9 +35,9 @@ func init() {
 
 	switch AREA {
 	case "baltimare":
-		REGIONS = []string{"baltimare", "horseheights"}
+		REGIONS = []string{"horseheights", "baltimare"}
 	case "cloudsdale":
-		REGIONS = []string{"cloudsdale", "clouddistrict"}
+		REGIONS = []string{"clouddistrict", "cloudsdale"}
 	default:
 		panic("unknown area: " + AREA)
 	}

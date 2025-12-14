@@ -1,3 +1,5 @@
+@use "font";
+
 * {
 	margin: 0;
 }
@@ -5,4 +7,10 @@
 body {
 	background-color: #111;
 	color: #fff;
+	font-family: "SN Pro", sans-serif;
+}
+
+a {
+	text-decoration: inherit;
+	color: inherit;
 }

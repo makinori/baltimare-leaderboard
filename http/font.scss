@@ -1,0 +1,20 @@
+$sizes: 200 "Thin", 300 "Light", 350 "Book", 400 "Regular", 500 "Medium",
+	600 "Semibold", 700 "Bold", 800 "Heavy", 900 "Black";
+
+@each $weight, $name in $sizes {
+	@font-face {
+		font-family: "SN Pro";
+		src: url(/fonts/SNPro-#{$name}.woff2) format(woff2);
+		font-weight: $weight;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "SN Pro";
+		src: url(/fonts/SNPro-#{$name}Italic.woff2) format(woff2);
+		font-weight: $weight;
+		font-style: italic;
+		font-display: swap;
+	}
+}

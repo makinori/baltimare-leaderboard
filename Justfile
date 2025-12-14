@@ -21,7 +21,7 @@ start:
 	-proxy.app_port=1234 \
 	-proxy.proxy_port=8080 \
 	-build.delay=10 \
-	-build.include_ext go,html,css,scss,png,jpg,gif,svg,md \
+	-build.include_ext go,html,css,scss,png,jpg,gif,svg,md,js \
 	-build.exclude_dir cache,cmd,tmp
 
 alias u := update

@@ -23,6 +23,8 @@ import (
 )
 
 var (
+	//go:embed font.scss
+	fontSCSS string
 	//go:embed page.scss
 	pageSCSS string
 	//go:embed page.js
@@ -69,63 +71,129 @@ func getImageURL(imageID uuid.UUID) string {
 }
 
 func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
-	url := "https://world.secondlife.com/resident/" + user.ID.String()
-
-	lastSeenDate := user.LastSeen.Format("Jan 2 2006, 15:04 MST")
-
-	var lastSeenRow Node
-	if online {
-		lastSeenRow = Td(
-			Class(foxcss.Class(ctx, `
-				color: `+ColorGreen+`;
-				font-weight: 600;
-			`)),
-			Text("online"),
-			Title(lastSeenDate),
-		)
+	nameEl := Group{}
+	if user.Info.DisplayName == "" {
+		nameEl = Group{
+			Text(user.Info.Username),
+		}
 	} else {
-		lastSeenText := timediff.TimeDiff(user.User.LastSeen)
-		lastSeenText = strings.ReplaceAll(lastSeenText, "a few", "few")
-		lastSeenText = strings.ReplaceAll(lastSeenText, "minute", "min")
-		lastSeenText = strings.ReplaceAll(lastSeenText, "ago", "")
-		lastSeenText = strings.TrimSpace(lastSeenText)
-		lastSeenRow = Td(
-			Class(foxcss.Class(ctx, `
-				color: `+ColorRed+`;
-				font-weight: 600;
-			`)),
-			Text(lastSeenText),
-			Title(lastSeenDate),
-		)
+		nameEl = Group{
+			Text(user.Info.DisplayName),
+			Span(Text(user.Info.Username)),
+		}
+	}
+
+	userURL := "https://world.secondlife.com/resident/" + user.ID.String()
+
+	var statusClass, statusText string
+	statusDate := user.LastSeen.Format("Jan 2 2006, 15:04 MST")
+
+	if online {
+		statusClass = "online"
+		statusText = "online"
+	} else {
+		statusClass = "offline"
+		statusText = timediff.TimeDiff(user.User.LastSeen)
+		statusText = strings.ReplaceAll(statusText, "a few", "few")
+		statusText = strings.ReplaceAll(statusText, "minute", "min")
+		statusText = strings.ReplaceAll(statusText, "ago", "")
+		statusText = strings.TrimSpace(statusText)
 	}
 
 	return Tr(
+		ID(user.ID.String()),
 		Class(foxcss.Class(ctx, `
-			.icon {
+			font-size: 20px;
+
+			.avatar-icon {
 				width: 32px;
 				height: 32px;
 				border-radius: 8px;
+				cursor: pointer;
+				transition: all 100ms ease;
+				&:hover {
+					transform: scale(1.1);
+				}
+				&:active {
+					transform: scale(0.9);
+					&.in-left {
+						transform: rotate(-5deg);
+					}
+					&.in-right {
+						transform: rotate(5deg);
+					}
+				}
 			}
 
 			.name {
+				font-weight: 800;
+				opacity: 0.9;
+
+				> span {
+					font-weight: 700;
+					font-size: 16px;
+					opacity: 0.4;
+					margin-left: 8px;
+				}
+			}
+
+			.time {
 				font-weight: 700;
+				opacity: 0.6;
+				text-align: right;
+				padding-right: 16px;
+			}
+
+			.status {
+				> div {
+					align-items: center;
+					gap: 6px;
+				}
+				.strip {
+					width: 6px;
+					height: 24px;
+					border-radius: 4px;
+				}
+				&.online .strip {
+					background: `+ColorGreen+`;
+				}
+				&.offline .strip {
+					background: `+ColorRed+`;
+				}
+				a {
+					opacity: 0.4;
+					font-size: 16px;
+					font-weight: 700;
+					white-space: nowrap;
+					letter-spacing: -1px;
+				}
 			}
 		`)),
-		Td(A(
-			Href(url),
-			Img(
-				Class("icon"),
-				Src(getImageURL(user.User.Info.ImageID)),
-				Loading("lazy"),
-			),
+		Td(Img(
+			Class("avatar-icon"),
+			Src(getImageURL(user.User.Info.ImageID)),
+			Loading("lazy"),
 		)),
 		Td(
 			Class("name"),
-			Text(formatName(&user.User.Info)),
+			nameEl,
 		),
-		// Td(Text(formatUint(user.User.Minutes)+" minutes")),
-		Td(Text(formatUint(user.User.Minutes/60)+" hours")),
-		lastSeenRow,
+		Td(
+			Class("time"),
+			// Text(formatUint(user.User.Minutes)+" minutes"),
+			Text(formatUint(user.User.Minutes/60)+" hours"),
+		),
+		Td(
+			Class("status "+statusClass),
+			foxhtml.HStack(ctx,
+				Div(Class("strip")),
+				A(
+					Text(statusText),
+					Title(statusDate),
+					Href(userURL),
+				),
+			),
+		),
 	)
 }
 
@@ -156,33 +224,59 @@ func renderMapUser(
 	ctx context.Context, region string, onlineUser *lsl.OnlineUser,
 	users []user.UserWithID,
 ) Node {
-	x := onlineUser.X
-	if region == "baltimare" || region == "cloudsdale" {
-		x += 256
-	}
-
-	var imageUrl string
+	var user *user.UserWithID
 	for i := range users {
 		if users[i].ID == onlineUser.UUID {
-			imageUrl = getImageURL(users[i].Info.ImageID)
+			user = &users[i]
 			break
 		}
 	}
+	if user == nil {
+		return nil
+	}
 
-	return Img(
+	x := onlineUser.X
+	regionIndex := slices.Index(env.REGIONS, region)
+	if regionIndex > -1 {
+		x += regionIndex * 256
+	}
+
+	// TODO: a with #
+
+	return A(
+		Href("#"+user.ID.String()),
 		Class(foxcss.Class(ctx, `
 			position: absolute;
 			width: 32px;
 			height: 32px;
 			border-radius: 999px;
+			overflow: hidden;
 			transform: translate(-50%, -50%);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			> img {
+				width: 24px;
+				height: 24px;
+				border-radius: 999px;
+				transition: all 150ms ease;
+			}
+
+			&:hover {
+				> img {
+					width: 32px;
+					height: 32px;
+				}
+			}
 		`)),
 		Style(fmt.Sprintf(
 			"left:%.2f%%;top:%.2f%%",
 			float32(clamp(x, 0, 512))/512*100,
 			float32(256-clamp(onlineUser.Y, 0, 256))/256*100,
 		)),
-		Src(imageUrl),
+		Title(formatName(&user.Info)),
+		Img(Src(getImageURL(user.Info.ImageID))),
 	)
 }
 
@@ -208,6 +302,18 @@ func renderMap(
 		mapImageURL = "/maps/cloudsdale.jpg"
 	}
 
+	_, health := lsl.GetHealth()
+
+	firstSimOnlineColor := ColorRed
+	if health[env.REGIONS[0]] {
+		firstSimOnlineColor = ColorGreen
+	}
+
+	secondSimOnlineColor := ColorRed
+	if health[env.REGIONS[1]] {
+		secondSimOnlineColor = ColorGreen
+	}
+
 	return Div(
 		Class(foxcss.Class(ctx, `
 			background-image: 
@@ -220,6 +326,24 @@ func renderMap(
 			position: relative;
 		`)),
 		userEls,
+		Div(Class(foxcss.Class(ctx, `
+			position: absolute;
+			top: 6px;
+			left: 6px;
+			border-radius: 999px;
+			width: 8px;
+			height: 8px;
+			background: `+firstSimOnlineColor+`;
+		`))),
+		Div(Class(foxcss.Class(ctx, `
+			position: absolute;
+			top: 6px;
+			right: 6px;
+			border-radius: 999px;
+			width: 8px;
+			height: 8px;
+			background: `+secondSimOnlineColor+`;
+		`))),
 	)
 }
 
@@ -378,7 +502,10 @@ func renderPage() (string, bool) {
 		),
 	)
 
-	css, err := foxcss.RenderSCSS(pageSCSS + "\n" + foxcss.GetPageSCSS(ctx))
+	css, err := foxcss.RenderSCSS(
+		pageSCSS+"\n"+foxcss.GetPageSCSS(ctx),
+		foxcss.SassImport{Filename: "font.scss", Content: fontSCSS},
+	)
 	if err != nil {
 		slog.Error("failed to render scss", "err", err)
 		return "failed to render scss", false
