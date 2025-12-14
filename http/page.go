@@ -104,6 +104,7 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 		ID(user.ID.String()),
 		Class(foxcss.Class(ctx, `
 			font-size: 20px;
+			letter-spacing: -1px;
 
 			.avatar-icon {
 				width: 32px;
@@ -165,7 +166,6 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 					font-size: 16px;
 					font-weight: 700;
 					white-space: nowrap;
-					letter-spacing: -1px;
 				}
 			}
 		`)),
