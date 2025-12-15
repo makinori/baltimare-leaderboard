@@ -71,7 +71,12 @@ func getImageURL(imageID uuid.UUID) string {
 	)
 }
 
-func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
+func renderUser(
+	ctx context.Context, user *user.UserWithID,
+	online bool, maxMinutes uint64,
+) Node {
+	percentage := float32(user.Minutes) / float32(maxMinutes)
+
 	nameEl := Group{}
 	if user.Info.DisplayName == "" {
 		nameEl = Group{
@@ -101,13 +106,23 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 		statusText = strings.TrimSpace(statusText)
 	}
 
-	return Tr(
+	return foxhtml.HStack(ctx,
 		ID(user.ID.String()),
-		Class(foxcss.Class(ctx, `
+		foxhtml.StackSCSS(`
 			font-size: 20px;
 			letter-spacing: -1px;
-		`)),
-		Td(Img(
+			width: 100%;
+			height: 32px;
+			align-items: center;
+			gap: 0;
+
+			@for $i from 0 through 35 {
+				&:nth-child(36n + #{$i + 1}) .progress-bar {
+					background: hsl($i * 10deg, 20%, 30%)
+				}
+			}
+		`),
+		Img(
 			Class(foxcss.Class(ctx, `
 				width: 32px;
 				height: 32px;
@@ -115,6 +130,7 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 				cursor: pointer;
 				transition: all 100ms ease;
 				user-select: none;
+				z-index: 10;
 				&:hover {
 					transform: scale(1.1);
 				}
@@ -128,32 +144,73 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 			Src(getImageURL(user.User.Info.ImageID)),
 			Loading("lazy"),
 			Draggable("false"),
-		)),
-		Td(
-			Class(foxcss.Class(ctx, `
-				font-weight: 800;
-				opacity: 0.9;
-				> span {
-					font-weight: 700;
-					font-size: 16px;
-					opacity: 0.4;
-					margin-left: 8px;
-				}
-			`)),
-			nameEl,
 		),
-		Td(
+		Div(
 			Class(foxcss.Class(ctx, `
-				font-weight: 700;
-				opacity: 0.6;
-				text-align: right;
-				padding-right: 16px;
+				flex-grow: 1;
+				height: 100%;
+				position: relative;
+				background: #222;
+				// no left border so we can move slightly to left. this way
+				// the progress bar doesnt start fully behind the avatar
+				border-radius: 0 8px 8px 0;
+				margin-left: -8px;
 			`)),
-			// Text(formatUint(user.User.Minutes)+" minutes"),
-			Text(formatUint(user.User.Minutes/60)+" hours"),
+			Div(
+				Class(foxcss.Class(ctx, `
+					position: absolute;
+					top: 0;
+					bottom: 0;
+					left: 0;
+					border-radius: 0 8px 8px 0;
+				`)+" progress-bar"),
+				Style(fmt.Sprintf("right: %02f%%", (1-percentage)*100)),
+			),
+			foxhtml.HStack(ctx,
+				foxhtml.StackSCSS(`
+					position: absolute;
+					top: 0;
+					bottom: 0;
+					left: 16px;
+					right: 12px;
+					align-items: center;
+				`),
+				Div(
+					Class(foxcss.Class(ctx, `
+						font-weight: 800;
+						opacity: 0.9;
+						text-shadow: 2px 2px 0px rgba(#111, 0.4);
+						> span {
+							font-weight: 700;
+							font-size: 16px;
+							opacity: 0.4;
+							margin-left: 8px;
+						}
+					`)),
+					nameEl,
+				),
+				Div(Class(foxcss.Class(ctx, `flex-grow:1`))),
+				Div(
+					Class(foxcss.Class(ctx, `
+						font-weight: 700;
+						opacity: 0.6;
+						text-align: right;
+					`)),
+					// Text(formatUint(user.User.Minutes)+" minutes"),
+					Text(formatUint(user.User.Minutes/60)+" hours"),
+				),
+			),
 		),
-		Td(
+		Div(
 			Class(foxcss.Class(ctx, `
+				width: 80px;
+				height: 100%;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: 6px;
+				padding-left: 6px;
+
 				> div {
 					align-items: center;
 					gap: 6px;
@@ -176,13 +233,11 @@ func renderUser(ctx context.Context, user *user.UserWithID, online bool) Node {
 					white-space: nowrap;
 				}
 			`)+" "+statusClass),
-			foxhtml.HStack(ctx,
-				Div(Class("strip")),
-				A(
-					Text(statusText),
-					Title(statusDate),
-					Href(userURL),
-				),
+			Div(Class("strip")),
+			A(
+				Text(statusText),
+				Title(statusDate),
+				Href(userURL),
 			),
 		),
 	)
@@ -193,21 +248,28 @@ func renderUsers(
 ) (Node, uint64, uint64) {
 	var total, totalMinutes uint64
 
-	tableRows := make(Group, len(sortedUsers))
+	var maxMinutes uint64
+	for i := range sortedUsers {
+		if sortedUsers[i].Minutes > maxMinutes {
+			maxMinutes = sortedUsers[i].Minutes
+		}
+	}
+
+	userEls := make(Group, len(sortedUsers))
 	for i := range sortedUsers {
 		online := slices.Contains(onlineUUIDs, sortedUsers[i].ID)
 
-		tableRows[i] = renderUser(ctx, &sortedUsers[i], online)
+		userEls[i] = renderUser(ctx, &sortedUsers[i], online, maxMinutes)
 
 		total++
 		totalMinutes += sortedUsers[i].User.Minutes
 	}
 
-	return Table(
-		Class(foxcss.Class(ctx, `
-			width: 100%;
-		`)),
-		tableRows,
+	return foxhtml.VStack(ctx,
+		foxhtml.StackSCSS(`
+			gap: 4px;
+		`),
+		userEls,
 	), total, totalMinutes / 60
 }
 
@@ -341,7 +403,7 @@ func renderMap(
 func content(ctx context.Context) (Group, error) {
 	// get users and sort
 	// TODO: this could get expensive so maybe we should cache this
-	// TODO: these data structures being passed around like this is also ineffecient
+	// TODO: these data structures are also ineffecient
 
 	unsortedUsers, err := user.GetUsers()
 	if err != nil {
@@ -512,9 +574,12 @@ func renderPage() (string, bool) {
 		return "failed to render scss", false
 	}
 
+	title := []byte(env.AREA)
+	title[0] -= 32 // uppercase
+
 	html := Group{HTML(
 		Head(
-			TitleEl(Text(env.AREA+" leaderboard")),
+			TitleEl(Text(string(title)+" Leaderboard")),
 			StyleEl(Raw(css)),
 		),
 		Body(
