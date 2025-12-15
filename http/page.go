@@ -8,6 +8,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/makinori/baltimare-leaderboard/env"
@@ -62,7 +63,25 @@ func content(ctx context.Context) (Group, error) {
 	onlineUsers := lsl.GetData()
 	onlineUUIDs := lsl.GetOnlineUUIDs(onlineUsers)
 
-	users, total, totalHours := renderUsers(ctx, sortedUsers, onlineUUIDs)
+	var wg sync.WaitGroup
+	var mapRenderTime, listRenderTime time.Duration
+
+	var usersMap Node
+	wg.Go(func() {
+		startTime := time.Now()
+		usersMap = renderMap(ctx, onlineUsers, sortedUsers)
+		mapRenderTime = time.Since(startTime)
+	})
+
+	var usersList Node
+	var total, totalHours uint64
+	wg.Go(func() {
+		startTime := time.Now()
+		usersList, total, totalHours = renderUsers(ctx, sortedUsers, onlineUUIDs)
+		listRenderTime = time.Since(startTime)
+	})
+
+	wg.Wait()
 
 	sinceText := ""
 	switch env.AREA {
@@ -159,16 +178,22 @@ func content(ctx context.Context) (Group, error) {
 			Text("> also how long ago since last online"),
 		),
 		Br(),
-		renderMap(ctx, onlineUsers, sortedUsers),
+		usersMap,
 		Br(),
-		users,
-		P(
-			Class(foxcss.Class(ctx, `
+		usersList,
+		foxhtml.HStack(ctx,
+			foxhtml.StackSCSS(`
 				margin-top: 64px;
 				text-align: center;
 				opacity: 0.3;
-			`)),
-			Text("{{.RenderTime}} to render"),
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				gap: 32px;
+			`),
+			Span(Text("map: "+formatShortDuration(mapRenderTime))),
+			Span(Text("list: "+formatShortDuration(listRenderTime))),
+			Span(Text("total: {{.RenderTime}}")),
 		),
 	}, nil
 }
