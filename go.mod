@@ -6,14 +6,14 @@ require (
 	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/fxamacker/cbor/v2 v2.9.0
 	github.com/google/uuid v1.6.0
-	github.com/makinori/foxlib v0.0.0
+	github.com/makinori/foxlib v0.0.0-20251215195747-6ca26fead0c5
 	github.com/mergestat/timediff v0.0.4
 	github.com/robfig/cron/v3 v3.0.1
 	go.etcd.io/bbolt v1.4.3
 	maragu.dev/gomponents v1.2.0
 )
 
-replace github.com/makinori/foxlib v0.0.0 => ../foxlib
+// replace github.com/makinori/foxlib v0.0.0 => ../foxlib
 
 require (
 	github.com/andybalholm/brotli v1.2.0 // indirect
