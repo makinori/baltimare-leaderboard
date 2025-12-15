@@ -121,9 +121,8 @@ func renderUser(
 					background: hsl($i * 10deg, 20%, 30%)
 				}
 			}
-		`),
-		Img(
-			Class(foxcss.Class(ctx, `
+
+			.avatar-icon {
 				width: 32px;
 				height: 32px;
 				border-radius: 8px;
@@ -140,7 +139,10 @@ func renderUser(
 				&.in-right {
 					transform: scale(0.9) rotate(5deg);
 				}
-			`)),
+			}
+		`),
+		Img(
+			Class("avatar-icon"),
 			Src(getImageURL(user.User.Info.ImageID)),
 			Loading("lazy"),
 			Draggable("false"),
@@ -151,19 +153,20 @@ func renderUser(
 				height: 100%;
 				position: relative;
 				background: #222;
-				// no left border so we can move slightly to left. this way
-				// the progress bar doesnt start fully behind the avatar
-				border-radius: 0 8px 8px 0;
+
+				border-radius: 8px;
 				margin-left: -8px;
-			`)),
-			Div(
-				Class(foxcss.Class(ctx, `
+
+				.progress-bar {
 					position: absolute;
 					top: 0;
 					bottom: 0;
 					left: 0;
-					border-radius: 0 8px 8px 0;
-				`)+" progress-bar"),
+					border-radius: 8px;
+				}
+			`)),
+			Div(
+				Class("progress-bar"),
 				Style(fmt.Sprintf("right: %02f%%", (1-percentage)*100)),
 			),
 			foxhtml.HStack(ctx,

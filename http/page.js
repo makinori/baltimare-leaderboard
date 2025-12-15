@@ -69,7 +69,7 @@ function onAvatarDown(e) {
 	avatarsCurrentlyHeld.push(e.target);
 }
 
-function onAvatarUp(el) {
+function onAvatarUp() {
 	for (const el of avatarsCurrentlyHeld) {
 		el.className = "avatar-icon";
 		let squeakIndex = Math.floor(Math.random() * soundsSqueakIn.length);
@@ -79,6 +79,6 @@ function onAvatarUp(el) {
 }
 
 document.body.addEventListener("mousedown", onAvatarDown);
-document.body.addEventListener("touchdown", onAvatarDown);
 document.body.addEventListener("mouseup", onAvatarUp);
-document.body.addEventListener("touchup", onAvatarUp);
+// document.body.addEventListener("touchdown", onAvatarDown);
+// document.body.addEventListener("touchup", onAvatarUp);
