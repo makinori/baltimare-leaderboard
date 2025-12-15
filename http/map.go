@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"slices"
+	"sync"
 
 	"github.com/google/uuid"
 	"github.com/makinori/baltimare-leaderboard/env"
@@ -131,14 +132,21 @@ func spreadMapUsers(mapUsers []*mapUser) {
 	iterate := func() bool {
 		anyOverlaps := false
 
+		wg := sync.WaitGroup{}
 		mapUsersWithOverlaps := make([]*mapUserWithOverlaps, len(mapUsers))
 		for i, mapUser := range mapUsers {
-			mapUsersWithOverlaps[i] = &mapUserWithOverlaps{
-				mapUser:  mapUser,
-				overlaps: findOverlaps(mapUser),
-			}
+			wg.Go(func() {
+				mapUsersWithOverlaps[i] = &mapUserWithOverlaps{
+					mapUser:  mapUser,
+					overlaps: findOverlaps(mapUser),
+				}
+			})
 		}
+		wg.Wait()
 
+		// sort by least overlaps first
+		// is this necessary? we could remove mapUserWithOverlaps entirely
+		// maybe this helps keep the map more stable
 		slices.SortFunc(mapUsersWithOverlaps,
 			func(a, b *mapUserWithOverlaps) int {
 				// TODO: might be flipped
@@ -149,7 +157,8 @@ func spreadMapUsers(mapUsers []*mapUser) {
 		for _, mapUserWithOverlaps := range mapUsersWithOverlaps {
 			mapUser := mapUserWithOverlaps.mapUser
 
-			// need to get new ones since we're moving stuff around
+			// need to get fresh already cause we're moving users around
+			// overlaps := mapUserWithOverlaps.overlaps
 			overlaps := findOverlaps(mapUser)
 			if len(overlaps) == 0 {
 				continue
