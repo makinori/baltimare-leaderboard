@@ -21,16 +21,16 @@ function sound(url) {
 	};
 }
 
-let soundBoop = sound("/sounds/boop.wav");
-let soundSquee = sound("/sounds/squee.wav");
-let soundsSqueakIn = [
+const soundBoop = sound("/sounds/boop.wav");
+const soundSquee = sound("/sounds/squee.wav");
+const soundsSqueakIn = [
 	sound("/sounds/squeak-in/1.wav"),
 	sound("/sounds/squeak-in/2.wav"),
 	sound("/sounds/squeak-in/3.wav"),
 	sound("/sounds/squeak-in/4.wav"),
 	sound("/sounds/squeak-in/5.wav"),
 ];
-let soundsSqueakOut = [
+const soundsSqueakOut = [
 	sound("/sounds/squeak-out/1.wav"),
 	sound("/sounds/squeak-out/2.wav"),
 	sound("/sounds/squeak-out/3.wav"),
@@ -80,5 +80,17 @@ function onAvatarUp() {
 
 document.body.addEventListener("mousedown", onAvatarDown);
 document.body.addEventListener("mouseup", onAvatarUp);
+
+// TODO: fix for mobile
 // document.body.addEventListener("touchdown", onAvatarDown);
 // document.body.addEventListener("touchup", onAvatarUp);
+
+// image trait sound effect
+
+const soundVineBoom = sound("/sounds/vine-boom.wav");
+
+document.querySelectorAll(".image-trait").forEach(el => {
+	el.addEventListener("click", () => {
+		soundVineBoom(0.15);
+	});
+});

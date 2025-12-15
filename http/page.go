@@ -89,6 +89,24 @@ func renderUser(
 		}
 	}
 
+	traitEls := Group{}
+	userTraits := uuidTraitMap[user.ID]
+
+	for _, userTrait := range userTraits {
+		imageTrait, ok := imageTraitMap[userTrait]
+		if ok {
+			traitEls = append(traitEls, A(
+				Class("image-trait"),
+				Target("_blank"),
+				Href(imageTrait.URL),
+				Img(
+					Src("/traits/"+userTrait),
+					Height(strconv.Itoa(imageTrait.Size)+"px"),
+				),
+			))
+		}
+	}
+
 	userURL := "https://world.secondlife.com/resident/" + user.ID.String()
 
 	var statusClass, statusText string
@@ -139,6 +157,13 @@ func renderUser(
 				&.in-right {
 					transform: scale(0.9) rotate(5deg);
 				}
+			}
+
+			.image-trait {
+				transition: all 100ms ease;
+				&:hover {
+					transform: scale(1.1);
+				}	
 			}
 		`),
 		Img(
@@ -192,6 +217,7 @@ func renderUser(
 					`)),
 					nameEl,
 				),
+				traitEls,
 				Div(Class(foxcss.Class(ctx, `flex-grow:1`))),
 				Div(
 					Class(foxcss.Class(ctx, `

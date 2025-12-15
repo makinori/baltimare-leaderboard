@@ -21,38 +21,86 @@ var traitUUIDMap = map[string][]uuid.UUID{
 		uuid.MustParse("60c54dc2-f46b-41f2-8678-071d93655834"), // boggy
 	},
 	// image traits
-	"anonfilly": {
+	"happy-anonfilly.png": {
 		uuid.MustParse("cc53d796-c678-4f55-beea-3ee343b558c6"), // camarea2
 		uuid.MustParse("1cedf5f7-b556-477a-a7bc-dcbf6b2e9096"), // sunshineyelloww
 		uuid.MustParse("a31fc8dc-5d82-477e-b81d-1dc74c63d897"), // bun
 	},
-	"nugget": {
+	"nugget.png": {
 		uuid.MustParse("fbc5881b-c3ec-4996-8e03-110f95e4aaf0"), // hind
 	},
-	"strawberry": {
+	"strawberry.png": {
 		uuid.MustParse("b1f4f7a5-972d-4b73-a3d3-cd286d9e0772"), // zydney
 	},
-	"fish": {
+	"fish.png": {
 		uuid.MustParse("44fb6569-017f-4dbc-8f2c-975c39ce33e8"), // fish enthusiast
 		uuid.MustParse("b7c5f366-7a39-4289-8157-d3a8ae6d57f4"), // maki
 	},
-	"floppy": {
+	"floppy.png": {
 		uuid.MustParse("4d6ed11a-1280-4743-b147-52bea3144600"), // wolvan
 	},
-	"portalBlue": {
+	"portal-blue.png": {
 		uuid.MustParse("5fa2c141-7cd3-4d56-a4e2-e26797753803"), // tapioca omniportal
 	},
-	"portalOrange": {
+	"portal-orange.png": {
 		uuid.MustParse("62240c57-b55a-4f0e-a435-c1c80d5e8c3a"), // tapioca sophia.naumova
 	},
-	"bee": {
+	"bee.png": {
 		uuid.MustParse("37e6d943-76cc-4d2f-9f1d-5ad037ea2f24"), // zee
 	},
-	"mareStareMareQuest": {
+	"mare-stare.png": {
 		uuid.MustParse("621c7346-ddc8-4bbd-9c01-eab111507c00"), // red
 	},
-	"blueFastStudios": {
+	"blue-fast-studios.png": {
 		uuid.MustParse("02bc27c8-47f6-4f1e-94e5-0aee6fa955a2"), // skyline
+	},
+}
+
+type imageTrait struct {
+	URL  string
+	Size int
+}
+
+var imageTraitMap = map[string]imageTrait{
+	"happy-anonfilly.png": {
+		URL:  "https://anonfilly.horse",
+		Size: 24,
+	},
+	"nugget.png": {
+		URL:  "https://www.youtube.com/watch?v=h_CaoxnX_Vc",
+		Size: 20,
+	},
+	"strawberry.png": {
+		URL:  "https://www.youtube.com/watch?v=yYSNp1JgkA8",
+		Size: 20,
+	},
+	"fish.png": {
+		URL:  "https://www.youtube.com/watch?v=RHuQqLxmEyg",
+		Size: 20,
+	},
+	"floppy.png": {
+		URL:  "https://www.youtube.com/watch?v=bLHL75H_VEM",
+		Size: 20,
+	},
+	"portal-blue.png": {
+		URL:  "https://www.youtube.com/watch?v=iuAbwbqNc3A",
+		Size: 20,
+	},
+	"portal-orange.png": {
+		URL:  "https://www.youtube.com/watch?v=iuAbwbqNc3A",
+		Size: 20,
+	},
+	"bee.png": {
+		URL:  "https://www.youtube.com/watch?v=R4MUPVWMnDQ",
+		Size: 20,
+	},
+	"mare-stare.png": {
+		URL:  "https://store.steampowered.com/search/?developer=ElectroKaplosion%20LLC",
+		Size: 20,
+	},
+	"blue-fast-studios.png": {
+		URL:  "https://bluefaststud.io",
+		Size: 20,
 	},
 }
 
