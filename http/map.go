@@ -210,6 +210,8 @@ func getUserByID(uuid uuid.UUID, users []user.UserWithID) *user.UserWithID {
 	return nil
 }
 
+const mapWidth = "calc(100% - 96px)"
+
 func renderMap(
 	ctx context.Context, onlineUsersMap map[string][]lsl.OnlineUser,
 	users []user.UserWithID,
@@ -273,7 +275,7 @@ func renderMap(
 				linear-gradient(0deg, rgba(#111, 0.5), rgba(#111, 0.5)), 
 				url("`+mapImageURL+`");
 			aspect-ratio: 2/1;
-			width: calc(100% - 96px);
+			width: `+mapWidth+`;
 			background-size: 100% 100%;
 			border-radius: 8px;
 			position: relative;

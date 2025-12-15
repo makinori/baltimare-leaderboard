@@ -95,22 +95,25 @@ func content(ctx context.Context) (Group, error) {
 
 	switch env.AREA {
 	case "baltimare":
-		logoEl = Img(
-			Class(foxcss.Class(ctx, `
+		logoEl = A(
+			Href("https://baltimare.org"),
+			Img(
+				Class(foxcss.Class(ctx, `
 					width: 600px;
 					max-width: 100%;
 					align-self: center;
 					margin-top: 48px;
-					margin-bottom: 48px;
+					margin-bottom: 16px;
 				`)),
-			Src("/logos/baltimare-opg.png"),
+				Src("/logos/baltimare-opg.png"),
+			),
 		)
 	case "cloudsdale":
 		logoEl = H1(
 			Class(foxcss.Class(ctx, `
 				text-align: center;
 				margin-top: 64px;
-				margin-bottom: 64px;
+				margin-bottom: 32px;
 				font-size: 64px
 			`)),
 			Text("cloudsdale"),
@@ -127,57 +130,62 @@ func content(ctx context.Context) (Group, error) {
 		),
 		foxhtml.HStack(ctx,
 			foxhtml.StackSCSS(`
-				flex-direction: row;
+				width: `+mapWidth+`;
+				align-items: flex-end;
+				margin-bottom: 16px;
+				gap: 8px;
+				> a {
+					opacity: 0.4;
+				}
 			`),
-			P(
-				Text("promise the page will look just as pretty again soon"),
+			Div(
+				P(
+					Class(foxcss.Class(ctx, `
+					font-weight: 700;
+					line-height: 1.1em;
+					color: rgba(`+ColorGreen+`, 0.6);
+					span {
+						color: `+ColorGreen+`;
+					}
+					margin-bottom: 12px;
+				`)),
+					Text("> "),
+					Span(Text(formatUint(uint64(len(onlineUUIDs)))+" online")),
+					Text(" right now"),
+					Br(),
+					Text("> "),
+					Span(Text(formatUint(total)+" popens")),
+					Text(" seen in total"),
+					Br(),
+					Text("> "),
+					Span(Text(formatUint(totalHours)+" hours")),
+					Text(" collectively"),
+				),
+				P(
+					Class(foxcss.Class(ctx, `
+					font-weight: 700;
+					line-height: 1.1em;
+					color: rgba(`+ColorLime+`, 0.6);
+					span {
+						color: `+ColorLime+`;
+					}
+				`)),
+					Text("> total time online since "),
+					Span(Text(sinceText)),
+					Br(),
+					Text("> also how long ago since last online"),
+				),
 			),
-			Div(Style("flex-grow:1")),
+			Div(Class(foxcss.Class(ctx, `flex-grow:1`))),
 			A(
-				Img(Height("24"), Src("/icons/github.svg")),
+				Img(Height("20"), Src("/icons/github.svg")),
 				Href("https://github.com/makinori/baltimare-leaderboard"),
 			),
 			A(
-				Img(Height("24"), Src("/icons/tor.svg")),
+				Img(Height("28"), Src("/icons/tor.svg")),
 				Href("http://"+env.AREA+".hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion"),
 			),
 		),
-		Br(),
-		P(
-			Class(foxcss.Class(ctx, `
-				font-weight: 700;
-				color: rgba(`+ColorGreen+`, 0.6);
-				span {
-					color: `+ColorGreen+`;
-				} 
-			`)),
-			Text("> "),
-			Span(Text(formatUint(uint64(len(onlineUUIDs)))+" online")),
-			Text(" right now"),
-			Br(),
-			Text("> "),
-			Span(Text(formatUint(total)+" popens")),
-			Text(" seen in total"),
-			Br(),
-			Text("> "),
-			Span(Text(formatUint(totalHours)+" hours")),
-			Text(" collectively"),
-		),
-		Br(),
-		P(
-			Class(foxcss.Class(ctx, `
-				font-weight: 700;
-				color: rgba(`+ColorLime+`, 0.6);
-				span {
-					color: `+ColorLime+`;
-				} 
-			`)),
-			Text("> total time online since "),
-			Span(Text(sinceText)),
-			Br(),
-			Text("> also how long ago since last online"),
-		),
-		Br(),
 		usersMap,
 		Br(),
 		usersList,
