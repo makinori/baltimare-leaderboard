@@ -1,3 +1,6 @@
+CGO_ENABLED := "0"
+GOEXPERIMENT := "greenteagc"
+
 default:
 	@just --list
 
@@ -14,7 +17,6 @@ start:
 
 	DEV=1 PORT=1234 \
 	DATABASE_PATH=data/data.db \
-	GOEXPERIMENT=greenteagc \
 	CI=true CLICOLOR_FORCE=1 \
 	air \
 	-proxy.enabled=true \
@@ -23,6 +25,11 @@ start:
 	-build.delay=10 \
 	-build.include_ext go,html,css,scss,png,jpg,gif,svg,md,js \
 	-build.exclude_dir cache,cmd,tmp
+
+buildstart:
+	go build -ldflags "-s -w" . 
+	PORT=8080 DATABASE_PATH=data/data.db \
+	./baltimare-leaderboard
 
 alias u := update
 # git pull, build and restart quadlet

@@ -7,3 +7,4 @@
 /backup.d
 /systemd/*.env
 /tmp
+/baltimare-leaderboard
