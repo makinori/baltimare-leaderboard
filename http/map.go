@@ -30,6 +30,7 @@ func renderMapUser(
 	ctx context.Context, mapUser *mapUser,
 ) Node {
 	return A(
+		ID("map-"+mapUser.ID.String()),
 		Href("#"+mapUser.ID.String()),
 		Class(foxcss.Class(ctx, `
 			position: absolute;
