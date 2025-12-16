@@ -51,6 +51,12 @@ func PutData(region string, data string) {
 
 	data = strings.TrimSpace(data)
 
+	// lsl doesnt allow empty post body
+	if data == "empty" {
+		onlineRegions.Store(region, onlineRegion)
+		return
+	}
+
 	for line := range strings.SplitSeq(data, ";") {
 		matches := lineRegexp.FindStringSubmatch(line)
 		if len(matches) == 0 {
