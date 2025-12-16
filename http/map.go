@@ -38,7 +38,8 @@ func renderMapUser(
 			height: 32px;
 			border-radius: 999px;
 			overflow: hidden;
-			transform: translate(-50%, -50%);
+			// positive y cause we're using left,bottom
+			transform: translate(-50%, 50%);
 			display: flex;
 			align-items: center;
 			justify-content: center;
