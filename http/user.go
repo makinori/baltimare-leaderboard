@@ -194,6 +194,7 @@ func renderUser(
 					width: 6px;
 					height: 24px;
 					border-radius: 4px;
+					background: #222;
 				}
 				&.online .strip {
 					background: `+ColorGreen+`;
