@@ -3,12 +3,16 @@ package http
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"fmt"
+	"log/slog"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/makinori/baltimare-leaderboard/lsl"
 	"github.com/makinori/baltimare-leaderboard/user"
 	"github.com/makinori/foxlib/foxcss"
 	"github.com/makinori/foxlib/foxhtml"
@@ -66,6 +70,7 @@ func renderUser(
 		statusText = timediff.TimeDiff(user.User.LastSeen)
 		statusText = strings.ReplaceAll(statusText, "a few", "few")
 		statusText = strings.ReplaceAll(statusText, "minute", "min")
+		statusText = strings.ReplaceAll(statusText, "second", "sec")
 		statusText = strings.ReplaceAll(statusText, "ago", "")
 		statusText = strings.TrimSpace(statusText)
 	}
@@ -220,32 +225,80 @@ func renderUser(
 	)
 }
 
-func renderUsers(
-	ctx context.Context, sortedUsers []user.UserWithID, onlineUUIDs []uuid.UUID,
-) (Node, uint64, uint64) {
-	var total, totalMinutes uint64
+func getSortedUsers() ([]user.UserWithID, error) {
+	// TODO: this could get expensive so maybe we should cache this
+	// TODO: these data structures are also ineffecient
 
-	var maxMinutes uint64
-	for i := range sortedUsers {
-		if sortedUsers[i].Minutes > maxMinutes {
-			maxMinutes = sortedUsers[i].Minutes
+	unsortedUsers, err := user.GetUsers()
+	if err != nil {
+		slog.Error("failed to get online users", "err", err)
+		return []user.UserWithID{}, errors.New("failed to get online users")
+	}
+
+	var sortedUsers []user.UserWithID
+
+	for i := range unsortedUsers {
+		if unsortedUsers[i].User.Minutes >= 120 &&
+			!slices.Contains(traitUUIDMap["bot"], unsortedUsers[i].ID) {
+			sortedUsers = append(sortedUsers, unsortedUsers[i])
 		}
 	}
 
+	sort.Slice(sortedUsers, func(i, j int) bool {
+		return sortedUsers[i].User.Minutes > sortedUsers[j].User.Minutes
+	})
+
+	return sortedUsers, nil
+}
+
+func renderUsers(
+	ctx context.Context, sortedUsers []user.UserWithID,
+	onlineUUIDs []uuid.UUID, maxMinutes uint64,
+) Node {
 	userEls := make(Group, len(sortedUsers))
 	for i := range sortedUsers {
 		online := slices.Contains(onlineUUIDs, sortedUsers[i].ID)
-
 		userEls[i] = renderUser(ctx, &sortedUsers[i], online, maxMinutes)
-
-		total++
-		totalMinutes += sortedUsers[i].User.Minutes
 	}
 
 	return foxhtml.VStack(ctx,
+		Attr("hx-get", "/hx/users"),
+		Attr("hx-swap", "morph:outerHTML"),
+		Attr("hx-trigger", "every 1m"),
 		foxhtml.StackSCSS(`
 			gap: 4px;
 		`),
 		userEls,
-	), total, totalMinutes / 60
+	)
+}
+
+func renderOnlyUsers() (string, bool) {
+	ctx := context.Background()
+	ctx = foxcss.InitContext(ctx)
+
+	sortedUsers, err := getSortedUsers()
+	if err != nil {
+		slog.Error("failed to get online users", "err", err)
+		return "failed to get online users", false
+	}
+
+	onlineUsers := lsl.GetData()
+	onlineUUIDs := lsl.GetOnlineUUIDs(onlineUsers)
+
+	stats := getStats(sortedUsers, onlineUUIDs)
+
+	node := renderUsers(ctx, sortedUsers, onlineUUIDs, stats.maxMinutes)
+
+	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(ctx))
+	if err != nil {
+		slog.Error("failed to only render users", "err", err)
+		return "failed to only render users", false
+	}
+
+	html := Group{
+		Head(StyleEl(Raw(css))),
+		node,
+	}.String()
+
+	return html, true
 }

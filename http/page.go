@@ -5,13 +5,10 @@ import (
 	_ "embed"
 	"errors"
 	"log/slog"
-	"slices"
-	"sort"
 	"sync"
 
 	"github.com/makinori/baltimare-leaderboard/env"
 	"github.com/makinori/baltimare-leaderboard/lsl"
-	"github.com/makinori/baltimare-leaderboard/user"
 	"github.com/makinori/foxlib/foxcss"
 	"github.com/makinori/foxlib/foxhtml"
 	. "maragu.dev/gomponents"
@@ -35,31 +32,16 @@ const (
 )
 
 func content(ctx context.Context) (Group, error) {
-	// get users and sort
-	// TODO: this could get expensive so maybe we should cache this
-	// TODO: these data structures are also ineffecient
-
-	unsortedUsers, err := user.GetUsers()
+	sortedUsers, err := getSortedUsers()
 	if err != nil {
 		slog.Error("failed to get online users", "err", err)
 		return Group{}, errors.New("failed to get online users")
 	}
 
-	var sortedUsers []user.UserWithID
-
-	for i := range unsortedUsers {
-		if unsortedUsers[i].User.Minutes >= 120 &&
-			!slices.Contains(traitUUIDMap["bot"], unsortedUsers[i].ID) {
-			sortedUsers = append(sortedUsers, unsortedUsers[i])
-		}
-	}
-
-	sort.Slice(sortedUsers, func(i, j int) bool {
-		return sortedUsers[i].User.Minutes > sortedUsers[j].User.Minutes
-	})
-
 	onlineUsers := lsl.GetData()
 	onlineUUIDs := lsl.GetOnlineUUIDs(onlineUsers)
+
+	stats := getStats(sortedUsers, onlineUUIDs)
 
 	var wg sync.WaitGroup
 	// var mapRenderTime, listRenderTime time.Duration
@@ -72,22 +54,15 @@ func content(ctx context.Context) (Group, error) {
 	})
 
 	var usersList Node
-	var total, totalHours uint64
 	wg.Go(func() {
 		// startTime := time.Now()
-		usersList, total, totalHours = renderUsers(ctx, sortedUsers, onlineUUIDs)
+		usersList = renderUsers(
+			ctx, sortedUsers, onlineUUIDs, stats.maxMinutes,
+		)
 		// listRenderTime = time.Since(startTime)
 	})
 
 	wg.Wait()
-
-	sinceText := ""
-	switch env.AREA {
-	case "baltimare":
-		sinceText = "august 6th 2024"
-	case "cloudsdale":
-		sinceText = "january 13th 2025"
-	}
 
 	var logoEl Node
 
@@ -136,44 +111,7 @@ func content(ctx context.Context) (Group, error) {
 					opacity: 0.4;
 				}
 			`),
-			Div(
-				P(
-					Class(foxcss.Class(ctx, `
-					font-weight: 700;
-					line-height: 1.1em;
-					color: rgba(`+ColorGreen+`, 0.6);
-					span {
-						color: `+ColorGreen+`;
-					}
-					margin-bottom: 12px;
-				`)),
-					Text("> "),
-					Span(Text(formatUint(uint64(len(onlineUUIDs)))+" online")),
-					Text(" right now"),
-					Br(),
-					Text("> "),
-					Span(Text(formatUint(total)+" popens")),
-					Text(" seen in total"),
-					Br(),
-					Text("> "),
-					Span(Text(formatUint(totalHours)+" hours")),
-					Text(" collectively"),
-				),
-				P(
-					Class(foxcss.Class(ctx, `
-					font-weight: 700;
-					line-height: 1.1em;
-					color: rgba(`+ColorLime+`, 0.6);
-					span {
-						color: `+ColorLime+`;
-					}
-				`)),
-					Text("> total time online since "),
-					Span(Text(sinceText)),
-					Br(),
-					Text("> also how long ago since last online"),
-				),
-			),
+			renderStats(ctx, &stats),
 			Div(Class(foxcss.Class(ctx, `flex-grow:1`))),
 			A(
 				Img(Height("20"), Src("/icons/github.svg")),

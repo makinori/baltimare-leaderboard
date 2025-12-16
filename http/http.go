@@ -55,7 +55,9 @@ func Init() {
 
 	http.HandleFunc("GET /{$}", handleRender(renderPage))
 
+	http.HandleFunc("GET /hx/stats", handleRender(renderOnlyStats))
 	http.HandleFunc("GET /hx/map", handleRender(renderOnlyMap))
+	http.HandleFunc("GET /hx/users", handleRender(renderOnlyUsers))
 
 	http.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(assetsFS, "icons/favicon-"+env.AREA+".ico")

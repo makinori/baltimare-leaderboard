@@ -1,6 +1,6 @@
-setInterval(() => {
-	document.location.reload();
-}, 1000 * 60);
+// setInterval(() => {
+// 	document.location.reload();
+// }, 1000 * 60);
 
 // avatar icon animation
 
