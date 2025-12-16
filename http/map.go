@@ -5,7 +5,9 @@ import (
 	_ "embed"
 	"encoding/binary"
 	"fmt"
+	"log/slog"
 	"slices"
+	"strconv"
 	"sync"
 
 	"github.com/google/uuid"
@@ -39,6 +41,7 @@ func renderMapUser(
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			transition: all 100ms ease;
 
 			> img {
 				width: 24px;
@@ -280,24 +283,57 @@ func renderMap(
 			border-radius: 8px;
 			position: relative;
 		`)),
+		Attr("hx-get", "/hx/map"),
+		Attr("hx-swap", "morph:outerHTML"),
+		Attr("hx-trigger", "every "+strconv.Itoa(lsl.ScriptIntervalSeconds)+"s"),
 		userEls,
-		Div(Class(foxcss.Class(ctx, `
-			position: absolute;
-			top: 6px;
-			left: 6px;
-			border-radius: 999px;
-			width: 8px;
-			height: 8px;
-			background: `+firstSimOnlineColor+`;
-		`))),
-		Div(Class(foxcss.Class(ctx, `
-			position: absolute;
-			top: 6px;
-			right: 6px;
-			border-radius: 999px;
-			width: 8px;
-			height: 8px;
-			background: `+secondSimOnlineColor+`;
-		`))),
+		Div(
+			Class(foxcss.Class(ctx, `
+				position: absolute;
+				top: 6px;
+				left: 6px;
+				border-radius: 999px;
+				width: 8px;
+				height: 8px;
+			`)),
+			Style(`background:`+firstSimOnlineColor),
+		),
+		Div(
+			Class(foxcss.Class(ctx, `
+				position: absolute;
+				top: 6px;
+				right: 6px;
+				border-radius: 999px;
+				width: 8px;
+				height: 8px;
+			`)),
+			Style(`background:`+secondSimOnlineColor),
+		),
 	)
+}
+
+func renderOnlyMap() (string, bool) {
+	ctx := context.Background()
+	ctx = foxcss.InitContext(ctx)
+
+	users, err := user.GetUsers()
+	if err != nil {
+		slog.Error("failed to only render map", "err", err)
+		return "failed to only render map", false
+	}
+
+	node := renderMap(ctx, lsl.GetData(), users)
+
+	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(ctx))
+	if err != nil {
+		slog.Error("failed to only render map", "err", err)
+		return "failed to only render map", false
+	}
+
+	html := Group{
+		Head(StyleEl(Raw(css))),
+		node,
+	}.String()
+
+	return html, true
 }

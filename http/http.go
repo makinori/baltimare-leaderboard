@@ -17,17 +17,26 @@ var (
 	embedFS embed.FS
 )
 
-func handleIndex(w http.ResponseWriter, r *http.Request) {
-	html, ok := renderPage()
-	if !ok {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(html))
-		return
-	}
+func handleRender(renderable func() (string, bool)) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		startTime := time.Now()
 
-	foxhttp.ServeOptimized(
-		w, r, ".html", time.Unix(0, 0), []byte(html), false,
-	)
+		html, ok := renderable()
+		if !ok {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(html))
+			return
+		}
+
+		w.Header().Add(
+			"X-Render-Time",
+			formatShortDuration(time.Since(startTime)),
+		)
+
+		foxhttp.ServeOptimized(
+			w, r, ".html", time.Unix(0, 0), []byte(html), false,
+		)
+	}
 }
 
 // sets up routes
@@ -44,7 +53,9 @@ func Init() {
 
 	initAPI()
 
-	http.HandleFunc("GET /{$}", handleIndex)
+	http.HandleFunc("GET /{$}", handleRender(renderPage))
+
+	http.HandleFunc("GET /hx/map", handleRender(renderOnlyMap))
 
 	http.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(assetsFS, "icons/favicon-"+env.AREA+".ico")

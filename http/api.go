@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,7 +25,8 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		"GET /api/health - for monitoring",
 		"",
 		"GET /api/users - data for leaderboard, refreshes once a minute",
-		"GET /api/users/online - output from in-world lsl cube, updates every " + lsl.ScriptInterval.String(),
+		"GET /api/users/online - output from in-world lsl cube, updates every " +
+			strconv.Itoa(lsl.ScriptIntervalSeconds) + " seconds",
 		"",
 		"PUT /api/lsl/:where - for the in-world lsl cube to send data to",
 	}, "\n"))

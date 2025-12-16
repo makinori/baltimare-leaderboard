@@ -7,9 +7,7 @@ import (
 	"log/slog"
 	"slices"
 	"sort"
-	"strings"
 	"sync"
-	"time"
 
 	"github.com/makinori/baltimare-leaderboard/env"
 	"github.com/makinori/baltimare-leaderboard/lsl"
@@ -64,21 +62,21 @@ func content(ctx context.Context) (Group, error) {
 	onlineUUIDs := lsl.GetOnlineUUIDs(onlineUsers)
 
 	var wg sync.WaitGroup
-	var mapRenderTime, listRenderTime time.Duration
+	// var mapRenderTime, listRenderTime time.Duration
 
 	var usersMap Node
 	wg.Go(func() {
-		startTime := time.Now()
+		// startTime := time.Now()
 		usersMap = renderMap(ctx, onlineUsers, sortedUsers)
-		mapRenderTime = time.Since(startTime)
+		// mapRenderTime = time.Since(startTime)
 	})
 
 	var usersList Node
 	var total, totalHours uint64
 	wg.Go(func() {
-		startTime := time.Now()
+		// startTime := time.Now()
 		usersList, total, totalHours = renderUsers(ctx, sortedUsers, onlineUUIDs)
-		listRenderTime = time.Since(startTime)
+		// listRenderTime = time.Since(startTime)
 	})
 
 	wg.Wait()
@@ -189,25 +187,25 @@ func content(ctx context.Context) (Group, error) {
 		usersMap,
 		Br(),
 		usersList,
-		foxhtml.HStack(ctx,
-			foxhtml.StackSCSS(`
-				margin-top: 64px;
-				text-align: center;
-				opacity: 0.3;
-				align-items: center;
-				justify-content: center;
-				width: 100%;
-				gap: 32px;
-			`),
-			Span(Text("map: "+formatShortDuration(mapRenderTime))),
-			Span(Text("list: "+formatShortDuration(listRenderTime))),
-			Span(Text("total: {{.RenderTime}}")),
-		),
+		// foxhtml.HStack(ctx,
+		// 	foxhtml.StackSCSS(`
+		// 		margin-top: 64px;
+		// 		text-align: center;
+		// 		opacity: 0.3;
+		// 		align-items: center;
+		// 		justify-content: center;
+		// 		width: 100%;
+		// 		gap: 32px;
+		// 	`),
+		// 	Span(Text("map: "+formatShortDuration(mapRenderTime))),
+		// 	Span(Text("list: "+formatShortDuration(listRenderTime))),
+		// 	Span(Text("total: {{.RenderTime}}")),
+		// ),
 	}, nil
 }
 
 func renderPage() (string, bool) {
-	startTime := time.Now()
+	// startTime := time.Now()
 
 	ctx := context.Background()
 	ctx = foxcss.InitContext(ctx)
@@ -245,21 +243,25 @@ func renderPage() (string, bool) {
 	title := []byte(env.AREA)
 	title[0] -= 32 // uppercase
 
-	html := Group{HTML(
+	html := Group{Doctype(HTML(
 		Head(
 			TitleEl(Text(string(title)+" Leaderboard")),
 			StyleEl(Raw(css)),
+			Script(Src("/js/htmx.min.js")),
+			Script(Src("/js/idiomorph-ext.min.js")),
+			Script(Src("/js/htmx-ext-head-support.min.js")),
 		),
 		Body(
+			Attr("hx-ext", "morph,head-support"),
 			contentDiv,
 			Script(Raw(pageJS)),
 		),
-	)}.String()
+	))}.String()
 
-	renderTime := time.Since(startTime)
-	html = strings.ReplaceAll(html,
-		"{{.RenderTime}}", formatShortDuration(renderTime),
-	)
+	// renderTime := time.Since(startTime)
+	// html = strings.ReplaceAll(html,
+	// 	"{{.RenderTime}}", formatShortDuration(renderTime),
+	// )
 
 	return html, true
 }

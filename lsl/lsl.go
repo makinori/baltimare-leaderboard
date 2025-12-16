@@ -23,8 +23,8 @@ import (
 // online regions/users expire here after 15 seconds
 
 const (
-	ScriptInterval      = time.Second * 5
-	regionExpireSeconds = 15
+	ScriptIntervalSeconds = 5
+	regionExpireSeconds   = 15
 )
 
 type OnlineUser struct {
