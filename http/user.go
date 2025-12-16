@@ -94,6 +94,7 @@ func renderUser(
 				transition: all 100ms ease;
 				user-select: none;
 				z-index: 10;
+				background: #333;
 				&:hover {
 					transform: scale(1.1);
 				}
@@ -114,7 +115,7 @@ func renderUser(
 		`),
 		Img(
 			Class("avatar-icon"),
-			Src(getImageURL(user.User.Info.ImageID)),
+			Src("/api/user/"+user.ID.String()+"/image"),
 			Loading("lazy"),
 			Draggable("false"),
 		),

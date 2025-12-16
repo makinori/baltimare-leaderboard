@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/makinori/baltimare-leaderboard/user"
 )
 
@@ -46,12 +45,4 @@ func formatName(userInfo *user.UserInfo) string {
 	} else {
 		return fmt.Sprintf("%s (%s)", userInfo.DisplayName, userInfo.Username)
 	}
-}
-
-func getImageURL(imageID uuid.UUID) string {
-	// https://wiki.secondlife.com/wiki/Picture_Service
-	return fmt.Sprintf(
-		"https://picture-service.secondlife.com/%s/60x45.jpg",
-		imageID.String(),
-	)
 }

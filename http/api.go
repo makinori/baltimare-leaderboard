@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/makinori/baltimare-leaderboard/env"
 	"github.com/makinori/baltimare-leaderboard/lsl"
 	"github.com/makinori/baltimare-leaderboard/user"
@@ -28,7 +29,9 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		"GET /api/users/online - output from in-world lsl cube, updates every " +
 			strconv.Itoa(lsl.ScriptIntervalSeconds) + " seconds",
 		"",
-		"PUT /api/lsl/:where - for the in-world lsl cube to send data to",
+		"GET /api/user/{id}/image - get image for user or return default",
+		"",
+		"PUT /api/lsl/{where} - for the in-world lsl cube to send data to",
 	}, "\n"))
 
 	foxhttp.ServeOptimized(w, r, ".txt", time.Unix(0, 0), out, false)
@@ -124,6 +127,26 @@ func handleUsersOnline(w http.ResponseWriter, r *http.Request) {
 	foxhttp.ServeOptimized(w, r, ".json", time.Unix(0, 0), out, false)
 }
 
+func handleUserImage(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("invalid uuid"))
+		return
+	}
+
+	userImage := user.GetUserImage(id)
+	if len(userImage) > 0 {
+		foxhttp.ServeOptimized(w, r, ".jpg", time.Unix(0, 0), userImage, true)
+		return
+	}
+
+	http.Redirect(
+		w, r, "/avatars/anon-avatar.png", http.StatusTemporaryRedirect,
+	)
+}
+
 func handleLSLRegion(w http.ResponseWriter, r *http.Request) {
 	auth := r.Header.Get("Authorization")
 	if auth != "Bearer "+env.SECRET {
@@ -160,5 +183,6 @@ func initAPI() {
 	http.HandleFunc("GET /api/health", handleHealth)
 	http.HandleFunc("GET /api/users", handleUsers)
 	http.HandleFunc("GET /api/users/online", handleUsersOnline)
+	http.HandleFunc("GET /api/user/{id}/image", handleUserImage)
 	http.HandleFunc("PUT /api/lsl/{region}", handleLSLRegion)
 }

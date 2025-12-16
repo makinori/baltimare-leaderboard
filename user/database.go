@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"log/slog"
+	"slices"
 	"time"
 
 	"github.com/fxamacker/cbor/v2"
@@ -25,7 +26,6 @@ type UserInfo struct {
 	LastUpdated time.Time `json:"lastUpdated"`
 	Username    string    `json:"username"`
 	DisplayName string    `json:"displayName"`
-	ImageID     uuid.UUID `json:"imageID"`
 }
 
 type User struct {
@@ -49,6 +49,11 @@ func InitDatabase() *bbolt.DB {
 
 	err = db.Update(func(tx *bbolt.Tx) error {
 		_, err = tx.CreateBucketIfNotExists([]byte("users"))
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.CreateBucketIfNotExists([]byte("userImages"))
 		if err != nil {
 			return err
 		}
@@ -140,4 +145,49 @@ func GetUsers() ([]UserWithID, error) {
 	})
 
 	return users, err
+}
+
+func putUserImage(userID uuid.UUID, imageID uuid.UUID, imageData []byte) error {
+	return db.Update(func(tx *bbolt.Tx) error {
+		userImagesBucket := tx.Bucket([]byte("userImages"))
+		if userImagesBucket == nil {
+			panic("user images bucket not found")
+		}
+
+		err := userImagesBucket.Put(userID[:], imageData)
+		if err != nil {
+			return err
+		}
+
+		err = userImagesBucket.Put(
+			slices.Concat(userID[:], []byte(":id")),
+			imageID[:],
+		)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func GetUserImage(userID uuid.UUID) []byte {
+	var userImage []byte
+	db.View(func(tx *bbolt.Tx) error {
+		userImagesBucket := tx.Bucket([]byte("userImages"))
+		if userImagesBucket == nil {
+			panic("user images bucket not found")
+		}
+
+		foundUserImage := userImagesBucket.Get(userID[:])
+		if len(foundUserImage) == 0 {
+			return nil
+		}
+
+		userImage = make([]byte, len(foundUserImage))
+		copy(userImage, foundUserImage)
+
+		return nil
+	})
+	return userImage
 }

@@ -20,10 +20,9 @@ import (
 )
 
 type mapUser struct {
-	ID      uuid.UUID
-	ImageID uuid.UUID
-	Name    string
-	X, Y    float64
+	ID   uuid.UUID
+	Name string
+	X, Y float64
 }
 
 func renderMapUser(
@@ -50,6 +49,7 @@ func renderMapUser(
 				height: 24px;
 				border-radius: 999px;
 				transition: all 150ms ease;
+				background: #333;
 			}
 
 			&:hover {
@@ -66,7 +66,7 @@ func renderMapUser(
 			float64(clamp(mapUser.Y, 0, 256))/256*100,
 		)),
 		Title(mapUser.Name),
-		Img(Src(getImageURL(mapUser.ImageID))),
+		Img(Src("/api/user/"+mapUser.ID.String()+"/image")),
 	)
 }
 
@@ -231,11 +231,10 @@ func renderMap(
 			}
 
 			mapUser := mapUser{
-				ID:      user.ID,
-				ImageID: user.Info.ImageID,
-				Name:    formatName(&user.Info),
-				X:       float64(onlineUsers[i].X),
-				Y:       float64(onlineUsers[i].Y),
+				ID:   user.ID,
+				Name: formatName(&user.Info),
+				X:    float64(onlineUsers[i].X),
+				Y:    float64(onlineUsers[i].Y),
 			}
 
 			regionIndex := slices.Index(env.REGIONS, region)
