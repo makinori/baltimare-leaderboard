@@ -127,6 +127,7 @@ func GetUsers() ([]UserWithID, error) {
 
 			if len(k) != 16 {
 				slog.Error("invalid uuid", "uuid", k)
+				continue
 			}
 
 			var err error
@@ -154,17 +155,26 @@ func putUserImage(userID uuid.UUID, imageID uuid.UUID, imageData []byte) error {
 			panic("user images bucket not found")
 		}
 
-		err := userImagesBucket.Put(userID[:], imageData)
-		if err != nil {
-			return err
-		}
+		imageIDKey := slices.Concat(userID[:], []byte(":id"))
 
-		err = userImagesBucket.Put(
-			slices.Concat(userID[:], []byte(":id")),
-			imageID[:],
-		)
-		if err != nil {
-			return err
+		if imageID == uuid.Nil {
+			err := userImagesBucket.Delete(userID[:])
+			if err != nil {
+				return err
+			}
+			err = userImagesBucket.Delete(imageIDKey)
+			if err != nil {
+				return err
+			}
+		} else {
+			err := userImagesBucket.Put(userID[:], imageData)
+			if err != nil {
+				return err
+			}
+			err = userImagesBucket.Put(imageIDKey, imageID[:])
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil

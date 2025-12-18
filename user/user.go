@@ -152,6 +152,8 @@ func updateUserInfo(userID uuid.UUID, user *User) bool {
 
 	user.Info = newInfo
 
+	// if newImage is empty, function below will delete
+
 	err = putUserImage(userID, newImage.id, newImage.data)
 	if err != nil {
 		slog.Error(
