@@ -54,6 +54,11 @@ migrate-from-js old_path new_path:
 migrate-images db_path:
 	go run -C cmd/migrate-images . "$(realpath '{{db_path}}')"
 
+# some user images might be empty
+[group("util")]
+cleanup-images db_path:
+	go run -C cmd/cleanup-images . "$(realpath '{{db_path}}')"
+
 [group("dev")]
 favicon input output:
 	#!/bin/bash
