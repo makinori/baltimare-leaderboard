@@ -113,6 +113,10 @@ func getInfoAndImage(userID uuid.UUID) (UserInfo, imageWithID, error) {
 		return userInfo, imageWithID{}, nil
 	}
 
+	if imageID == uuid.Nil {
+		return userInfo, imageWithID{}, nil
+	}
+
 	imageData, err := getImage(imageID)
 	if err != nil {
 		slog.Warn(
