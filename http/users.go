@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	_ "embed"
-	"errors"
 	"fmt"
 	"log/slog"
 	"slices"
@@ -11,8 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/google/uuid"
-	"github.com/makinori/baltimare-leaderboard/lsl"
 	"github.com/makinori/baltimare-leaderboard/user"
 	"github.com/makinori/foxlib/foxcss"
 	"github.com/makinori/foxlib/foxhtml"
@@ -225,15 +222,9 @@ func renderUser(
 	)
 }
 
-func getSortedUsers() ([]user.UserWithID, error) {
+func getSortedUsers(unsortedUsers []user.UserWithID) ([]user.UserWithID, error) {
 	// TODO: this could get expensive so maybe we should cache this
 	// TODO: these data structures are also ineffecient
-
-	unsortedUsers, err := user.GetUsers()
-	if err != nil {
-		slog.Error("failed to get online users", "err", err)
-		return []user.UserWithID{}, errors.New("failed to get online users")
-	}
 
 	var sortedUsers []user.UserWithID
 
@@ -252,16 +243,15 @@ func getSortedUsers() ([]user.UserWithID, error) {
 }
 
 func renderUsers(
-	ctx context.Context, sortedUsers []user.UserWithID,
-	onlineUUIDs []uuid.UUID, maxMinutes uint64,
+	data *renderData, maxMinutes uint64,
 ) Node {
-	userEls := make(Group, len(sortedUsers))
-	for i := range sortedUsers {
-		online := slices.Contains(onlineUUIDs, sortedUsers[i].ID)
-		userEls[i] = renderUser(ctx, &sortedUsers[i], online, maxMinutes)
+	userEls := make(Group, len(data.users))
+	for i := range data.users {
+		online := slices.Contains(data.onlineUUIDs, data.users[i].ID)
+		userEls[i] = renderUser(data.ctx, &data.users[i], online, maxMinutes)
 	}
 
-	return foxhtml.VStack(ctx,
+	return foxhtml.VStack(data.ctx,
 		Attr("hx-get", "/hx/users"),
 		Attr("hx-swap", "morph:outerHTML"),
 		Attr("hx-trigger", "every 1m"),
@@ -273,23 +263,16 @@ func renderUsers(
 }
 
 func renderOnlyUsers() (string, bool) {
-	ctx := context.Background()
-	ctx = foxcss.InitContext(ctx)
-
-	sortedUsers, err := getSortedUsers()
+	data, err := getRenderData(true, "u-")
 	if err != nil {
-		slog.Error("failed to get online users", "err", err)
-		return "failed to get online users", false
+		return err.Error(), false
 	}
 
-	onlineUsers := lsl.GetData()
-	onlineUUIDs := lsl.GetOnlineUUIDs(onlineUsers)
+	stats := getStats(data)
 
-	stats := getStats(sortedUsers, onlineUUIDs)
+	node := renderUsers(data, stats.maxMinutes)
 
-	node := renderUsers(ctx, sortedUsers, onlineUUIDs, stats.maxMinutes)
-
-	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(ctx))
+	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(data.ctx))
 	if err != nil {
 		slog.Error("failed to only render users", "err", err)
 		return "failed to only render users", false

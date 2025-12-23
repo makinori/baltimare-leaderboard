@@ -4,10 +4,7 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/google/uuid"
 	"github.com/makinori/baltimare-leaderboard/env"
-	"github.com/makinori/baltimare-leaderboard/lsl"
-	"github.com/makinori/baltimare-leaderboard/user"
 	"github.com/makinori/foxlib/foxcss"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
@@ -20,18 +17,18 @@ type stats struct {
 	maxMinutes   uint64
 }
 
-func getStats(users []user.UserWithID, onlineUUIDs []uuid.UUID) stats {
+func getStats(data *renderData) stats {
 	stats := stats{}
 
-	for range onlineUUIDs {
+	for range data.onlineUUIDs {
 		stats.online++
 	}
 
-	for i := range users {
+	for i := range data.users {
 		stats.users++
-		stats.totalMinutes += users[i].Minutes
-		if users[i].Minutes > stats.maxMinutes {
-			stats.maxMinutes = users[i].Minutes
+		stats.totalMinutes += data.users[i].Minutes
+		if data.users[i].Minutes > stats.maxMinutes {
+			stats.maxMinutes = data.users[i].Minutes
 		}
 	}
 
@@ -91,23 +88,16 @@ func renderStats(ctx context.Context, stats *stats) Node {
 }
 
 func renderOnlyStats() (string, bool) {
-	ctx := context.Background()
-	ctx = foxcss.InitContext(ctx)
-
-	sortedUsers, err := getSortedUsers()
+	data, err := getRenderData(false, "s-")
 	if err != nil {
-		slog.Error("failed to get online users", "err", err)
-		return "failed to get online users", false
+		return err.Error(), false
 	}
 
-	onlineUsers := lsl.GetData()
-	onlineUUIDs := lsl.GetOnlineUUIDs(onlineUsers)
+	stats := getStats(data)
 
-	stats := getStats(sortedUsers, onlineUUIDs)
+	node := renderStats(data.ctx, &stats)
 
-	node := renderStats(ctx, &stats)
-
-	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(ctx))
+	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(data.ctx))
 	if err != nil {
 		slog.Error("failed to only render stats", "err", err)
 		return "failed to only render stats", false

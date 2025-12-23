@@ -217,15 +217,12 @@ func getUserByID(uuid uuid.UUID, users []user.UserWithID) *user.UserWithID {
 
 const mapWidth = "calc(100% - 96px)"
 
-func renderMap(
-	ctx context.Context, onlineUsersMap map[string][]lsl.OnlineUser,
-	users []user.UserWithID,
-) Node {
+func renderMap(data *renderData) Node {
 	var mapUsers []*mapUser
 
-	for region, onlineUsers := range onlineUsersMap {
+	for region, onlineUsers := range data.onlineUsers {
 		for i := range onlineUsers {
-			user := getUserByID(onlineUsers[i].UUID, users)
+			user := getUserByID(onlineUsers[i].UUID, data.users)
 			if user == nil {
 				continue
 			}
@@ -250,7 +247,7 @@ func renderMap(
 
 	userEls := make(Group, len(mapUsers))
 	for i := range mapUsers {
-		userEls[i] = renderMapUser(ctx, mapUsers[i])
+		userEls[i] = renderMapUser(data.ctx, mapUsers[i])
 	}
 
 	var mapImageURL string
@@ -274,7 +271,7 @@ func renderMap(
 	}
 
 	return Div(
-		Class(foxcss.Class(ctx, `
+		Class(foxcss.Class(data.ctx, `
 			background-image: 
 				linear-gradient(0deg, rgba(#111, 0.5), rgba(#111, 0.5)), 
 				url("`+mapImageURL+`");
@@ -289,7 +286,7 @@ func renderMap(
 		Attr("hx-trigger", "every "+strconv.Itoa(lsl.ScriptIntervalSeconds)+"s"),
 		userEls,
 		Div(
-			Class(foxcss.Class(ctx, `
+			Class(foxcss.Class(data.ctx, `
 				position: absolute;
 				top: 6px;
 				left: 6px;
@@ -300,7 +297,7 @@ func renderMap(
 			Style(`background:`+firstSimOnlineColor),
 		),
 		Div(
-			Class(foxcss.Class(ctx, `
+			Class(foxcss.Class(data.ctx, `
 				position: absolute;
 				top: 6px;
 				right: 6px;
@@ -314,18 +311,14 @@ func renderMap(
 }
 
 func renderOnlyMap() (string, bool) {
-	ctx := context.Background()
-	ctx = foxcss.InitContext(ctx)
-
-	users, err := user.GetUsers()
+	data, err := getRenderData(false, "m-")
 	if err != nil {
-		slog.Error("failed to only render map", "err", err)
-		return "failed to only render map", false
+		return err.Error(), false
 	}
 
-	node := renderMap(ctx, lsl.GetData(), users)
+	node := renderMap(data)
 
-	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(ctx))
+	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(data.ctx))
 	if err != nil {
 		slog.Error("failed to only render map", "err", err)
 		return "failed to only render map", false

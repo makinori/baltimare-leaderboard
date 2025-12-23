@@ -1,14 +1,11 @@
 package http
 
 import (
-	"context"
 	_ "embed"
-	"errors"
 	"log/slog"
 	"sync"
 
 	"github.com/makinori/baltimare-leaderboard/env"
-	"github.com/makinori/baltimare-leaderboard/lsl"
 	"github.com/makinori/foxlib/foxcss"
 	"github.com/makinori/foxlib/foxhtml"
 	. "maragu.dev/gomponents"
@@ -31,17 +28,8 @@ const (
 	ColorLime  = "#cddc39" // lime 500
 )
 
-func content(ctx context.Context) (Group, error) {
-	sortedUsers, err := getSortedUsers()
-	if err != nil {
-		slog.Error("failed to get online users", "err", err)
-		return Group{}, errors.New("failed to get online users")
-	}
-
-	onlineUsers := lsl.GetData()
-	onlineUUIDs := lsl.GetOnlineUUIDs(onlineUsers)
-
-	stats := getStats(sortedUsers, onlineUUIDs)
+func content(data *renderData) (Group, error) {
+	stats := getStats(data)
 
 	var wg sync.WaitGroup
 	// var mapRenderTime, listRenderTime time.Duration
@@ -49,16 +37,14 @@ func content(ctx context.Context) (Group, error) {
 	var usersMap Node
 	wg.Go(func() {
 		// startTime := time.Now()
-		usersMap = renderMap(ctx, onlineUsers, sortedUsers)
+		usersMap = renderMap(data)
 		// mapRenderTime = time.Since(startTime)
 	})
 
 	var usersList Node
 	wg.Go(func() {
 		// startTime := time.Now()
-		usersList = renderUsers(
-			ctx, sortedUsers, onlineUUIDs, stats.maxMinutes,
-		)
+		usersList = renderUsers(data, stats.maxMinutes)
 		// listRenderTime = time.Since(startTime)
 	})
 
@@ -71,7 +57,7 @@ func content(ctx context.Context) (Group, error) {
 		logoEl = A(
 			Href("https://baltimare.org"),
 			Img(
-				Class(foxcss.Class(ctx, `
+				Class(foxcss.Class(data.ctx, `
 					width: 600px;
 					max-width: 100%;
 					align-self: center;
@@ -83,7 +69,7 @@ func content(ctx context.Context) (Group, error) {
 		)
 	case "cloudsdale":
 		logoEl = H1(
-			Class(foxcss.Class(ctx, `
+			Class(foxcss.Class(data.ctx, `
 				text-align: center;
 				margin-top: 64px;
 				margin-bottom: 32px;
@@ -94,14 +80,14 @@ func content(ctx context.Context) (Group, error) {
 	}
 
 	return Group{
-		foxhtml.HStack(ctx,
+		foxhtml.HStack(data.ctx,
 			foxhtml.StackSCSS(`
 				align-items: center;
 				justify-content: center;
 			`),
 			logoEl,
 		),
-		foxhtml.HStack(ctx,
+		foxhtml.HStack(data.ctx,
 			foxhtml.StackSCSS(`
 				width: `+mapWidth+`;
 				align-items: flex-end;
@@ -111,8 +97,8 @@ func content(ctx context.Context) (Group, error) {
 					opacity: 0.4;
 				}
 			`),
-			renderStats(ctx, &stats),
-			Div(Class(foxcss.Class(ctx, `flex-grow:1`))),
+			renderStats(data.ctx, &stats),
+			Div(Class(foxcss.Class(data.ctx, `flex-grow:1`))),
 			A(
 				Img(Height("20"), Src("/icons/github.svg")),
 				Href("https://github.com/makinori/baltimare-leaderboard"),
@@ -143,24 +129,24 @@ func content(ctx context.Context) (Group, error) {
 }
 
 func renderPage() (string, bool) {
-	// startTime := time.Now()
+	data, err := getRenderData(true, "p-")
+	if err != nil {
+		return err.Error(), false
+	}
 
-	ctx := context.Background()
-	ctx = foxcss.InitContext(ctx)
-
-	contentGroup, err := content(ctx)
+	contentGroup, err := content(data)
 	if err != nil {
 		return err.Error(), false
 	}
 
 	var contentDiv = Div(
-		Class(foxcss.Class(ctx, `
+		Class(foxcss.Class(data.ctx, `
 			display: flex;
 			justify-content: center;
 			width: 100vw;
 		`)),
 		Div(
-			Class(foxcss.Class(ctx, `
+			Class(foxcss.Class(data.ctx, `
 				width: 800px;
 				max-width: 800px;
 				margin-bottom: 128px;
@@ -170,7 +156,7 @@ func renderPage() (string, bool) {
 	)
 
 	css, err := foxcss.RenderSCSS(
-		pageSCSS+"\n"+foxcss.GetPageSCSS(ctx),
+		pageSCSS+"\n"+foxcss.GetPageSCSS(data.ctx),
 		foxcss.SassImport{Filename: "font.scss", Content: fontSCSS},
 	)
 	if err != nil {
