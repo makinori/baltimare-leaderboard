@@ -21,6 +21,8 @@ github.com/klauspost/compress v1.18.2 h1:iiPHWW0YrcFgpBYhsA6D1+fqHssJscY/Tm/y2Uq
 github.com/klauspost/compress v1.18.2/go.mod h1:R0h/fSBs8DE4ENlcrlib3PsXS61voFxhIs2DeRhCvJ4=
 github.com/makinori/foxlib v0.0.0-20251229010830-b82142e1b0a5 h1:YOpEqs05JqfjB6est+5Xg7AvdGhSnGNqKn4vZo4fOEA=
 github.com/makinori/foxlib v0.0.0-20251229010830-b82142e1b0a5/go.mod h1:VxqpoQ+TZUfdSxrUJeG8AD9h0d9ZiLkzyyE584JAUL8=
+github.com/makinori/foxlib v0.0.0-20251229011608-e367b46da3e4 h1:5XFM1ETK8Xbg+GD70RT12er+9qHBIZBfpWx1M+0JNm4=
+github.com/makinori/foxlib v0.0.0-20251229011608-e367b46da3e4/go.mod h1:VxqpoQ+TZUfdSxrUJeG8AD9h0d9ZiLkzyyE584JAUL8=
 github.com/mergestat/timediff v0.0.4 h1:NZ3sqG/6K9flhTubdltmRx3RBfIiYv6LsGP+4FlXMM8=
 github.com/mergestat/timediff v0.0.4/go.mod h1:yvMUaRu2oetc+9IbPLYBJviz6sA7xz8OXMDfhBl7YSI=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
