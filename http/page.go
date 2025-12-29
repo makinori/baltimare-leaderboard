@@ -2,7 +2,6 @@ package http
 
 import (
 	_ "embed"
-	"log/slog"
 	"sync"
 
 	"github.com/makinori/baltimare-leaderboard/env"
@@ -13,13 +12,18 @@ import (
 )
 
 var (
-	//go:embed font.scss
-	fontSCSS string
-	//go:embed page.scss
-	pageSCSS string
+	//go:embed font.css
+	fontCSS string
+	//go:embed page.css
+	pageCSS string
 	//go:embed page.js
 	pageJS string
 )
+
+func init() {
+	fontCSS = foxcss.MustMinify(fontCSS)
+	pageCSS = foxcss.MustMinify(pageCSS)
+}
 
 const (
 	// https://m2.material.io/design/color/the-color-system.html#tools-for-picking-colors
@@ -81,14 +85,14 @@ func content(data *renderData) (Group, error) {
 
 	return Group{
 		foxhtml.HStack(data.ctx,
-			foxhtml.StackSCSS(`
+			foxhtml.StackCSS(`
 				align-items: center;
 				justify-content: center;
 			`),
 			logoEl,
 		),
 		foxhtml.HStack(data.ctx,
-			foxhtml.StackSCSS(`
+			foxhtml.StackCSS(`
 				width: `+mapWidth+`;
 				align-items: flex-end;
 				margin-bottom: 16px;
@@ -155,14 +159,8 @@ func renderPage() (string, bool) {
 		),
 	)
 
-	css, err := foxcss.RenderSCSS(
-		pageSCSS+"\n"+foxcss.GetPageSCSS(data.ctx),
-		foxcss.SassImport{Filename: "font.scss", Content: fontSCSS},
-	)
-	if err != nil {
-		slog.Error("failed to render scss", "err", err)
-		return "failed to render scss", false
-	}
+	css := fontCSS + pageCSS + foxcss.GetPageCSS(data.ctx)
+	// os.WriteFile("test.css", []byte(css), 0644)
 
 	title := []byte(env.AREA)
 	title[0] -= 32 // uppercase

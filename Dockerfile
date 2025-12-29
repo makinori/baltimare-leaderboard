@@ -16,7 +16,7 @@ go build -ldflags="-s -w" -o baltimare-leaderboard
 
 # create image
 
-FROM ghcr.io/makinori/foxlib:base
+FROM scratch
 
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 

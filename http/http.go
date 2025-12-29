@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/makinori/baltimare-leaderboard/env"
-	"github.com/makinori/foxlib/foxcss"
 	"github.com/makinori/foxlib/foxhttp"
 )
 
@@ -42,11 +41,6 @@ func handleRender(renderable func() (string, bool)) func(w http.ResponseWriter, 
 // sets up routes
 func Init() {
 	assetsFS, err := fs.Sub(embedFS, "assets")
-	if err != nil {
-		panic(err)
-	}
-
-	err = foxcss.InitSCSS(nil)
 	if err != nil {
 		panic(err)
 	}

@@ -2,7 +2,6 @@ package http
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/makinori/baltimare-leaderboard/env"
 	"github.com/makinori/foxlib/foxcss"
@@ -52,11 +51,11 @@ func renderStats(ctx context.Context, stats *stats) Node {
 			Class(foxcss.Class(ctx, `
 					font-weight: 700;
 					line-height: 1.1em;
-					color: rgba(`+ColorGreen+`, 0.6);
+					color: rgba(`+foxcss.HexToRGB(ColorGreen)+`, 0.6);
+					margin-bottom: 12px;
 					span {
 						color: `+ColorGreen+`;
 					}
-					margin-bottom: 12px;
 				`)),
 			Text("> "),
 			Span(Text(formatUint(stats.online)+" online")),
@@ -74,7 +73,7 @@ func renderStats(ctx context.Context, stats *stats) Node {
 			Class(foxcss.Class(ctx, `
 					font-weight: 700;
 					line-height: 1.1em;
-					color: rgba(`+ColorLime+`, 0.6);
+					color: rgba(`+foxcss.HexToRGB(ColorLime)+`, 0.6);
 					span {
 						color: `+ColorLime+`;
 					}
@@ -97,14 +96,8 @@ func renderOnlyStats() (string, bool) {
 
 	node := renderStats(data.ctx, &stats)
 
-	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(data.ctx))
-	if err != nil {
-		slog.Error("failed to only render stats", "err", err)
-		return "failed to only render stats", false
-	}
-
 	html := Group{
-		Head(StyleEl(Raw(css))),
+		Head(StyleEl(Raw(foxcss.GetPageCSS(data.ctx)))),
 		node,
 	}.String()
 

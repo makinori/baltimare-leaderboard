@@ -5,7 +5,6 @@ import (
 	_ "embed"
 	"encoding/binary"
 	"fmt"
-	"log/slog"
 	"slices"
 	"strconv"
 	"sync"
@@ -272,8 +271,7 @@ func renderMap(data *renderData) Node {
 
 	return Div(
 		Class(foxcss.Class(data.ctx, `
-			background-image: 
-				linear-gradient(0deg, rgba(#111, 0.5), rgba(#111, 0.5)), 
+			background-image: `+foxcss.HexAlphaBackground("#111", "0.5")+`,
 				url("`+mapImageURL+`");
 			aspect-ratio: 2/1;
 			width: `+mapWidth+`;
@@ -318,14 +316,8 @@ func renderOnlyMap() (string, bool) {
 
 	node := renderMap(data)
 
-	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(data.ctx))
-	if err != nil {
-		slog.Error("failed to only render map", "err", err)
-		return "failed to only render map", false
-	}
-
 	html := Group{
-		Head(StyleEl(Raw(css))),
+		Head(StyleEl(Raw(foxcss.GetPageCSS(data.ctx)))),
 		node,
 	}.String()
 

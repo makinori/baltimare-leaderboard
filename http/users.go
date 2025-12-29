@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"log/slog"
 	"slices"
 	"sort"
 	"strconv"
@@ -17,6 +16,18 @@ import (
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
+
+var rainbowBackgroundForNthChildCSS string
+
+func init() {
+	for i := range 36 {
+		rainbowBackgroundForNthChildCSS += `
+			&:nth-child(36n + ` + strconv.Itoa(i+1) + `) .progress-bar {
+		  		background: hsl(` + strconv.Itoa(i*10) + `, 20%, 30%)
+		  	}
+		`
+	}
+}
 
 func renderUser(
 	ctx context.Context, user *user.UserWithID,
@@ -74,7 +85,7 @@ func renderUser(
 
 	return foxhtml.HStack(ctx,
 		ID(user.ID.String()),
-		foxhtml.StackSCSS(`
+		foxhtml.StackCSS(`
 			font-size: 20px;
 			letter-spacing: -1px;
 			width: 100%;
@@ -82,11 +93,7 @@ func renderUser(
 			align-items: center;
 			gap: 0;
 
-			@for $i from 0 through 35 {
-				&:nth-child(36n + #{$i + 1}) .progress-bar {
-					background: hsl($i * 10deg, 20%, 30%)
-				}
-			}
+			`+rainbowBackgroundForNthChildCSS+`
 
 			.avatar-icon {
 				width: 32px;
@@ -97,22 +104,22 @@ func renderUser(
 				user-select: none;
 				z-index: 10;
 				background: #333;
-				&:hover {
-					transform: scale(1.1);
-				}
-				&.in-left {
-					transform: scale(0.9) rotate(-5deg);
-				}
-				&.in-right {
-					transform: scale(0.9) rotate(5deg);
-				}
+			}
+			.avatar-icon:hover {
+				transform: scale(1.1);
+			}
+			.avatar-icon.in-left {
+				transform: scale(0.9) rotate(-5deg);
+			}
+			.avatar-icon.in-right {
+				transform: scale(0.9) rotate(5deg);
 			}
 
 			.image-trait {
 				transition: all 100ms ease;
-				&:hover {
-					transform: scale(1.1);
-				}	
+			}
+			.image-trait:hover {
+				transform: scale(1.1);
 			}
 		`),
 		Img(
@@ -144,7 +151,7 @@ func renderUser(
 				Style(fmt.Sprintf("right: %02f%%", (1-percentage)*100)),
 			),
 			foxhtml.HStack(ctx,
-				foxhtml.StackSCSS(`
+				foxhtml.StackCSS(`
 					position: absolute;
 					top: 0;
 					bottom: 0;
@@ -156,7 +163,7 @@ func renderUser(
 					Class(foxcss.Class(ctx, `
 						font-weight: 800;
 						opacity: 0.9;
-						text-shadow: 2px 2px 0px rgba(#111, 0.4);
+						text-shadow: 2px 2px 0px rgba(`+foxcss.HexToRGB("#111")+`, 0.4);
 						> span {
 							font-weight: 700;
 							font-size: 16px;
@@ -255,7 +262,7 @@ func renderUsers(
 		Attr("hx-get", "/hx/users"),
 		Attr("hx-swap", "morph:outerHTML"),
 		Attr("hx-trigger", "every 1m"),
-		foxhtml.StackSCSS(`
+		foxhtml.StackCSS(`
 			gap: 4px;
 		`),
 		userEls,
@@ -272,14 +279,8 @@ func renderOnlyUsers() (string, bool) {
 
 	node := renderUsers(data, stats.maxMinutes)
 
-	css, err := foxcss.RenderSCSS(foxcss.GetPageSCSS(data.ctx))
-	if err != nil {
-		slog.Error("failed to only render users", "err", err)
-		return "failed to only render users", false
-	}
-
 	html := Group{
-		Head(StyleEl(Raw(css))),
+		Head(StyleEl(Raw(foxcss.GetPageCSS(data.ctx)))),
 		node,
 	}.String()
 
