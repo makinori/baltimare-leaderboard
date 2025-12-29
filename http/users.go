@@ -4,6 +4,8 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"log/slog"
+	"runtime"
 	"slices"
 	"sort"
 	"strconv"
@@ -13,6 +15,7 @@ import (
 	"github.com/makinori/foxlib/foxcss"
 	"github.com/makinori/foxlib/foxhtml"
 	"github.com/mergestat/timediff"
+	"golang.org/x/sync/semaphore"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )
@@ -253,9 +256,27 @@ func renderUsers(
 	data *renderData, maxMinutes uint64,
 ) Node {
 	userEls := make(Group, len(data.users))
+
+	workers := int64(runtime.GOMAXPROCS(0))
+	sem := semaphore.NewWeighted(workers)
+
 	for i := range data.users {
-		online := slices.Contains(data.onlineUUIDs, data.users[i].ID)
-		userEls[i] = renderUser(data.ctx, &data.users[i], online, maxMinutes)
+		err := sem.Acquire(data.ctx, 1)
+		if err != nil {
+			slog.Error("failed to acquire semaphore", "err", err)
+			return nil
+		}
+		go func() {
+			defer sem.Release(1)
+			online := slices.Contains(data.onlineUUIDs, data.users[i].ID)
+			userEls[i] = renderUser(data.ctx, &data.users[i], online, maxMinutes)
+		}()
+	}
+
+	err := sem.Acquire(data.ctx, workers)
+	if err != nil {
+		slog.Error("failed to acquire semaphore", "err", err)
+		return nil
 	}
 
 	return foxhtml.VStack(data.ctx,

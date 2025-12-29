@@ -7,10 +7,11 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/fxamacker/cbor/v2 v2.9.0
 	github.com/google/uuid v1.6.0
-	github.com/makinori/foxlib v0.0.0-20251229011608-e367b46da3e4
+	github.com/makinori/foxlib v0.0.0-20251229012846-d1ac9adbd433
 	github.com/mergestat/timediff v0.0.4
 	github.com/robfig/cron/v3 v3.0.1
 	go.etcd.io/bbolt v1.4.3
+	golang.org/x/sync v0.10.0
 	maragu.dev/gomponents v1.2.0
 )
 
