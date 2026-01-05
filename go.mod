@@ -3,11 +3,11 @@ module github.com/makinori/baltimare-leaderboard
 go 1.25.5
 
 require (
+	git.hotmilk.space/maki/foxlib v0.0.0-20260105163018-1281de24d8b6
 	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/fxamacker/cbor/v2 v2.9.0
 	github.com/google/uuid v1.6.0
-	github.com/makinori/foxlib v0.0.0-20251229012846-d1ac9adbd433
 	github.com/mergestat/timediff v0.0.4
 	github.com/robfig/cron/v3 v3.0.1
 	go.etcd.io/bbolt v1.4.3
@@ -15,7 +15,7 @@ require (
 	maragu.dev/gomponents v1.2.0
 )
 
-// replace github.com/makinori/foxlib v0.0.0 => ../foxlib
+// replace git.hotmilk.space/maki/foxlib v0.0.0 => ../foxlib
 
 require (
 	github.com/andybalholm/brotli v1.2.0 // indirect

@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"time"
 
+	"git.hotmilk.space/maki/foxlib/foxcss"
 	"github.com/google/uuid"
 	"github.com/makinori/baltimare-leaderboard/lsl"
 	"github.com/makinori/baltimare-leaderboard/user"
-	"github.com/makinori/foxlib/foxcss"
 )
 
 type renderData struct {

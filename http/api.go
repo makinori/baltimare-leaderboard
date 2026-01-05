@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
+	"git.hotmilk.space/maki/foxlib/foxhttp"
 	"github.com/google/uuid"
 	"github.com/makinori/baltimare-leaderboard/env"
 	"github.com/makinori/baltimare-leaderboard/lsl"
 	"github.com/makinori/baltimare-leaderboard/user"
-	"github.com/makinori/foxlib/foxhttp"
 )
 
 func handleAPI(w http.ResponseWriter, r *http.Request) {

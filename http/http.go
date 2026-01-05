@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"git.hotmilk.space/maki/foxlib/foxhttp"
 	"github.com/makinori/baltimare-leaderboard/env"
-	"github.com/makinori/foxlib/foxhttp"
 )
 
 var (

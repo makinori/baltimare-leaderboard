@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
+	"git.hotmilk.space/maki/foxlib/foxcss"
+	"git.hotmilk.space/maki/foxlib/foxhtml"
 	"github.com/makinori/baltimare-leaderboard/user"
-	"github.com/makinori/foxlib/foxcss"
-	"github.com/makinori/foxlib/foxhtml"
 	"github.com/mergestat/timediff"
 	"golang.org/x/sync/semaphore"
 	. "maragu.dev/gomponents"
