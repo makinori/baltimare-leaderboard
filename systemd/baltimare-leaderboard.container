@@ -27,7 +27,9 @@ Environment=DATABASE_PATH=/data.db
 
 Label=traefik.enable=true
 
-Label=traefik.http.routers.baltimare-leaderboard.rule=Host(`baltimare.hotmilk.space`)
+Label="traefik.http.routers.baltimare-leaderboard.rule=\
+Host(`baltimare.ran.cafe`) || \
+(Host(`baltimare.hotmilk.space`) && PathPrefix(`/api/lsl/`))"
 Label=traefik.http.routers.baltimare-leaderboard.entrypoints=websecure
 Label=traefik.http.routers.baltimare-leaderboard.service=baltimare-leaderboard
 
@@ -41,7 +43,7 @@ Label=traefik.docker.network=traefik
 
 Label=homepage.group=Fun
 Label="homepage.name=Baltimare Leaderboard"
-Label=homepage.icon=https://baltimare.hotmilk.space/favicon.ico
-Label=homepage.href=https://baltimare.hotmilk.space
+Label=homepage.icon=https://baltimare.ran.cafe/favicon.ico
+Label=homepage.href=https://baltimare.ran.cafe
 
 Network=traefik

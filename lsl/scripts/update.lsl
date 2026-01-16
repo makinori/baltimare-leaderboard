@@ -1,5 +1,5 @@
-// string updateUrl = "https://baltimare.hotmilk.space/api/lsl/baltimare";
-string updateUrl = "http://hotmilk.space:4845/api/lsl/baltimare"; // or horseheights
+// string updateUrl = "https://baltimare.ran.cafe/api/lsl/baltimare";
+string updateUrl = "http://ran.cafe:4845/api/lsl/baltimare"; // or horseheights
 string updateSecret = "dcumwoidaksdjlkajsd";
 integer updateInterval = 5;
 

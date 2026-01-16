@@ -27,7 +27,9 @@ Environment=DATABASE_PATH=/data.db
 
 Label=traefik.enable=true
 
-Label=traefik.http.routers.cloudsdale-leaderboard.rule=Host(`cloudsdale.hotmilk.space`)
+Label="traefik.http.routers.cloudsdale-leaderboard.rule=\
+Host(`cloudsdale.ran.cafe`) || \
+(Host(`cloudsdale.hotmilk.space`) && PathPrefix(`/api/lsl/`))"
 Label=traefik.http.routers.cloudsdale-leaderboard.entrypoints=websecure
 Label=traefik.http.routers.cloudsdale-leaderboard.service=cloudsdale-leaderboard
 
@@ -41,7 +43,7 @@ Label=traefik.docker.network=traefik
 
 Label=homepage.group=Fun
 Label="homepage.name=Cloudsdale Leaderboard"
-Label=homepage.icon=https://cloudsdale.hotmilk.space/favicon.ico
-Label=homepage.href=https://cloudsdale.hotmilk.space
+Label=homepage.icon=https://cloudsdale.ran.cafe/favicon.ico
+Label=homepage.href=https://cloudsdale.ran.cafe
 
 Network=traefik

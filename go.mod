@@ -3,7 +3,7 @@ module github.com/makinori/baltimare-leaderboard
 go 1.25.5
 
 require (
-	git.hotmilk.space/maki/foxlib v0.0.0-20260105163018-1281de24d8b6
+	git.ran.cafe/maki/foxlib v0.0.0-20260115012638-4c5279f1b034
 	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/fxamacker/cbor/v2 v2.9.0
@@ -15,7 +15,7 @@ require (
 	maragu.dev/gomponents v1.2.0
 )
 
-// replace git.hotmilk.space/maki/foxlib v0.0.0 => ../foxlib
+// replace git.ran.cafe/maki/foxlib v0.0.0 => ../foxlib
 
 require (
 	github.com/andybalholm/brotli v1.2.0 // indirect

@@ -4,8 +4,8 @@ import (
 	_ "embed"
 	"sync"
 
-	"git.hotmilk.space/maki/foxlib/foxcss"
-	"git.hotmilk.space/maki/foxlib/foxhtml"
+	"git.ran.cafe/maki/foxlib/foxcss"
+	"git.ran.cafe/maki/foxlib/foxhtml"
 	"github.com/makinori/baltimare-leaderboard/env"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"

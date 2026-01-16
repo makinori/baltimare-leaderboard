@@ -1,5 +1,5 @@
 # Baltimare Leaderboard
 
-Available at https://baltimare.hotmilk.space
+Available at https://baltimare.ran.cafe
 
-See API endpoints https://baltimare.hotmilk.space/api
+See API endpoints https://baltimare.ran.cafe/api

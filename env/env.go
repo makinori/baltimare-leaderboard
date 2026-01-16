@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"git.hotmilk.space/maki/foxlib/foxhttp"
+	"git.ran.cafe/maki/foxlib/foxhttp"
 )
 
 var (

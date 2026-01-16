@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"git.hotmilk.space/maki/foxlib/foxcss"
-	"git.hotmilk.space/maki/foxlib/foxhtml"
+	"git.ran.cafe/maki/foxlib/foxcss"
+	"git.ran.cafe/maki/foxlib/foxhtml"
 	"github.com/makinori/baltimare-leaderboard/user"
 	"github.com/mergestat/timediff"
 	"golang.org/x/sync/semaphore"

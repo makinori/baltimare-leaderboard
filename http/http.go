@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"git.hotmilk.space/maki/foxlib/foxhttp"
+	"git.ran.cafe/maki/foxlib/foxhttp"
 	"github.com/makinori/baltimare-leaderboard/env"
 )
 

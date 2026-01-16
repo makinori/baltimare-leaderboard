@@ -3,7 +3,7 @@ package http
 import (
 	"context"
 
-	"git.hotmilk.space/maki/foxlib/foxcss"
+	"git.ran.cafe/maki/foxlib/foxcss"
 	"github.com/makinori/baltimare-leaderboard/env"
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
