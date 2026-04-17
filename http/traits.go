@@ -25,6 +25,7 @@ var traitUUIDMap = map[string][]uuid.UUID{
 		uuid.MustParse("cc53d796-c678-4f55-beea-3ee343b558c6"), // camarea2
 		uuid.MustParse("1cedf5f7-b556-477a-a7bc-dcbf6b2e9096"), // sunshineyelloww
 		uuid.MustParse("a31fc8dc-5d82-477e-b81d-1dc74c63d897"), // bun
+		uuid.MustParse("49dcff31-43dc-491d-aa25-538a03e32d13"), // bimm
 	},
 	"nugget.png": {
 		uuid.MustParse("fbc5881b-c3ec-4996-8e03-110f95e4aaf0"), // hind
