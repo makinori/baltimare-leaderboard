@@ -33,7 +33,7 @@ func handleRender(renderable func() (string, bool)) func(w http.ResponseWriter, 
 		)
 
 		foxhttp.ServeOptimized(
-			w, r, ".html", time.Unix(0, 0), []byte(html), false,
+			w, r, ".html", []byte(html), false,
 		)
 	}
 }
@@ -59,7 +59,7 @@ func Init() {
 			slog.Error("failed to get favicon", "area", env.AREA)
 			return
 		}
-		foxhttp.ServeOptimized(w, r, "favicon.ico", time.Unix(0, 0), data, true)
+		foxhttp.ServeOptimized(w, r, "favicon.ico", data, true)
 	})
 
 	http.HandleFunc(

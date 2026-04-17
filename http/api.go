@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"git.ran.cafe/maki/foxlib/foxhttp"
 	"github.com/google/uuid"
@@ -34,7 +33,7 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		"PUT /api/lsl/{where} - for the in-world lsl cube to send data to",
 	}, "\n"))
 
-	foxhttp.ServeOptimized(w, r, ".txt", time.Unix(0, 0), out, false)
+	foxhttp.ServeOptimized(w, r, ".txt", out, false)
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +50,7 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	foxhttp.ServeOptimized(w, r, ".json", time.Unix(0, 0), out, false)
+	foxhttp.ServeOptimized(w, r, ".json", out, false)
 }
 
 type APIUser struct {
@@ -89,7 +88,7 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	foxhttp.ServeOptimized(w, r, ".json", time.Unix(0, 0), data, false)
+	foxhttp.ServeOptimized(w, r, ".json", data, false)
 }
 
 type APIOnlineUser struct {
@@ -124,7 +123,7 @@ func handleUsersOnline(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	foxhttp.ServeOptimized(w, r, ".json", time.Unix(0, 0), out, false)
+	foxhttp.ServeOptimized(w, r, ".json", out, false)
 }
 
 func handleUserImage(w http.ResponseWriter, r *http.Request) {
@@ -138,7 +137,7 @@ func handleUserImage(w http.ResponseWriter, r *http.Request) {
 
 	userImage := user.GetUserImage(id)
 	if len(userImage) > 0 {
-		foxhttp.ServeOptimized(w, r, ".jpg", time.Unix(0, 0), userImage, true)
+		foxhttp.ServeOptimized(w, r, ".jpg", userImage, true)
 		return
 	}
 
@@ -174,7 +173,7 @@ func handleLSLRegion(w http.ResponseWriter, r *http.Request) {
 	lsl.PutData(region, string(data))
 
 	foxhttp.ServeOptimized(
-		w, r, ".json", time.Unix(0, 0), []byte(`{"success":true}`), false,
+		w, r, ".json", []byte(`{"success":true}`), false,
 	)
 }
 

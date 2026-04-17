@@ -1,18 +1,18 @@
 module github.com/makinori/baltimare-leaderboard
 
-go 1.25.5
+go 1.26.1
 
 require (
-	git.ran.cafe/maki/foxlib v0.0.0-20260115012638-4c5279f1b034
-	github.com/PuerkitoBio/goquery v1.11.0
+	git.ran.cafe/maki/foxlib v0.0.0-20260409181022-ad59415076ab
+	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/disintegration/imaging v1.6.2
-	github.com/fxamacker/cbor/v2 v2.9.0
+	github.com/fxamacker/cbor/v2 v2.9.1
 	github.com/google/uuid v1.6.0
 	github.com/mergestat/timediff v0.0.4
 	github.com/robfig/cron/v3 v3.0.1
 	go.etcd.io/bbolt v1.4.3
-	golang.org/x/sync v0.10.0
-	maragu.dev/gomponents v1.2.0
+	golang.org/x/sync v0.20.0
+	maragu.dev/gomponents v1.3.0
 )
 
 // replace git.ran.cafe/maki/foxlib v0.0.0 => ../foxlib
@@ -22,12 +22,13 @@ require (
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/elliotchance/orderedmap/v3 v3.1.0 // indirect
-	github.com/klauspost/compress v1.18.2 // indirect
-	github.com/tdewolff/minify/v2 v2.24.8 // indirect
-	github.com/tdewolff/parse/v2 v2.8.5 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
+	github.com/klauspost/compress v1.18.5 // indirect
+	github.com/tdewolff/minify/v2 v2.24.10 // indirect
+	github.com/tdewolff/parse/v2 v2.8.10 // indirect
 	github.com/wordgen/wordlists/eff v0.3.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
-	golang.org/x/image v0.34.0 // indirect
-	golang.org/x/net v0.47.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
+	golang.org/x/net v0.52.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
 )
