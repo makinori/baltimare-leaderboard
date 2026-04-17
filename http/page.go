@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	//go:embed font.css
+	//go:embed font-monaspace-xenon.css
 	fontCSS string
 	//go:embed page.css
 	pageCSS string
@@ -59,7 +59,8 @@ func content(data *renderData) (Group, error) {
 	switch env.AREA {
 	case "baltimare":
 		logoEl = A(
-			Href("https://baltimare.org"),
+			// Href("https://baltimare.org"),
+			Href("https://boards.4chan.org/mlp/catalog#s=/opg/"),
 			Img(
 				Class(foxcss.Class(data.ctx, `
 					width: 600px;
