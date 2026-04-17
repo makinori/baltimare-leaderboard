@@ -1,0 +1,76 @@
+networks:
+    traefik:
+        external: true
+
+services:
+    baltimare:
+        build: .
+        restart: always
+        user: 1000:1000
+        env_file: baltimare.env
+        volumes:
+            - ./data/baltimare.db:/data.db
+        environment:
+            AREA: baltimare
+            DATABASE_PATH: /data.db
+        labels:
+            - traefik.enable=true
+
+            - >
+                traefik.http.routers.baltimare-leaderboard.rule=
+                Host(`baltimare.ran.cafe`) || 
+                (Host(`baltimare.hotmilk.space`) && PathPrefix(`/api/lsl/`))
+            - traefik.http.routers.baltimare-leaderboard.entrypoints=websecure
+            - traefik.http.routers.baltimare-leaderboard.service=baltimare-leaderboard
+
+            - >
+                traefik.http.routers.baltimare-leaderboard-tor.rule=
+                Host(`baltimare.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion`)
+            - traefik.http.routers.baltimare-leaderboard-tor.entrypoints=webtor
+            - traefik.http.routers.baltimare-leaderboard-tor.service=baltimare-leaderboard
+
+            - traefik.http.services.baltimare-leaderboard.loadbalancer.server.port=8080
+            - traefik.docker.network=traefik
+
+            - homepage.group=Fun
+            - homepage.name=Baltimare Leaderboard
+            - homepage.icon=https://baltimare.ran.cafe/favicon.ico
+            - homepage.href=https://baltimare.ran.cafe
+        networks:
+            - traefik
+
+    cloudsdale:
+        build: .
+        restart: always
+        user: 1000:1000
+        env_file: baltimare.env
+        volumes:
+            - ./data/cloudsdale.db:/data.db
+        environment:
+            AREA: cloudsdale
+            DATABASE_PATH: /data.db
+        labels:
+            - traefik.enable=true
+
+            - >
+                traefik.http.routers.cloudsdale-leaderboard.rule=
+                Host(`cloudsdale.ran.cafe`) || 
+                (Host(`cloudsdale.hotmilk.space`) && PathPrefix(`/api/lsl/`))
+            - traefik.http.routers.cloudsdale-leaderboard.entrypoints=websecure
+            - traefik.http.routers.cloudsdale-leaderboard.service=cloudsdale-leaderboard
+
+            - >
+                traefik.http.routers.cloudsdale-leaderboard-tor.rule=
+                Host(`cloudsdale.hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion`)
+            - traefik.http.routers.cloudsdale-leaderboard-tor.entrypoints=webtor
+            - traefik.http.routers.cloudsdale-leaderboard-tor.service=cloudsdale-leaderboard
+
+            - traefik.http.services.cloudsdale-leaderboard.loadbalancer.server.port=8080
+            - traefik.docker.network=traefik
+
+            - homepage.group=Fun
+            - homepage.name=Cloudsdale Leaderboard
+            - homepage.icon=https://cloudsdale.ran.cafe/favicon.ico
+            - homepage.href=https://cloudsdale.ran.cafe
+        networks:
+            - traefik

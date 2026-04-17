@@ -1,7 +1,5 @@
 /data
-/data.d
 /backup
-/backup.d
-/systemd/*.env
+/*.env
 /tmp
 /baltimare-leaderboard
