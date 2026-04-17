@@ -34,7 +34,6 @@ var traitUUIDMap = map[string][]uuid.UUID{
 	},
 	"fish.png": {
 		uuid.MustParse("44fb6569-017f-4dbc-8f2c-975c39ce33e8"), // fish enthusiast
-		uuid.MustParse("b7c5f366-7a39-4289-8157-d3a8ae6d57f4"), // maki
 	},
 	"floppy.png": {
 		uuid.MustParse("4d6ed11a-1280-4743-b147-52bea3144600"), // wolvan
@@ -53,6 +52,9 @@ var traitUUIDMap = map[string][]uuid.UUID{
 	},
 	"blue-fast-studios.png": {
 		uuid.MustParse("02bc27c8-47f6-4f1e-94e5-0aee6fa955a2"), // skyline
+	},
+	"reimu-fumo.png": {
+		uuid.MustParse("b7c5f366-7a39-4289-8157-d3a8ae6d57f4"), // maki
 	},
 }
 
@@ -101,6 +103,10 @@ var imageTraitMap = map[string]imageTrait{
 	"blue-fast-studios.png": {
 		URL:  "https://bluefaststud.io",
 		Size: 20,
+	},
+	"reimu-fumo.png": {
+		URL:  "https://youtu.be/yeci1WNTw6I?t=41",
+		Size: 22,
 	},
 }
 
