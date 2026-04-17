@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"time"
 
 	"git.ran.cafe/maki/foxlib/foxcss"
 	"github.com/google/uuid"
@@ -43,13 +42,13 @@ func getRenderData(sortUsers bool, classPrefix string) (*renderData, error) {
 	data.ctx = context.Background()
 	data.ctx = foxcss.InitContext(data.ctx, classPrefix)
 
-	err = foxcss.UseWords(
-		data.ctx, foxcss.RegularWords, time.Now().Format(time.DateOnly),
-	)
-	if err != nil {
-		slog.Error("failed to use css words", "err", err)
-		return data, errors.New("failed to use css words")
-	}
+	// err = foxcss.UseWords(
+	// 	data.ctx, foxcss.RegularWords, time.Now().Format(time.DateOnly),
+	// )
+	// if err != nil {
+	// 	slog.Error("failed to use css words", "err", err)
+	// 	return data, errors.New("failed to use css words")
+	// }
 
 	return data, nil
 }
