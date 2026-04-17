@@ -124,6 +124,10 @@ func renderUser(
 			.image-trait:hover {
 				transform: scale(1.1);
 			}
+
+			.image-trait>img {
+				display: block;
+			}
 		`),
 		Img(
 			Class("avatar-icon"),
@@ -204,6 +208,7 @@ func renderUser(
 					gap: 6px;
 				}
 				.strip {
+					min-width: 6px;
 					width: 6px;
 					height: 24px;
 					border-radius: 4px;
