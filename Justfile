@@ -32,13 +32,11 @@ buildstart:
 	./baltimare-leaderboard
 
 alias u := update
-# git pull, build and restart quadlet
+# git pull, build and restart
 [group("server")]
 update:
 	git pull
-	systemctl --user daemon-reload
-	systemctl --user start baltimare-leaderboard-build
-	systemctl --user restart baltimare-leaderboard-pod
+	docker compose up -d --build
 
 # 2025-12-09
 [group("migration")]
