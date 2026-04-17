@@ -1,0 +1,167 @@
+@supports (font-variation-settings: normal) {
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/Monaspace Xenon Var.woff2")
+				format("woff2-variations"),
+			url("/fonts/monaspace-xenon/Monaspace Xenon Var.woff")
+				format("woff-variations");
+		font-weight: 200 800;
+		font-display: swap;
+	}
+}
+
+@supports not (font-variation-settings: normal) {
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-ExtraLight.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-ExtraLight.woff")
+				format("woff");
+		font-weight: 200;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-ExtraLightItalic.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-ExtraLightItalic.woff")
+				format("woff");
+		font-weight: 200;
+		font-style: italic;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-Light.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-Light.woff")
+				format("woff");
+		font-weight: 300;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-LightItalic.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-LightItalic.woff")
+				format("woff");
+		font-weight: 300;
+		font-style: italic;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-Regular.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-Regular.woff")
+				format("woff");
+		font-weight: 400;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-Italic.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-Italic.woff")
+				format("woff");
+		font-weight: 400;
+		font-style: italic;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-Medium.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-Medium.woff")
+				format("woff");
+		font-weight: 500;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-MediumItalic.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-MediumItalic.woff")
+				format("woff");
+		font-weight: 500;
+		font-style: italic;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-SemiBold.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-SemiBold.woff")
+				format("woff");
+		font-weight: 600;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-SemiBoldItalic.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-SemiBoldItalic.woff")
+				format("woff");
+		font-weight: 600;
+		font-style: italic;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-Bold.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-Bold.woff")
+				format("woff");
+		font-weight: 700;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-BoldItalic.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-BoldItalic.woff")
+				format("woff");
+		font-weight: 700;
+		font-style: italic;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-ExtraBold.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-ExtraBold.woff")
+				format("woff");
+		font-weight: 800;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Monaspace Xenon";
+		src: url("/fonts/monaspace-xenon/MonaspaceXenon-ExtraBoldItalic.woff2")
+				format("woff2"),
+			url("/fonts/monaspace-xenon/MonaspaceXenon-ExtraBoldItalic.woff")
+				format("woff");
+		font-weight: 800;
+		font-style: italic;
+		font-display: swap;
+	}
+}

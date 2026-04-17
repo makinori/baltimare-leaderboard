@@ -223,7 +223,7 @@ func renderUser(
 				a {
 					opacity: 0.4;
 					font-size: 16px;
-					font-weight: 700;
+					font-weight: 800;
 					white-space: nowrap;
 				}
 			`)+" "+statusClass),
