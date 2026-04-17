@@ -237,24 +237,25 @@ func renderUser(
 	)
 }
 
-func getSortedUsers(unsortedUsers []user.UserWithID) ([]user.UserWithID, error) {
-	// TODO: this could get expensive so maybe we should cache this
-	// TODO: these data structures are also ineffecient
+// TODO: this could get expensive so maybe we should cache this
+// TODO: these data structures are also ineffecient
 
-	var sortedUsers []user.UserWithID
-
-	for i := range unsortedUsers {
-		if unsortedUsers[i].User.Minutes >= 120 &&
-			!slices.Contains(traitUUIDMap["bot"], unsortedUsers[i].ID) {
-			sortedUsers = append(sortedUsers, unsortedUsers[i])
+func filterUsers(unfilteredUsers []user.UserWithID) []user.UserWithID {
+	var filteredUsers []user.UserWithID
+	for i := range unfilteredUsers {
+		if unfilteredUsers[i].User.Minutes >= 120 &&
+			!slices.Contains(traitUUIDMap["bot"], unfilteredUsers[i].ID) {
+			filteredUsers = append(filteredUsers, unfilteredUsers[i])
 		}
 	}
+	return filteredUsers
+}
 
-	sort.Slice(sortedUsers, func(i, j int) bool {
-		return sortedUsers[i].User.Minutes > sortedUsers[j].User.Minutes
+func sortUsers(users []user.UserWithID) []user.UserWithID {
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].User.Minutes > users[j].User.Minutes
 	})
-
-	return sortedUsers, nil
+	return users
 }
 
 func renderUsers(

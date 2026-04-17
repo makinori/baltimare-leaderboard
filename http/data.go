@@ -18,7 +18,7 @@ type renderData struct {
 	onlineUUIDs []uuid.UUID
 }
 
-func getRenderData(sortUsers bool, classPrefix string) (*renderData, error) {
+func getRenderData(needSortedUsers bool, classPrefix string) (*renderData, error) {
 	var err error
 	data := &renderData{}
 
@@ -28,12 +28,9 @@ func getRenderData(sortUsers bool, classPrefix string) (*renderData, error) {
 		return data, errors.New("failed to get users")
 	}
 
-	if sortUsers {
-		data.users, err = getSortedUsers(data.users)
-		if err != nil {
-			slog.Error("failed to sort users", "err", err)
-			return data, errors.New("failed to sort users")
-		}
+	data.users = filterUsers(data.users)
+	if needSortedUsers {
+		data.users = sortUsers(data.users)
 	}
 
 	data.onlineUsers = lsl.GetData()
