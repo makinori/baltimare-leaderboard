@@ -221,6 +221,10 @@ func renderMap(data *renderData) Node {
 
 	for region, onlineUsers := range data.onlineUsers {
 		for i := range onlineUsers {
+			if slices.Contains(uuidTraitMap[onlineUsers[i].UUID], "bot") {
+				continue
+			}
+
 			user := getUserByID(onlineUsers[i].UUID, data.users)
 			if user == nil {
 				continue
