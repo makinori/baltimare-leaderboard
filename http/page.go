@@ -63,7 +63,7 @@ func content(data *renderData) (Group, error) {
 			Href("https://boards.4chan.org/mlp/catalog#s=/opg/"),
 			Img(
 				Class(foxcss.Class(data.ctx, `
-					width: 600px;
+					max-height: 220px;
 					max-width: 100%;
 					align-self: center;
 					margin-top: 48px;
