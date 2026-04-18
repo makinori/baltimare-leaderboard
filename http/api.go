@@ -172,9 +172,13 @@ func handleLSLRegion(w http.ResponseWriter, r *http.Request) {
 
 	lsl.PutData(region, string(data))
 
-	foxhttp.ServeOptimized(
-		w, r, ".json", []byte(`{"success":true}`), false,
-	)
+	w.Header().Add("Cache-Control", "no-store")
+	w.Header().Add("Content-Type", "application/json")
+	w.Write([]byte(`{"success":true}`))
+
+	// foxhttp.ServeOptimized(
+	// 	w, r, ".json", []byte(`{"success":true}`), false,
+	// )
 }
 
 func initAPI() {

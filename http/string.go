@@ -39,10 +39,18 @@ func formatUint(n uint64) string {
 	return string(out)
 }
 
+// func formatNameWithUsername(userInfo *user.UserInfo) string {
+// 	if userInfo.DisplayName == "" {
+// 		return userInfo.Username
+// 	} else {
+// 		return fmt.Sprintf("%s (%s)", userInfo.DisplayName, userInfo.Username)
+// 	}
+// }
+
 func formatName(userInfo *user.UserInfo) string {
 	if userInfo.DisplayName == "" {
 		return userInfo.Username
 	} else {
-		return fmt.Sprintf("%s (%s)", userInfo.DisplayName, userInfo.Username)
+		return userInfo.DisplayName
 	}
 }

@@ -35,7 +35,7 @@ func renderMapUser(
 			width: 32px;
 			height: 32px;
 			border-radius: 999px;
-			overflow: hidden;
+			// overflow: hidden;
 			// positive y cause we're using left,bottom
 			transform: translate(-50%, 50%);
 			display: flex;
@@ -47,16 +47,41 @@ func renderMapUser(
 				width: 24px;
 				height: 24px;
 				border-radius: 999px;
-				transition: all 150ms ease;
+				transition: all 100ms ease;
 				background: #333;
 			}
 
 			&:hover {
 				z-index: 100;
-				> img {
-					width: 32px;
-					height: 32px;
-				}
+			}
+
+			&:hover > img {
+				width: 32px;
+				height: 32px;
+			}
+			
+			.name {
+				position: absolute;
+				top: 2px;
+				bottom: 2px;
+				left: 36px;
+				width: max-content;
+				background: #111;
+				border-radius: 8px;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				padding: 0 8px;
+				font-weight: 700;
+				transition: all 100ms ease;
+				opacity: 0;
+				pointer-events: none;
+			}
+
+			&:hover .name {
+				opacity: 1;
+				// left: 36px;
+				// pointer-events: auto;
 			}
 		`)),
 		Style(fmt.Sprintf(
@@ -64,8 +89,12 @@ func renderMapUser(
 			float64(clamp(mapUser.X, 0, 512))/512*100,
 			float64(clamp(mapUser.Y, 0, 256))/256*100,
 		)),
-		Title(mapUser.Name),
+		// Title(mapUser.Name),
 		Img(Src("/api/user/"+mapUser.ID.String()+"/image")),
+		Div(
+			Class("name"),
+			Text(mapUser.Name),
+		),
 	)
 }
 
