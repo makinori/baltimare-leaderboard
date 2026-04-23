@@ -71,6 +71,10 @@ func getInfoAndImage(userID uuid.UUID) (UserInfo, imageWithID, error) {
 	}
 	defer res.Body.Close()
 
+	if res.StatusCode != 200 {
+		return userInfo, imageWithID{}, errors.New("failed to load page")
+	}
+
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		return userInfo, imageWithID{}, err
