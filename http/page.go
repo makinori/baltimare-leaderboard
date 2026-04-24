@@ -110,7 +110,7 @@ func content(data *renderData) (Group, error) {
 			),
 			A(
 				Img(Height("28"), Src("/icons/tor.svg")),
-				Href("http://"+env.AREA+".hotmilkdyzrzsig55s373ruuedebeexwcgbipaemyjqnhd5wfmngjvqd.onion"),
+				Href("http://"+env.AREA+".rancafel2l4amvvvlwc6m3gzuwk65ptnw6znpgdcsqg3iuf4trrfgwad.onion"),
 			),
 		),
 		usersMap,
