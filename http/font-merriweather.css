@@ -1,0 +1,90 @@
+@supports (font-variation-settings: normal) {
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-Var.woff2")
+			format("woff2-variations");
+		font-weight: 200 800;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-VarItalic.woff2")
+			format("woff2-variations");
+		font-weight: 200 800;
+		font-style: italic;
+		font-display: swap;
+	}
+}
+
+@supports not (font-variation-settings: normal) {
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-Light.woff2") format("woff2");
+		font-weight: 300;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-LightItalic.woff2")
+			format("woff2");
+		font-weight: 300;
+		font-style: italic;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-Regular.woff2")
+			format("woff2");
+		font-weight: 400;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-Italic.woff2")
+			format("woff2");
+		font-weight: 400;
+		font-style: italic;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-Bold.woff2") format("woff2");
+		font-weight: 700;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-BoldItalic.woff2")
+			format("woff2");
+		font-weight: 700;
+		font-style: italic;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-Black.woff2") format("woff2");
+		font-weight: 900;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: "Maki Merriweather";
+		src: url("/fonts/merriweather/Merriweather-BlackItalic.woff2")
+			format("woff2");
+		font-weight: 900;
+		font-style: italic;
+		font-display: swap;
+	}
+}

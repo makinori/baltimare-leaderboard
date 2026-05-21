@@ -90,7 +90,7 @@ func renderUser(
 		ID(user.ID.String()),
 		foxhtml.StackCSS(`
 			font-size: 20px;
-			letter-spacing: -1px;
+			// letter-spacing: -1px;
 			width: 100%;
 			height: 32px;
 			align-items: center;
@@ -168,7 +168,7 @@ func renderUser(
 				`),
 				Div(
 					Class(foxcss.Class(ctx, `
-						font-weight: 800;
+						font-weight: 700;
 						opacity: 0.9;
 						text-shadow: 2px 2px 0px rgba(`+foxcss.HexToRGB("#111")+`, 0.4);
 						> span {
@@ -223,7 +223,7 @@ func renderUser(
 				a {
 					opacity: 0.4;
 					font-size: 16px;
-					font-weight: 800;
+					font-weight: 700;
 					white-space: nowrap;
 				}
 			`)+" "+statusClass),
