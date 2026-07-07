@@ -168,7 +168,7 @@ func renderUser(
 				`),
 				Div(
 					Class(foxcss.Class(ctx, `
-						font-weight: 700;
+						font-weight: 800;
 						opacity: 0.9;
 						text-shadow: 2px 2px 0px rgba(`+foxcss.HexToRGB("#111")+`, 0.4);
 						> span {
