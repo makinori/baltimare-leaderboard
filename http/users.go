@@ -90,7 +90,7 @@ func renderUser(
 		ID(user.ID.String()),
 		foxhtml.StackCSS(`
 			font-size: 20px;
-			// letter-spacing: -1px;
+			letter-spacing: -0.03em;
 			width: 100%;
 			height: 32px;
 			align-items: center;

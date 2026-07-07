@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	//go:embed font-monaspace-xenon.css
+	//go:embed font-sn-pro.css
 	fontCSS string
 	//go:embed page.css
 	pageCSS string
