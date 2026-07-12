@@ -161,15 +161,18 @@ func updateUserInfo(userID uuid.UUID, user *User) bool {
 	user.Info = newInfo
 
 	// if newImage is empty, function below will delete
+	// we dont want to delete though, so only put if there's data
 
-	err = putUserImage(userID, newImage.id, newImage.data)
-	if err != nil {
-		slog.Error(
-			"failed to put user image. will ignore for now",
-			"user", userID,
-			"err", err,
-		)
-		// its still fresh so just fall through
+	if len(newImage.data) > 0 {
+		err = putUserImage(userID, newImage.id, newImage.data)
+		if err != nil {
+			slog.Error(
+				"failed to put user image. will ignore for now",
+				"user", userID,
+				"err", err,
+			)
+			// its still fresh so just fall through
+		}
 	}
 
 	return true
