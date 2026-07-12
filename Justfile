@@ -57,6 +57,12 @@ migrate-images db_path:
 cleanup-images db_path:
 	go run -C cmd/cleanup-images . "$(realpath '{{db_path}}')"
 
+# restore images from a backup
+[group("util")]
+copy-images src_db_path dest_db_path:
+	go run -C cmd/copy-images . \
+	"$(realpath '{{src_db_path}}')" "$(realpath '{{dest_db_path}}')"
+
 [group("dev")]
 favicon input output:
 	#!/bin/bash

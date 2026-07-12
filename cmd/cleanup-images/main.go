@@ -127,6 +127,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer db.Close()
 
 	// db.View(func(tx *bbolt.Tx) error {
 	// 	tx.Bucket([]byte("userImages")).ForEach(func(k, v []byte) error {
